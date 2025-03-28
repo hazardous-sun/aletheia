@@ -22,17 +22,20 @@ func main() {
 
 	// Initializing the repository layer
 	languageRepository := repositories.NewLanguageRepository(dbConnection)
+	newsOutletRepository := repositories.NewNewsOutletRepository(dbConnection)
 
 	// Initializing the use case layer
 	languageUsecase := usecases.NewLanguageUsecase(languageRepository)
+	newsOutletUsecase := usecases.NewNewsOutletUsecase(newsOutletRepository)
 
 	// Initializing the controller layer
 	languageController := controllers.NewLanguageController(languageUsecase)
+	newsOutletController := controllers.NewNewsOutletController(newsOutletUsecase)
 
     // Initialize the API server
     server := gin.Default()
 
-    // Setting up HTTP paths in the API server--------------------------------------------------------------------------
+	// Setting up HTTP paths in the API server -------------------------------------------------------------------------
 	server.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
 			"message": "pong",
@@ -48,6 +51,8 @@ func main() {
 	server.GET("languageName/:languageName", languageController.GetLanguageByName)
 	// -----
 	// ----- News Outlets
+	// ---------- Create
+	server.POST("newsOutlet", newsOutletController.AddNewsOutlet)
 	// -----------------------------------------------------------------------------------------------------------------
 
     if err != nil {
