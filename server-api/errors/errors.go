@@ -8,8 +8,17 @@ import (
 const (
 	LanguageNotFound = "language not found inside the database"
 	LanguageAlreadyExists = "language already exists inside the database"
+	LanguageTableMissing = "language table does not exist inside the database"
+	LanguageParsingError = "language row could not be parsed from the database"
+	LanguageClosingTableError = "language table could not be closed properly"
+)
+
+const (
 	NewsOutletNotFound = "news outlet not found inside the database"
 	NewsOutletAlreadyExists = "news outlet already exists inside the database"
+	NewsOutletTableMissing = "news outlet table does not exist inside the database"
+	NewsOutletParsingError = "news outlet could not be parsed from the database"
+	NewsOutletClosingTableError = "news outlet table could not be closed properly"
 )
 
 const (
@@ -19,8 +28,8 @@ const (
 )
 
 const (
-	ErrorColor = "\033[91m"
-	WarningColor = "\033[93m"
+	errorColor = "\033[91m"
+	warningColor = "\033[93m"
 )
 
 func CustomLog(message string, level string) {
@@ -28,8 +37,8 @@ func CustomLog(message string, level string) {
 	case InfoLevel:
 		log.Println(fmt.Sprintf("info: %s", message))
 	case WarningLevel:
-		log.Println(fmt.Sprintf("%swarning: %s", WarningColor, message))
+		log.Println(fmt.Sprintf("%swarning: %s", warningColor, message))
 	case ErrorLevel:
-		log.Println(fmt.Sprintf("%serror: %s", ErrorColor, message))
+		log.Println(fmt.Sprintf("%serror: %s", errorColor, message))
 	}
 }
