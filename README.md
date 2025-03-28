@@ -19,14 +19,14 @@ tool would be unable to fact check anything, so keep in mind that this is not a 
 ### [Client](client/README.md)
 
 The client is a simple GUI developed in Go using the Fyne framework where the user passes the URL to the news they would
-like to fact-check, along with some other inputs such as extra context and flags informing if the application should
-also fact-check an image, or video.
+like to fact-check. There, they could also inform some other inputs, such as extra context and flags informing if the 
+application should also fact-check an image, or video.
 
 ### [Server API](server-api/README.md)
 
 The Server API was also developed in Go, using the Gin framework. It continuously listens for requests and, when it 
-receives one, it collects the data from the package, that should contain a URL and possibly some context, starts a 
-number of web crawlers and searches for related data on predefined news outlets.
+receives one, it collects the data from the package, that should contain a URL and possibly some context. With the 
+received data, it starts a number of web crawlers and searches for related data on predefined news outlets.
 
 ### [AI Analyzer](ai-analyzer/README.md)
 
