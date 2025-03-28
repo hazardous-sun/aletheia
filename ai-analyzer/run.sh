@@ -1,10 +1,14 @@
 #!/usr/bin/bash
 
 installOllama() {
-  if [[ $(ollama -v) != 0 ]]; then
+  if command -v ollama &> /dev/null; then
+    echo "ollama is already installed"
+  else
     echo "ollama is not installed, installing most recent version..."
 
-    if [[ $(curl -fsSL https://ollama.com/install.sh | sh) != 0 ]]; then
+    if curl -fsSL https://ollama.com/install.sh | sh > install.log 2>&1; then
+      echo "ollama installed successfully"
+    else
       echo "ollama installation failed!"
       exit 1
     fi
@@ -37,6 +41,15 @@ source ai-ananlyzer/bin/activate
 
 # Download required libraries
 pip install -r requirements.txt
+
+export ORIGINAL_POST_CONTENT="ducks do not 'quack', they only 'bark'"
+echo $ORIGINAL_POST_CONTENT
+
+export ONLINE_NEWS_CONTENT="ducks only 'quack' and nothing else"
+echo $ONLINE_NEWS_CONTENT
+
+export USER_CONTEXT="can you confirm to me if ducks actually 'bark'?"
+echo $USER_CONTEXT
 
 # Activate the connector
 python3 connector.py
