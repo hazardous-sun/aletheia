@@ -11,6 +11,8 @@ This section of the project is a REST API built using the Gin framework in Go.
     - [Environment Variables](#environment-variables)
     - [Running the Application](#running-the-application)
 - [API Endpoints](#api-endpoints)
+  - [Languages](#languages)
+  - [News Outlets](#news-outlets)
 - [Project Structure](#project-structure)
 - [Docker Compose](#docker-compose)
 - [Database Initialization](#database-initialization)
@@ -31,7 +33,7 @@ This section of the project is a REST API built using the Gin framework in Go.
     - [x] Retrieve a language by name
 - Manage accepted news outlets
     - [x] Add news outlets
-    - [ ] List all news outlets
+    - [x] List all news outlets
     - [ ] Retrieve a news outlet by ID
     - [x] Retrieve a news outlet by name
 - Dockerized environment for easy setup
