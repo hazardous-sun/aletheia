@@ -20,14 +20,22 @@ func NewLanguageRepository(connection *sql.DB) *LanguageRepository {
 // Create ----------------------------------------------------------------------------------
 
 func (lr *LanguageRepository) CreateLanguage(newsOutlet models.NewsOutlet) (int, error) {
-	_, err := lr.connection.Prepare("INSERT INTO languages (name) VALUES ($1) RETURNING id")
+	query, err := lr.connection.Prepare("INSERT INTO languages (name) VALUES ($1) RETURNING id")
 	
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return -1, errors.New(custom_errors.LanguageNotFound)
+			custom_errors.CustomLog(custom_errors.LanguageTableMissing, custom_errors.ErrorLevel)
+			return -1, errors.New(custom_errors.LanguageTableMissing)
 		}
-		// TODO implement missing handler for the scenario where the language already exists
 		return -1, err
+	}
+
+	var id int
+	err = query.QueryRow(newsOutlet.Name).Scan(&id)
+
+	if err != nil {
+		custom_errors.CustomLog(custom_errors.LanguageAlreadyExists, custom_errors.ErrorLevel)
+		
 	}
 	
 	return -1, nil
