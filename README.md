@@ -1,4 +1,4 @@
-# Ai Fact Checker
+# Athena
 
 ## Server API
 
