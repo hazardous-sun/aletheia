@@ -1,13 +1,10 @@
 #!/usr/bin/bash
 
 installOllama() {
-  _=$(ollama -v)
-
-  if [[ "$?" != 0 ]]; then
+  if [[ $(ollama -v) != 0 ]]; then
     echo "ollama is not installed, installing most recent version..."
-    _=$(curl -fsSL https://ollama.com/install.sh | sh)
 
-    if [[ "$?" != 0 ]]; then
+    if [[ $(curl -fsSL https://ollama.com/install.sh | sh) != 0 ]]; then
       echo "ollama installation failed!"
       exit 1
     fi
@@ -16,13 +13,11 @@ installOllama() {
   fi
 }
 
-instalAIModel() {
-  _=$(ollama list | grep deepseek)
-  if [[ $? != 0 ]]; then
+installAIModel() {
+  if [[ $(ollama list | grep deepseek) != 0 ]]; then
     echo "Deepseek LLM not installed. Downloading Deepseek 1.5b model..."
-    _=$(ollama pull deepseek-r1:1.5b)
 
-    if [[ $? != 0 ]]; then
+    if [[ $(ollama pull deepseek-r1:1.5b) != 0 ]]; then
       echo "An error occurred while downloading the LLM model"
     fi
 
@@ -34,12 +29,13 @@ instalAIModel() {
 installOllama
 
 # Install LLM model if needed
-instalAIModel
+installAIModel
 
 # Activate Python virtual environment
-source ./ai-analyzer/bin/activate
+source ai-ananlyzer/bin/activate
 
 # Download required libraries
 pip install -r requirements.txt
 
+# Activate the connector
 python3 connector.py
