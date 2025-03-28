@@ -23,12 +23,9 @@ clearDatabase() {
   if [[ -d "pgdata" ]]; then
     RESULT=$(sudo rm pgdata -r)
     if [[ "$RESULT" != 0 ]]; then
-        echo "An error occurred while clearing the database"
-        exit 1
+          echo "Successfully cleared the database!"
     fi
   fi
-
-  echo "Successfully cleared the database!"
 }
 
 clearImages() {
@@ -49,9 +46,6 @@ removeImage() {
 
   if [[ "$RESULT" == 0 ]]; then
     echo "Successfully removed previous $1 image"
-  else
-    echo "An error occurred while trying to remove image $1"
-    exit 1
   fi
 }
 
@@ -122,6 +116,9 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
+
+# Build the image for news-db
+podman build src/deployments/news-db -t news-db
 
 # Run service
 podman-compose up -d
