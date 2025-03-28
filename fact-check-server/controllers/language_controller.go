@@ -4,7 +4,6 @@ import (
 	apiErrors "ai-fact-checker/errors"
 	"ai-fact-checker/models"
 	"ai-fact-checker/usecases"
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -49,17 +48,28 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.LanguageNotAdded, customErrors.ErrorLevel)
-		if errors.Is(err, errors.New(customErrors.LanguageParsingError)) {
+		switch err.Error() {
+		case customErrors.LanguageParsingError:
 			ctx.JSON(http.StatusBadRequest, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
 			})
-		} else if errors.Is(err, errors.New(customErrors.LanguageTableMissing)) {
+		case customErrors.LanguageTableMissing:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
-		} else if errors.Is(err, errors.New(customErrors.LanguageClosingTableError)) {
+		case customErrors.LanguageClosingTableError:
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
+		case customErrors.LanguageAlreadyExists:
+			ctx.JSON(http.StatusBadRequest, models.Response{
+				Message: customErrors.LanguageAlreadyExists,
+				Status:  http.StatusBadRequest,
+			})
+		default:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
@@ -72,12 +82,13 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.LanguageNotAdded, customErrors.ErrorLevel)
-		if errors.Is(err, errors.New(customErrors.LanguageNotFound)) {
+		switch err.Error() {
+		case customErrors.LanguageNotFound:
 			ctx.JSON(http.StatusNotFound, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusNotFound,
 			})
-		} else {
+		default:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
@@ -103,22 +114,23 @@ func (lc *LanguageController) GetLanguages(ctx *gin.Context) {
 	languages, err := lc.languageUseCase.GetLanguages()
 
 	if err != nil {
-		if errors.Is(err, errors.New(customErrors.LanguageParsingError)) {
+		switch err.Error() {
+		case customErrors.LanguageParsingError:
 			ctx.JSON(http.StatusBadRequest, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
 			})
-		} else if errors.Is(err, errors.New(customErrors.LanguageTableMissing)) {
+		case customErrors.LanguageTableMissing:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
-		} else if errors.Is(err, errors.New(customErrors.LanguageClosingTableError)) {
+		case customErrors.LanguageClosingTableError:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
-		} else {
+		default:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,

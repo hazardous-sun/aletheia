@@ -5,6 +5,7 @@ import (
 	"ai-fact-checker/models"
 	"database/sql"
 	"errors"
+	"github.com/lib/pq"
 	"strings"
 )
 
@@ -45,6 +46,14 @@ func (lr *LanguageRepository) AddLanguage(newsOutlet models.Language) (int, erro
 	err = query.QueryRow(name).Scan(&id)
 
 	if err != nil {
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) {
+			if pqErr.Code == "23505" && pqErr.Constraint == "languages_name_key" {
+				customErrors.CustomLog(customErrors.LanguageAlreadyExists, customErrors.ErrorLevel)
+				return -1, errors.New(customErrors.LanguageAlreadyExists)
+			}
+		}
+		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
 		return -1, errors.New(customErrors.LanguageParsingError)
 	}
 
