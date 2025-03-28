@@ -11,9 +11,18 @@ printUsage() {
   echo -e "  --DB_NAME= \t \t Value passed to POSTGRES_DB during the database initialization"
   echo -e "  --DB_PASSWORD= \t Value passed to POSTGRES_PASSWORD during the database initialization"
   echo -e "  --DB_USER= \t \t Value passed to POSTGRES_USER during the database initialization"
+  echo -e "  --SERVER_PORT= \t \t Value used to set the port the API server will use"
   echo "Miscelaneous:"
   echo -e "  -h --HELP \t \t Shows the script usage"
 }
+
+# Setting environment variables
+export DB_HOST="news-db"
+export DB_PORT="5432"
+export DB_USER="postgres"
+export DB_PASSWORD="1234"
+export DB_NAME="postgres"
+export SERVER_PORT="8000"
 
 # Parse short options
 while getopts ":drh" opt; do
@@ -77,6 +86,11 @@ for arg in "$@"; do
       export DB_NAME="$VALUE"
       echo "DB_NAME value overwritten"
       ;;
+    --SERVER_PORT=*)
+      VALUE="${arg#*=}"
+      export SERVER_PORT="$VALUE"
+      echo "SERVER_PORT value overwritten"
+      ;;
     --HELP)
       printUsage
       exit 2
@@ -92,13 +106,6 @@ done
 
 # Cleanup previously created containers of this project
 podman-compose down
-
-# Setting environment variables
-export DB_HOST="news-db"
-export DB_PORT="5432"
-export DB_USER="postgres"
-export DB_PASSWORD="1234"
-export DB_NAME="postgres"
 
 # Run service
 podman-compose up -d
