@@ -29,7 +29,7 @@ func NewNewsOutletRepository(connection *sql.DB) NewsOutletRepository {
 //
 // Error: will throw NewsOutletClosingTableError if it fails to close the database rows.
 func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int, error) {
-	query, err := no.connection.Prepare("INSERT INTO news_outlet (name, url, language) VALUES ($1, $2, $3) RETURNING id")
+	query, err := no.connection.Prepare("INSERT INTO news_outlet (name, url, language, credibility) VALUES ($1, $2, $3, $4) RETURNING id")
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -40,7 +40,7 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 	}
 
 	var id int
-	err = query.QueryRow(newsOutlet.Name, newsOutlet.Url, newsOutlet.Language).Scan(&id)
+	err = query.QueryRow(newsOutlet.Name, newsOutlet.Url, newsOutlet.Language, newsOutlet.Id).Scan(&id)
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.NewsOutletParsingError, customErrors.ErrorLevel)

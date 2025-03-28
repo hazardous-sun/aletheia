@@ -6,4 +6,4 @@ ENV POSTGRES_PASSWORD=${DB_PASSWORD}
 ENV POSTGRES_DB=${DB_NAME}
 
 # Copy the initialization script to the Docker image
-COPY initialize_db.sql /docker-entrypoint-initdb.d/
+COPY deployments/news-db/initialize_db.sql /docker-entrypoint-initdb.d/
