@@ -30,10 +30,10 @@ This section of the project is a REST API built using the Gin framework in Go.
     - [x] Retrieve a language by ID
     - [x] Retrieve a language by name
 - Manage accepted news outlets
-    - [ ] Add news outlets
+    - [x] Add news outlets
     - [ ] List all news outlets
     - [ ] Retrieve a news outlet by ID
-    - [ ] Retrieve a news outlet by name
+    - [x] Retrieve a news outlet by name
 - Dockerized environment for easy setup
 - PostgreSQL database for data storage
 
