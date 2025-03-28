@@ -6,34 +6,15 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"reflect"
 )
 
 func Build(a fyne.App, config *models.Config) {
-	fields := collectConfiguredFields(*config)
+	fields := models.CollectConfigValues(*config)
 	ctr := buildFields(fields)
 
 	w := a.NewWindow("Client Test")
 	w.SetContent(ctr)
 	w.ShowAndRun()
-}
-
-func collectConfiguredFields(config models.Config) []string {
-	v := reflect.ValueOf(config)
-	typeOfS := v.Type()
-	var result []string
-
-	for i := 0; i < v.NumField(); i++ {
-		field := v.Field(i)
-		fieldName := typeOfS.Field(i).Name
-		fieldType := field.Type()
-
-		if fieldType.Kind() == reflect.Bool && field.Bool() {
-			result = append(result, fieldName)
-		}
-	}
-
-	return result
 }
 
 func buildFields(fields []string) fyne.CanvasObject {
@@ -68,11 +49,11 @@ func buildOptionalFields(windowWidgets []fyne.CanvasObject, fields []string) []f
 	flagsValues := models.NewConfig(false, false, false)
 	for _, v := range fields {
 		switch v {
-		case "Image":
+		case "IMAGE":
 			windowWidgets = append(windowWidgets, buildCheckField("Image:", flagsValues))
-		case "Video":
+		case "VIDEO":
 			windowWidgets = append(windowWidgets, buildCheckField("Video:", flagsValues))
-		case "Context":
+		case "CONTEXT":
 			windowWidgets = append(windowWidgets, buildEntryContainerField("Context:"))
 		default:
 			fmt.Println("unknown")
