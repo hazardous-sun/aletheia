@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type NewsOutletController struct {
@@ -155,6 +156,50 @@ func (no *NewsOutletController) GetNewsOutletByName(ctx *gin.Context) {
 	}
 
 	newsOutlet, err := no.newsOutletUsecase.GetNewsOutletByName(name)
+
+	if err != nil {
+		customErrors.CustomLog(customErrors.NewsOutletNotFound, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusNotFound, models.Response{
+			Message: err.Error(),
+			Status:  http.StatusNotFound,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, newsOutlet)
+}
+
+// GetNewsOutletById :
+// Returns a "NewsOutlet" instance by id. Even though it may fail, it should not crash the application at any given
+// moment.
+//
+// Error: will return StatusBadRequest if the body is invalid.
+//
+// Error: will return StatusNotFound if a news outlet with the provided name is not found.
+func (no *NewsOutletController) GetNewsOutletById(ctx *gin.Context) {
+	inputId := ctx.Param("newsOutletName")
+
+	if inputId == "" {
+		customErrors.CustomLog(customErrors.EmptyNameError, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Message: customErrors.EmptyNameError,
+			Status:  http.StatusBadRequest,
+		})
+		return
+	}
+
+	id, err := strconv.Atoi(inputId)
+
+	if err != nil {
+		customErrors.CustomLog(customErrors.InvalidIdError, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Message: err.Error(),
+			Status:  http.StatusBadRequest,
+		})
+		return
+	}
+
+	newsOutlet, err := no.newsOutletUsecase.GetNewsOutletById(id)
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.NewsOutletNotFound, customErrors.ErrorLevel)

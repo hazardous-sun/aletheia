@@ -66,3 +66,18 @@ func (no *NewsOutletUseCase) GetNewsOutletByName(name string) (*models.NewsOutle
 
 	return language, nil
 }
+
+// GetNewsOutletById :
+// Returns a "NewsOutlet" instance by id. Even though it may fail, it should not crash the application at any given
+// moment.
+//
+// Error: will throw NewsOutletNotFound if a news outlet with the provided name is not found.
+func (no *NewsOutletUseCase) GetNewsOutletById(id int) (*models.NewsOutlet, error) {
+	language, err := no.newsOutletRepository.GetNewsOutletById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return language, nil
+}

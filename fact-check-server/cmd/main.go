@@ -56,6 +56,7 @@ func main() {
 	// ---------- Read
 	server.GET("newsOutlets", newsOutletController.GetNewsOutlets)
 	server.GET("newsOutletName/:newsOutletName", newsOutletController.GetNewsOutletByName)
+	server.GET("newsOutletId/:newsOutletId", newsOutletController.GetNewsOutletById)
 	// -----------------------------------------------------------------------------------------------------------------
 
     if err != nil {
