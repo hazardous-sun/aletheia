@@ -16,8 +16,6 @@ This section of the project is a REST API built using the Gin framework in Go.
 - [Project Structure](#project-structure)
 - [Docker Compose](#docker-compose)
 - [Database Initialization](#database-initialization)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## TODO
 
