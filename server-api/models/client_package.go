@@ -7,8 +7,3 @@ type ClientPackage struct {
     Video bool `json:"vide"`
     Prompt string `json:"prompt"`
 }
-
-func NewClientPackage() ClientPackage {
-    return ClientPackage{}
-}
-

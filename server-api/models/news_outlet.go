@@ -6,8 +6,3 @@ type NewsOutlet struct {
     Language string `json:"language"`
     Credibility int `json:"credibility"`
 }
-
-func NewNewsOutlet() NewsOutlet {
-    return NewsOutlet{}
-}
-
