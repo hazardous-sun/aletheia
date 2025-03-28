@@ -135,4 +135,5 @@ func (cr *CrawlerRepository) Crawl() {
 			custom_errors.ErrorLevel,
 		)
 	}
+	cr.crawler.Status = custom_errors.CrawlerSucceeded
 }

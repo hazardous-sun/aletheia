@@ -7,3 +7,5 @@ const (
 	CrawlerFilledPagesBodies = "crawler filled pages bodies needs to be empty"
 	CrawlerClosingPageError  = "crawler did not close the page properly"
 )
+
+const CrawlerSucceeded = "crawler successfully crawled"
