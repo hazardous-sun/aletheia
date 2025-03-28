@@ -3,17 +3,56 @@
 printUsage() {
   echo "Usage: run.sh [OPTIONS]"
   echo "Pod:"
-  echo -e "  -r --RESET \t \t Resets the project images"
-  echo -e "  -d -- DELETE \t \t Deletes the previously stored data"
-  echo -e "Postgres database:"
+  echo -e "  -C --CLEAR \t \t Clears the database"
+  echo -e "  -R --RESET \t \t Resets the project images"
+  echo -e "Fact check server connection:"
+  echo -e "  --SERVER_PORT= \t Value used to set the port the API server will use"
+  echo -e "Postgres database connection:"
   echo -e "  --DB_HOST= \t \t Value used to identify the container where the database is running"
   echo -e "  --DB_PORT= \t \t Value used to identify the port where the database is running"
   echo -e "  --DB_NAME= \t \t Value passed to POSTGRES_DB during the database initialization"
   echo -e "  --DB_PASSWORD= \t Value passed to POSTGRES_PASSWORD during the database initialization"
   echo -e "  --DB_USER= \t \t Value passed to POSTGRES_USER during the database initialization"
-  echo -e "  --SERVER_PORT= \t \t Value used to set the port the API server will use"
   echo "Miscelaneous:"
   echo -e "  -h --HELP \t \t Shows the script usage"
+}
+
+clearDatabase() {
+  echo "Clearing database..."
+
+  if [[ -d "pgdata" ]]; then
+    RESULT=$(sudo rm pgdata -r)
+    if [[ "$RESULT" != 0 ]]; then
+        echo "An error occurred while clearing the database"
+        exit 1
+    fi
+  fi
+
+  echo "Successfully cleared the database!"
+}
+
+clearImages() {
+  echo "Clearing previous project images..."
+
+  # Check if the images exist
+  for IMAGE in news-db fact-check-api; do
+    if podman image exists "$IMAGE"; then
+      removeImage "$IMAGE"
+    fi
+  done
+
+  echo "Successfully cleread previous project images!"
+}
+
+removeImage() {
+  RESULT=$(podman image rm $1)
+
+  if [[ "$RESULT" == 0 ]]; then
+    echo "Successfully removed previous $1 image"
+  else
+    echo "An error occurred while trying to remove image $1"
+    exit 1
+  fi
 }
 
 # Setting environment variables
@@ -24,42 +63,17 @@ export DB_PASSWORD="1234"
 export DB_NAME="postgres"
 export SERVER_PORT="8000"
 
-# Parse short options
-while getopts ":drh" opt; do
-  case $opt in
-    d) # deletes previously stored data
-      echo "Running 'rm pgdata -r'..."
-      sudo rm pgdata -r
-      ;;
-    r) # resets project images
-      echo "Clearing previous project images..."
-      podman image rm news-db fact-check-api
-      ;;
-    h) # shows the usage of the script
-      printUsage
-      exit 2
-      ;;
-    \?) # handles invalid options
-      echo "Invalid option: -$OPTARG" >&2
-      printUsage
-      exit 1
-      ;;
-  esac
-done
+# Cleanup previously created containers of this project
+podman-compose down --remove-orphans
 
-# Shift the parsed options away, leaving only positional arguments
-shift $((OPTIND - 1))
-
-# Parse long options
-for arg in "$@"; do
-  case "$arg" in
-    --DELETE)
-      echo "Running 'rm pgdata -r'..."
-      sudo rm pgdata -r
+# Parse command-line options
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -C|--CLEAR) # clears the database
+      clearDatabase
       ;;
-    --RESET)
-      echo "Clearing previous project images..."
-      podman image rm news-db fact-check-api
+    -R|--RESET)
+      clearImages
       ;;
     --DB_HOST=*)
       VALUE="${arg#*=}"
@@ -91,21 +105,23 @@ for arg in "$@"; do
       export SERVER_PORT="$VALUE"
       echo "SERVER_PORT value overwritten"
       ;;
-    --HELP)
+    -h|--HELP)
       printUsage
       exit 2
       ;;
+    -*)
+      echo "Invalid option: $1" >&2
+      printUsage
+      exit 1
+      ;;
     *)
-      # Handle unknown arguments
-      echo "Unknown argument: $arg" >&2
+      echo "Invalid argument: $1" >&2
       printUsage
       exit 1
       ;;
   esac
+  shift
 done
-
-# Cleanup previously created containers of this project
-podman-compose down
 
 # Run service
 podman-compose up -d
