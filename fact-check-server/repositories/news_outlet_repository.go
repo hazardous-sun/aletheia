@@ -133,12 +133,22 @@ func (no *NewsOutletRepository) GetNewsOutletByName(name string) (*models.NewsOu
 	}
 
 	var newsOutletObj models.NewsOutlet
-	err = query.QueryRow(name).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.Url, &newsOutletObj.Language, &newsOutletObj.Credibility)
+	var languageId int
+	err = query.QueryRow(name).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.Url, &languageId, &newsOutletObj.Credibility)
 
 	if err != nil {
 		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
 		return nil, errors.New(customErrors.NewsOutletNotFound)
 	}
+
+	language, err := no.languageRepository.GetLanguageById(languageId)
+
+	if err != nil {
+		customErrors.CustomLog(customErrors.LanguageNotFound, customErrors.ErrorLevel)
+		return &models.NewsOutlet{}, err
+	}
+
+	newsOutletObj.Language = language.Name
 
 	return &newsOutletObj, nil
 }
