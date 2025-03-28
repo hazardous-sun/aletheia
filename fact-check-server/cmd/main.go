@@ -22,14 +22,14 @@ func main() {
 
 	// Initializing the repository layer
 	languageRepository := repositories.NewLanguageRepository(dbConnection)
-	newsOutletRepository := repositories.NewNewsOutletRepository(dbConnection)
+	languageUsecase := usecases.NewLanguageUsecase(languageRepository)
+	languageController := controllers.NewLanguageController(languageUsecase)
 
 	// Initializing the use case layer
-	languageUsecase := usecases.NewLanguageUsecase(languageRepository)
-	newsOutletUsecase := usecases.NewNewsOutletUsecase(newsOutletRepository)
 
 	// Initializing the controller layer
-	languageController := controllers.NewLanguageController(languageUsecase)
+	newsOutletRepository := repositories.NewNewsOutletRepository(dbConnection, *languageRepository)
+	newsOutletUsecase := usecases.NewNewsOutletUsecase(newsOutletRepository)
 	newsOutletController := controllers.NewNewsOutletController(newsOutletUsecase)
 
     // Initialize the API server

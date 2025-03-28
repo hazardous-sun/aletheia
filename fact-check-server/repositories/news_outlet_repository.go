@@ -8,12 +8,14 @@ import (
 )
 
 type NewsOutletRepository struct {
-	connection *sql.DB
+	connection         *sql.DB
+	languageRepository *LanguageRepository
 }
 
-func NewNewsOutletRepository(connection *sql.DB) NewsOutletRepository {
+func NewNewsOutletRepository(connection *sql.DB, languageRepository LanguageRepository) NewsOutletRepository {
 	return NewsOutletRepository{
-		connection: connection,
+		connection:         connection,
+		languageRepository: &languageRepository,
 	}
 }
 
@@ -80,13 +82,14 @@ func (no *NewsOutletRepository) GetNewsOutlets() ([]models.NewsOutlet, error) {
 
 	var newsOutletList []models.NewsOutlet
 	var newsOutletObj models.NewsOutlet
+	var languageId int
 
 	for rows.Next() {
 		err = rows.Scan(
 			&newsOutletObj.Id,
 			&newsOutletObj.Name,
 			&newsOutletObj.Url,
-			&newsOutletObj.Language,
+			&languageId,
 			&newsOutletObj.Credibility,
 		)
 
@@ -95,6 +98,14 @@ func (no *NewsOutletRepository) GetNewsOutlets() ([]models.NewsOutlet, error) {
 			return []models.NewsOutlet{}, errors.New(customErrors.NewsOutletParsingError)
 		}
 
+		language, err := no.languageRepository.GetLanguageById(languageId)
+
+		if err != nil {
+			customErrors.CustomLog(customErrors.LanguageNotFound, customErrors.ErrorLevel)
+			return []models.NewsOutlet{}, err
+		}
+
+		newsOutletObj.Language = language.Name
 		newsOutletList = append(newsOutletList, newsOutletObj)
 	}
 
@@ -122,7 +133,7 @@ func (no *NewsOutletRepository) GetNewsOutletByName(name string) (*models.NewsOu
 	}
 
 	var newsOutletObj models.NewsOutlet
-	err = query.QueryRow(name).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.Url, &newsOutletObj.Language)
+	err = query.QueryRow(name).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.Url, &newsOutletObj.Language, &newsOutletObj.Credibility)
 
 	if err != nil {
 		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
