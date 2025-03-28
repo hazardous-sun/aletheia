@@ -153,13 +153,15 @@ Finally, the Go application will be available at http://localhost:8000
 
 - Create a new news outlet
     - `POST /newsOutlet`
+    - The `QueryUrl` field should contain `KEYWORDS_HERE` at the position used to store the search query
     - Request Body Example:
       ```json
       {
-        "name": "example",
-        "url": "example.com",
-        "language": "english",
-        "credibility": 10
+        "Name": "G1",
+        "QueryUrl": "https://g1.globo.com/busca/?q=KEYWORDS_HERE",
+        "HtmlSelector": ".widget--info__text-container a",
+        "language": "portuguese",
+        "credibility": 50
       }
       ```
     - Response Example:
@@ -167,7 +169,8 @@ Finally, the Go application will be available at http://localhost:8000
       {
         "id": 1,
         "name": "example",
-        "url": "example.com",
+        "queryurl": "example.com",
+        "htmlselector": "example example",
         "language": "english",
         "credibility": 10
       }
@@ -180,7 +183,8 @@ Finally, the Go application will be available at http://localhost:8000
         {
           "id": 1,
           "name": "example",
-          "url": "example.com",
+          "queryurl": "example.com",
+          "htmlselector": "example example",
           "language": "english",
           "credibility": 10
         }
@@ -193,7 +197,8 @@ Finally, the Go application will be available at http://localhost:8000
       {
         "id": 1,
         "name": "example",
-        "url": "example.com",
+        "queryurl": "example.com",
+        "htmlselector": "example example",
         "language": "english",
         "credibility": 10
       }
@@ -205,7 +210,8 @@ Finally, the Go application will be available at http://localhost:8000
       {
         "id": 1,
         "name": "example",
-        "url": "example.com",
+        "queryurl": "example.com",
+        "htmlselector": "example example",
         "language": "english",
         "credibility": 10
       }
@@ -235,20 +241,21 @@ application starts.
 ```sql
 CREATE TABLE languages
 (
-    ID   SERIAL PRIMARY KEY,
-    NAME VARCHAR(255) UNIQUE NOT NULL
+    Id   SERIAL PRIMARY KEY,
+    Name VARCHAR(255) UNIQUE NOT NULL
 );
 
 CREATE TABLE news_outlet
 (
-    ID          SERIAL PRIMARY KEY,
-    NAME        VARCHAR(255) UNIQUE NOT NULL,
-    URL         TEXT                NOT NULL,
-    LANGUAGE    INT                 NOT NULL,
-    CREDIBILITY INT                 NOT NULL
+    Id           SERIAL PRIMARY KEY,
+    Name         VARCHAR(255) UNIQUE NOT NULL,
+    QueryUrl     TEXT                NOT NULL,
+    HtmlSelector TEXT                NOT NULL,
+    LanguageId   INT                 NOT NULL,
+    Credibility  INT                 NOT NULL
 );
 
 ALTER TABLE news_outlet
     ADD CONSTRAINT fk_language
-        FOREIGN KEY (language) REFERENCES languages (id);
+        FOREIGN KEY (LanguageId) REFERENCES languages (Id) ON UPDATE CASCADE ON DELETE CASCADE;
 ```
