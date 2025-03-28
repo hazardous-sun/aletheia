@@ -59,19 +59,19 @@ The application requires the following environment variables to be set:
 - `DB_PASSWORD`: The password for the PostgreSQL database (default: `1234`).
 - `DB_NAME`: The name of the PostgreSQL database (default: `postgres`).
 
-These variables are set in the [`run-server.sh`](run-server.sh) script.
+These variables are set in the [`run.sh`](run.sh) script.
 
 ### Running the Application
 
 ```bash
-# Make the run-server.sh script executable:
-chmod +x run-server.sh
+# Make the run.sh script executable:
+chmod +x run.sh
 
 # Initialize the API server
-./run-server.sh
+./run.sh
 ```
 
-#### The [run-server.sh](run-server.sh) script will:
+#### The [run.sh](run.sh) script will:
 
 1. Set the necessary environment variables.
 2. Clean up any previously created containers.
@@ -79,7 +79,7 @@ chmod +x run-server.sh
 
 Finally, the Go application will be available at http://localhost:8000
 
-#### run-server.sh parameters
+#### run.sh parameters
 
 - `-d`: deletes the `pgdata/` volume used to store the languages and news outlets
 - `-r`: deletes the images from the project before initializing the pod
