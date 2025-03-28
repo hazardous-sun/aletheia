@@ -2,12 +2,11 @@ FROM docker.io/golang:1.23-alpine as builder
 
 WORKDIR /go/build
 
-COPY go.mod go.sum ./
-RUN go mod download
-
 COPY . .
 
-RUN go build -o ai-fact-checker cmd/main.go
+RUN go mod download
+
+RUN go build -o fact-check-server src/cmd/main.go
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -17,12 +16,12 @@ FROM alpine:latest
 RUN apk add --no-cache netcat-openbsd
 
 # Copy the wait-for-db.sh script and set permissions
-COPY deployments/fact-check-server/wait-for-db.sh /wait-for-db.sh
+COPY src/deployments/fact-check-server/wait-for-db.sh /wait-for-db.sh
 RUN chmod +x /wait-for-db.sh
 
 # Copy the binary from the builder stage
-COPY --from=builder /go/build/ai-fact-checker /ai-fact-checker
+COPY --from=builder /go/build/fact-check-server /fact-check-server
 
 EXPOSE 8000
 
-CMD ["/wait-for-db.sh", "news-db", "5432", "./ai-fact-checker"]
+CMD ["/wait-for-db.sh", "news-db", "5432", "./fact-check-server"]
