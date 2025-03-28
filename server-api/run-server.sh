@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Cleanup previously created containers of this project
+podman-compose down
+
 # Setting environment variables
 export DB_HOST="news-db"
 export DB_PORT="5432"
@@ -8,12 +11,15 @@ export DB_PASSWORD="1234"
 export DB_NAME="postgres"
 
 # Parse command-line options
-while getopts ":d" opt; do
+while getopts ":dr" opt; do
   case $opt in
-    d)
-      # If -d is passed, execute the command
+    r) # reset project images
+      echo "Clearing previous project images..."
+      podman image rm news-db fact-check-api
+      ;;
+    d) # delete previously stored data
       echo "Running 'rm pgdata -r'..."
-      sudo rm -r pgdata
+      sudo rm pgdata -r
       ;;
     \?)
       # Handle invalid options
@@ -60,9 +66,6 @@ for arg in "$@"; do
       ;;
   esac
 done
-
-# Cleanup previously created containers of this project
-podman-compose down
 
 # Run service
 podman-compose up -d
