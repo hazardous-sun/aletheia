@@ -1,4 +1,4 @@
-# Server API
+# Fact Check Server
 
 This section of the project is a REST API built using the Gin framework in Go.
 
