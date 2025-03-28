@@ -35,6 +35,14 @@ func (lr *LanguageRepository) CreateLanguage(newsOutlet models.NewsOutlet) (int,
 
 // Read ------------------------------------------------------------------------------------
 
+// GetLanguages :
+// Returns all the languages stored in the database. Even though it may fail, it should not crash the application at any given moment.
+//
+// Error: will throw LanguageTableMissing if the database is incorrectly set and the "languages" table is missing.
+//
+// Error: will throw LanguageParsingError if for some reason it is unable to parse the values it receives from the database.
+//
+// Error: will throw LanguageClosingTableError if it fails to close the database rows.
 func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 	query := "SELECT * FROM languages"
 	rows, err := lr.connection.Query(query)
@@ -71,6 +79,10 @@ func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 	return languageList, nil
 }
 
+// GetLanguageById :
+// Returns a "language" instance by id. Even though it may fail, it should not crash the application at any given moment.
+//
+// Error: will throw LanguageNotFound if a language with the provided id is not found.
 func (lr *LanguageRepository) GetLanguageById(id int) (*models.Language, error) {
 	query, err := lr.connection.Prepare("SELECT * FROM languages WHERE id = $1")
 

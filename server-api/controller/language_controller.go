@@ -24,6 +24,12 @@ func NewLanguageController(usecase usecases.LanguageUseCase) LanguageController 
 
 // Read -------------------------------------------------------------------------------------------------------------------------------------
 
+// GetLanguages :
+// Returns all the languages stored in the database. Even though it may fail, it should not crash the application at any given moment.
+//
+// Error: will return StatusBadRequest if the requet is invalid.
+//
+// Error: will return StatusInternalServerError if there's a problem while closing the "language" table or if it is missing.
 func (lc *LanguageController) GetLanguages(ctx *gin.Context) {
 	languages, err := lc.languageUseCase.GetLanguages()
 
@@ -42,6 +48,12 @@ func (lc *LanguageController) GetLanguages(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, languages)
 }
 
+// GetLanguageById :
+// Returns a "language" instance by id. Even though it may fail, it should not crash the application at any given moment.
+//
+// Error: will return StatusBadRequest if the request is invalid.
+//
+// Error: will return StatusNotFound if a language with the provided id is not found.
 func (lc *LanguageController) GetLanguageById(ctx *gin.Context) {
 	id := ctx.Param("languageId")
 
