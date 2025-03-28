@@ -138,7 +138,7 @@ func (lr *LanguageRepository) GetLanguageByName(name string) (*models.Language, 
 
 	if err != nil {
 		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
-		return nil, errors.New(customErrors.LanguageNotFound)
+		return nil, err
 	}
 
 	var languageObj models.Language
