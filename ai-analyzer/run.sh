@@ -39,4 +39,7 @@ instalAIModel
 # Activate Python virtual environment
 source ./ai-analyzer/bin/activate
 
+# Download required libraries
+pip install -r requirements.txt
+
 python3 connector.py
