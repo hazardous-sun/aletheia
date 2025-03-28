@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -21,6 +22,16 @@ func NewCrawlerRepository(crawler models.Crawler) CrawlerRepository {
 		Crawler: crawler,
 	}
 }
+
+/*
+1. Analyze QueryUrl
+	1. Replace KEYWORDS_HERE1 by query value
+2. Analyze HtmlSelector
+	1. Replace N_FIRST_... with the number of the first iteration
+		- Example: N_FIRST_2 should be converted to 2, N_FIRST_13 should be converted to 13...
+3. Crawl QueryUrl
+	1. While len(resultsFound) < PagesToVisit, iterate over the resulting page searching for links
+*/
 
 func (cr *CrawlerRepository) Crawl() {
 	cr.Crawler.Status = custom_errors.CrawlerRunning
@@ -145,4 +156,10 @@ func (cr *CrawlerRepository) Crawl() {
 		)
 	}
 	cr.Crawler.Status = custom_errors.CrawlerSucceeded
+}
+
+// Replaces `N_FIRST_(\d+)` with the current iteration
+func configHtmlSelector(input string) string {
+	re := regexp.MustCompile(`N_FIRST_(\d+)`)
+	return re.ReplaceAllString(input, "$1")
 }
