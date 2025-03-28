@@ -6,5 +6,6 @@ type Crawler struct {
 	Query        string
 	QueryUrl     string
 	HtmlSelector string
+	Status       string
 	PagesBodies  []string
 }
