@@ -1,9 +1,11 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	custom_errors "ai-fact-checker/server-api/errors"
 	"ai-fact-checker/server-api/usecases"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type LanguageController struct {
@@ -16,12 +18,23 @@ func NewLanguageController(usecase usecases.LanguageUseCase) LanguageController 
 	}
 }
 
+// Create -----------------------------------------------------------------------------------------------------------------------------------
+
+// Read -------------------------------------------------------------------------------------------------------------------------------------
+
 func (lc *LanguageController) GetLanguages(ctx *gin.Context) {
 	languages, err := lc.languageUseCase.GetLanguages()
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
-		return
+		if err.Error() == custom_errors.LanguageParsingError {
+			// LanguageParsingError
+			ctx.JSON(http.StatusBadRequest, err)
+		} else {
+			// LanguageTableMissing
+			// LanguageClosingTableError
+			ctx.JSON(http.StatusInternalServerError, err)
+			return
+		}
 	}
 
 	ctx.JSON(http.StatusOK, languages)
