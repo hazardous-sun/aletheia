@@ -2,8 +2,8 @@ version: '3.9'
 
 services:
   fact-check-server:
-    container_name: fact-check-server
-    image: fact-check-server
+    container_name: fact-check-api
+    image: fact-check-api
     build:
       context: .
       dockerfile: deployments/fact-check-server/Dockerfile
@@ -19,7 +19,7 @@ services:
       DB_NAME: ${DB_NAME}
   news-db:
     container_name: news-db
-    image: postgres-go-api
+    image: news-db
     build:
       context: .
       dockerfile: deployments/news-db/Dockerfile
