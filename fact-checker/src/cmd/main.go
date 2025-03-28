@@ -15,10 +15,10 @@ func main() {
 	// Initialize the Database server
 	dbConnection, err := db.ConnectDB()
 
-    if err != nil {
-        custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
-        return
-    }
+	if err != nil {
+		customErros.Log(err.Error(), customErros.ErrorLevel)
+		return
+	}
 
 	// Initializing the repository layer
 	languageRepository := repositories2.NewLanguageRepository(dbConnection)
@@ -65,8 +65,10 @@ func main() {
 	server.POST("crawl", crawlerController.Crawl)
 	// -----------------------------------------------------------------------------------------------------------------
 
-    if err != nil {
-        custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
-        return
-    }
+	err = server.Run(":8000")
+
+	if err != nil {
+		customErros.Log(err.Error(), customErros.ErrorLevel)
+		return
+	}
 }

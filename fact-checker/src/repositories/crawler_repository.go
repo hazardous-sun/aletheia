@@ -38,7 +38,7 @@ func (cr *CrawlerRepository) Crawl() {
 
 	// crawler.QueryUrl should not be empty
 	if cr.Crawler.QueryUrl == "" {
-		custom_errors2.CustomLog(
+		custom_errors2.Log(
 			fmt.Sprintf("crawler %d failed because it was initialized without an URL to query", cr.Crawler.Id),
 			custom_errors2.WarningLevel,
 		)
@@ -48,7 +48,7 @@ func (cr *CrawlerRepository) Crawl() {
 
 	// crawler.Query should not be empty
 	if cr.Crawler.Query == "" {
-		custom_errors2.CustomLog(
+		custom_errors2.Log(
 			fmt.Sprintf("crawler %d failed because query was empty", cr.Crawler.Id),
 			custom_errors2.WarningLevel,
 		)
@@ -58,7 +58,7 @@ func (cr *CrawlerRepository) Crawl() {
 
 	// crawler.HtmlSelector should not be empty
 	if cr.Crawler.HtmlSelector == "" {
-		custom_errors2.CustomLog(
+		custom_errors2.Log(
 			fmt.Sprintf("crawler %d failed because HTML selector was empty", cr.Crawler.Id),
 			custom_errors2.WarningLevel,
 		)
@@ -68,7 +68,7 @@ func (cr *CrawlerRepository) Crawl() {
 
 	// crawler.PagesBodies should be empty
 	if len(cr.Crawler.PagesBodies) > 0 {
-		custom_errors2.CustomLog(
+		custom_errors2.Log(
 			fmt.Sprintf("crawler %d failed because its page bodies was initialized with values already maintained", cr.Crawler.Id),
 			custom_errors2.WarningLevel,
 		)
@@ -99,19 +99,19 @@ func (cr *CrawlerRepository) Crawl() {
 	})
 
 	c.OnRequest(func(r *colly.Request) {
-		custom_errors2.CustomLog(
+		custom_errors2.Log(
 			fmt.Sprintf("crawler %d visiting: %s", cr.Crawler.Id, searchURL),
 			custom_errors2.InfoLevel)
 	})
 
 	c.OnError(func(_ *colly.Response, err error) {
-		custom_errors2.CustomLog(
+		custom_errors2.Log(
 			fmt.Sprintf("crawler %d failed: %s", cr.Crawler.Id, searchURL),
 			custom_errors2.ErrorLevel)
 	})
 
 	if err := c.Visit(searchURL); err != nil {
-		custom_errors2.CustomLog(
+		custom_errors2.Log(
 			fmt.Sprintf("crawler %d visit error: %s", cr.Crawler.Id, searchURL),
 			custom_errors2.ErrorLevel)
 	}
@@ -136,7 +136,7 @@ func collectCandidateBody(cr *CrawlerRepository, link string) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			custom_errors2.CustomLog(
+			custom_errors2.Log(
 				custom_errors2.CrawlerClosingPageError,
 				custom_errors2.WarningLevel,
 			)
@@ -145,7 +145,7 @@ func collectCandidateBody(cr *CrawlerRepository, link string) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		custom_errors2.CustomLog(
+		custom_errors2.Log(
 			fmt.Sprintf("unable to read body from %s: %v", link, err),
 			custom_errors2.ErrorLevel,
 		)
@@ -156,7 +156,7 @@ func collectCandidateBody(cr *CrawlerRepository, link string) {
 	// Store the body
 	cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, string(body))
 
-	custom_errors2.CustomLog(
+	custom_errors2.Log(
 		fmt.Sprintf("added %s crawler %d pagebodies", link),
 		custom_errors2.ErrorLevel,
 	)

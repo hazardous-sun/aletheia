@@ -35,7 +35,7 @@ func (lr *LanguageRepository) AddLanguage(newsOutlet models.Language) (int, erro
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			custom_errors.CustomLog(custom_errors.LanguageTableMissing, custom_errors.ErrorLevel)
+			custom_errors.Log(custom_errors.LanguageTableMissing, custom_errors.ErrorLevel)
 			return -1, errors.New(custom_errors.LanguageTableMissing)
 		}
 		return -1, err
@@ -49,18 +49,18 @@ func (lr *LanguageRepository) AddLanguage(newsOutlet models.Language) (int, erro
 		var pqErr *pq.Error
 		if errors.As(err, &pqErr) {
 			if pqErr.Code == "23505" && pqErr.Constraint == "languages_name_key" {
-				custom_errors.CustomLog(custom_errors.LanguageAlreadyExists, custom_errors.ErrorLevel)
+				custom_errors.Log(custom_errors.LanguageAlreadyExists, custom_errors.ErrorLevel)
 				return -1, errors.New(custom_errors.LanguageAlreadyExists)
 			}
 		}
-		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
 		return -1, errors.New(custom_errors.LanguageParsingError)
 	}
 
 	err = query.Close()
 
 	if err != nil {
-		custom_errors.CustomLog(custom_errors.LanguageClosingTableError, custom_errors.ErrorLevel)
+		custom_errors.Log(custom_errors.LanguageClosingTableError, custom_errors.ErrorLevel)
 		return -1, errors.New(custom_errors.LanguageClosingTableError)
 	}
 
@@ -84,7 +84,7 @@ func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 	rows, err := lr.connection.Query(query)
 
 	if err != nil {
-		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
 		return []models.Language{}, errors.New(custom_errors.LanguageTableMissing)
 	}
 
@@ -98,7 +98,7 @@ func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 		)
 
 		if err != nil {
-			custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+			custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
 			return []models.Language{}, errors.New(custom_errors.LanguageParsingError)
 		}
 
@@ -108,7 +108,7 @@ func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 	err = rows.Close()
 
 	if err != nil {
-		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
 		return []models.Language{}, errors.New(custom_errors.LanguageClosingTableError)
 	}
 
@@ -124,7 +124,7 @@ func (lr *LanguageRepository) GetLanguageById(id int) (*models.Language, error) 
 	query, err := lr.connection.Prepare("SELECT * FROM languages WHERE id = $1")
 
 	if err != nil {
-		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
 		return nil, errors.New(custom_errors.LanguageNotFound)
 	}
 
@@ -132,7 +132,7 @@ func (lr *LanguageRepository) GetLanguageById(id int) (*models.Language, error) 
 	err = query.QueryRow(id).Scan(&languageObj.Id, &languageObj.Name)
 
 	if err != nil {
-		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
 		return nil, errors.New(custom_errors.LanguageNotFound)
 	}
 
@@ -148,7 +148,7 @@ func (lr *LanguageRepository) GetLanguageByName(name string) (*models.Language, 
 	query, err := lr.connection.Prepare("SELECT * FROM languages WHERE name = $1")
 
 	if err != nil {
-		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
 		return nil, err
 	}
 
@@ -157,7 +157,7 @@ func (lr *LanguageRepository) GetLanguageByName(name string) (*models.Language, 
 	err = query.QueryRow(name).Scan(&languageObj.Id, &languageObj.Name)
 
 	if err != nil {
-		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
 		return nil, errors.New(custom_errors.LanguageNotFound)
 	}
 

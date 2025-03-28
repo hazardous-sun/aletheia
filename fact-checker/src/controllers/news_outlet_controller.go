@@ -35,7 +35,7 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 	err := ctx.BindJSON(&newsOutlet)
 
 	if err != nil {
-		custom_errors.CustomLog(custom_errors.NewsOutletParsingError, custom_errors.ErrorLevel)
+		custom_errors.Log(custom_errors.NewsOutletParsingError, custom_errors.ErrorLevel)
 		ctx.JSON(http.StatusBadRequest, models2.Response{
 			Message: err.Error(),
 			Status:  http.StatusBadRequest,
@@ -46,7 +46,7 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 	newsOutlet, err = no.newsOutletUsecase.AddNewsOutlet(newsOutlet)
 
 	if err != nil {
-		custom_errors.CustomLog(custom_errors.NewsOutletNotAdded, custom_errors.ErrorLevel)
+		custom_errors.Log(custom_errors.NewsOutletNotAdded, custom_errors.ErrorLevel)
 		switch err.Error() {
 		case custom_errors.LanguageParsingError:
 			ctx.JSON(http.StatusBadRequest, models2.Response{
@@ -81,7 +81,7 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 	createdNewsOutlet, err := no.newsOutletUsecase.GetNewsOutletByName(newsOutlet.Name)
 
 	if err != nil {
-		custom_errors.CustomLog(custom_errors.NewsOutletNotAdded, custom_errors.ErrorLevel)
+		custom_errors.Log(custom_errors.NewsOutletNotAdded, custom_errors.ErrorLevel)
 		switch err.Error() {
 		case custom_errors.NewsOutletNotFound:
 			ctx.JSON(http.StatusNotFound, models2.Response{
@@ -114,7 +114,7 @@ func (no *NewsOutletController) GetNewsOutlets(ctx *gin.Context) {
 	newsOutlets, err := no.newsOutletUsecase.GetNewsOutlets()
 
 	if err != nil {
-		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
 		switch err.Error() {
 		case custom_errors.NewsOutletParsingError:
 			ctx.JSON(http.StatusBadRequest, models2.Response{
@@ -154,7 +154,7 @@ func (no *NewsOutletController) GetNewsOutletByName(ctx *gin.Context) {
 	name := ctx.Param("newsOutletName")
 
 	if name == "" {
-		custom_errors.CustomLog(custom_errors.EmptyNameError, custom_errors.ErrorLevel)
+		custom_errors.Log(custom_errors.EmptyNameError, custom_errors.ErrorLevel)
 		ctx.JSON(http.StatusBadRequest, models2.Response{
 			Message: custom_errors.EmptyNameError,
 			Status:  http.StatusBadRequest,
@@ -165,7 +165,7 @@ func (no *NewsOutletController) GetNewsOutletByName(ctx *gin.Context) {
 	newsOutlet, err := no.newsOutletUsecase.GetNewsOutletByName(name)
 
 	if err != nil {
-		custom_errors.CustomLog(custom_errors.NewsOutletNotFound, custom_errors.ErrorLevel)
+		custom_errors.Log(custom_errors.NewsOutletNotFound, custom_errors.ErrorLevel)
 		ctx.JSON(http.StatusNotFound, models2.Response{
 			Message: err.Error(),
 			Status:  http.StatusNotFound,
@@ -187,7 +187,7 @@ func (no *NewsOutletController) GetNewsOutletById(ctx *gin.Context) {
 	inputId := ctx.Param("newsOutletName")
 
 	if inputId == "" {
-		custom_errors.CustomLog(custom_errors.EmptyNameError, custom_errors.ErrorLevel)
+		custom_errors.Log(custom_errors.EmptyNameError, custom_errors.ErrorLevel)
 		ctx.JSON(http.StatusBadRequest, models2.Response{
 			Message: custom_errors.EmptyNameError,
 			Status:  http.StatusBadRequest,
@@ -198,7 +198,7 @@ func (no *NewsOutletController) GetNewsOutletById(ctx *gin.Context) {
 	id, err := strconv.Atoi(inputId)
 
 	if err != nil {
-		custom_errors.CustomLog(custom_errors.InvalidIdError, custom_errors.ErrorLevel)
+		custom_errors.Log(custom_errors.InvalidIdError, custom_errors.ErrorLevel)
 		ctx.JSON(http.StatusBadRequest, models2.Response{
 			Message: err.Error(),
 			Status:  http.StatusBadRequest,
@@ -209,7 +209,7 @@ func (no *NewsOutletController) GetNewsOutletById(ctx *gin.Context) {
 	newsOutlet, err := no.newsOutletUsecase.GetNewsOutletById(id)
 
 	if err != nil {
-		custom_errors.CustomLog(custom_errors.NewsOutletNotFound, custom_errors.ErrorLevel)
+		custom_errors.Log(custom_errors.NewsOutletNotFound, custom_errors.ErrorLevel)
 		ctx.JSON(http.StatusNotFound, models2.Response{
 			Message: err.Error(),
 			Status:  http.StatusNotFound,

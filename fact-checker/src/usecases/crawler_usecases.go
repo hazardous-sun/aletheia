@@ -37,7 +37,7 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models2.NewsOutlet, pagesToVisit i
 
 	// Initialize the crawlers
 	for _, crawlerRepository := range crawlersRepositories {
-		custom_errors2.CustomLog(
+		custom_errors2.Log(
 			fmt.Sprintf("initializing crawler %d", crawlerRepository.Crawler.Id),
 			custom_errors2.InfoLevel,
 		)

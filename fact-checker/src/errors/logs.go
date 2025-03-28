@@ -17,7 +17,7 @@ const (
 	warningColor = "\033[93m"
 )
 
-func CustomLog(message string, level string) {
+func Log(message string, level string) {
 	switch level {
 	case InfoLevel:
 		log.Println(fmt.Sprintf("%sinfo: %s %s", defaultColor, message, defaultColor))
