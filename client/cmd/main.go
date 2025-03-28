@@ -8,7 +8,6 @@ import (
 
 func main() {
 	config := models.NewConfig(false, true, true)
-	app := app.New()
-
-	gui.Build(app, config)
+	appInstance := app.New()
+	gui.Build(appInstance, config)
 }
