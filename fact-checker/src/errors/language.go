@@ -1,4 +1,4 @@
-package custom_errors
+package server_errors
 
 const (
 	LanguageNotFound          = "language not found inside the database"

@@ -1,4 +1,4 @@
-package custom_errors
+package server_errors
 
 const (
 	EmptyIdError      = "id cannot be empty"

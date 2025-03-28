@@ -38,9 +38,9 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 	language, err := no.languageRepository.GetLanguageByName(newsOutlet.Language)
 
 	if err != nil {
-		custom_errors.Log(custom_errors.LanguageNotFound, custom_errors.ErrorLevel)
+		server_errors.Log(server_errors.LanguageNotFound, server_errors.ErrorLevel)
 		if errors.Is(err, sql.ErrNoRows) {
-			return -1, errors.New(custom_errors.NewsOutletNotFound)
+			return -1, errors.New(server_errors.NewsOutletNotFound)
 		}
 		return -1, err
 	}
@@ -52,8 +52,8 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			custom_errors.Log(custom_errors.NewsOutletTableMissing, custom_errors.ErrorLevel)
-			return -1, errors.New(custom_errors.NewsOutletTableMissing)
+			server_errors.Log(server_errors.NewsOutletTableMissing, server_errors.ErrorLevel)
+			return -1, errors.New(server_errors.NewsOutletTableMissing)
 		}
 		return -1, err
 	}
@@ -63,15 +63,15 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 	err = query.QueryRow(name, newsOutlet.QueryUrl, newsOutlet.HtmlSelector, languageId, newsOutlet.Credibility).Scan(&id)
 
 	if err != nil {
-		custom_errors.Log(custom_errors.NewsOutletParsingError, custom_errors.ErrorLevel)
-		return -1, errors.New(custom_errors.NewsOutletParsingError)
+		server_errors.Log(server_errors.NewsOutletParsingError, server_errors.ErrorLevel)
+		return -1, errors.New(server_errors.NewsOutletParsingError)
 	}
 
 	err = query.Close()
 
 	if err != nil {
-		custom_errors.Log(custom_errors.NewsOutletClosingTableError, custom_errors.ErrorLevel)
-		return -1, errors.New(custom_errors.NewsOutletClosingTableError)
+		server_errors.Log(server_errors.NewsOutletClosingTableError, server_errors.ErrorLevel)
+		return -1, errors.New(server_errors.NewsOutletClosingTableError)
 	}
 
 	return id, nil
@@ -94,8 +94,8 @@ func (no *NewsOutletRepository) GetNewsOutlets() ([]models.NewsOutlet, error) {
 	rows, err := no.connection.Query(query)
 
 	if err != nil {
-		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
-		return []models.NewsOutlet{}, errors.New(custom_errors.NewsOutletTableMissing)
+		server_errors.Log(err.Error(), server_errors.ErrorLevel)
+		return []models.NewsOutlet{}, errors.New(server_errors.NewsOutletTableMissing)
 	}
 
 	var newsOutletList []models.NewsOutlet
@@ -113,14 +113,14 @@ func (no *NewsOutletRepository) GetNewsOutlets() ([]models.NewsOutlet, error) {
 		)
 
 		if err != nil {
-			custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
-			return []models.NewsOutlet{}, errors.New(custom_errors.NewsOutletParsingError)
+			server_errors.Log(err.Error(), server_errors.ErrorLevel)
+			return []models.NewsOutlet{}, errors.New(server_errors.NewsOutletParsingError)
 		}
 
 		language, err := no.languageRepository.GetLanguageById(languageId)
 
 		if err != nil {
-			custom_errors.Log(custom_errors.LanguageNotFound, custom_errors.ErrorLevel)
+			server_errors.Log(server_errors.LanguageNotFound, server_errors.ErrorLevel)
 			return []models.NewsOutlet{}, err
 		}
 
@@ -131,8 +131,8 @@ func (no *NewsOutletRepository) GetNewsOutlets() ([]models.NewsOutlet, error) {
 	err = rows.Close()
 
 	if err != nil {
-		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
-		return []models.NewsOutlet{}, errors.New(custom_errors.NewsOutletClosingTableError)
+		server_errors.Log(err.Error(), server_errors.ErrorLevel)
+		return []models.NewsOutlet{}, errors.New(server_errors.NewsOutletClosingTableError)
 	}
 
 	return newsOutletList, nil
@@ -147,7 +147,7 @@ func (no *NewsOutletRepository) GetNewsOutletByName(name string) (*models.NewsOu
 	query, err := no.connection.Prepare("SELECT * FROM news_outlet WHERE name = $1")
 
 	if err != nil {
-		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
+		server_errors.Log(err.Error(), server_errors.ErrorLevel)
 		return nil, err
 	}
 
@@ -157,14 +157,14 @@ func (no *NewsOutletRepository) GetNewsOutletByName(name string) (*models.NewsOu
 	err = query.QueryRow(name).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.QueryUrl, &newsOutletObj.HtmlSelector, &languageId, &newsOutletObj.Credibility)
 
 	if err != nil {
-		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
-		return nil, errors.New(custom_errors.NewsOutletNotFound)
+		server_errors.Log(err.Error(), server_errors.ErrorLevel)
+		return nil, errors.New(server_errors.NewsOutletNotFound)
 	}
 
 	language, err := no.languageRepository.GetLanguageById(languageId)
 
 	if err != nil {
-		custom_errors.Log(custom_errors.LanguageNotFound, custom_errors.ErrorLevel)
+		server_errors.Log(server_errors.LanguageNotFound, server_errors.ErrorLevel)
 		return &models.NewsOutlet{}, err
 	}
 
@@ -182,7 +182,7 @@ func (no *NewsOutletRepository) GetNewsOutletById(id int) (*models.NewsOutlet, e
 	query, err := no.connection.Prepare("SELECT * FROM news_outlet WHERE id = $1")
 
 	if err != nil {
-		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
+		server_errors.Log(err.Error(), server_errors.ErrorLevel)
 		return nil, err
 	}
 
@@ -191,14 +191,14 @@ func (no *NewsOutletRepository) GetNewsOutletById(id int) (*models.NewsOutlet, e
 	err = query.QueryRow(id).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.QueryUrl, &newsOutletObj.HtmlSelector, &languageId, &newsOutletObj.Credibility)
 
 	if err != nil {
-		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
-		return nil, errors.New(custom_errors.NewsOutletNotFound)
+		server_errors.Log(err.Error(), server_errors.ErrorLevel)
+		return nil, errors.New(server_errors.NewsOutletNotFound)
 	}
 
 	language, err := no.languageRepository.GetLanguageById(languageId)
 
 	if err != nil {
-		custom_errors.Log(custom_errors.LanguageNotFound, custom_errors.ErrorLevel)
+		server_errors.Log(server_errors.LanguageNotFound, server_errors.ErrorLevel)
 		return &models.NewsOutlet{}, err
 	}
 

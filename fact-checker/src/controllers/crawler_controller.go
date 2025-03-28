@@ -25,7 +25,7 @@ func (cr *CrawlerController) Crawl(ctx *gin.Context) {
 	err := ctx.BindJSON(&crawlersInitializer)
 
 	if err != nil {
-		custom_errors.Log(custom_errors.InvalidParameters, custom_errors.ErrorLevel)
+		server_errors.Log(server_errors.InvalidParameters, server_errors.ErrorLevel)
 		ctx.JSON(http.StatusBadRequest, models2.Response{
 			Message: err.Error(),
 			Status:  http.StatusBadRequest,
@@ -36,19 +36,19 @@ func (cr *CrawlerController) Crawl(ctx *gin.Context) {
 	newsOutlets, err := cr.newsOutletUseCase.GetNewsOutlets()
 
 	if err != nil {
-		custom_errors.Log(err.Error(), custom_errors.ErrorLevel)
+		server_errors.Log(err.Error(), server_errors.ErrorLevel)
 		switch err.Error() {
-		case custom_errors.NewsOutletParsingError:
+		case server_errors.NewsOutletParsingError:
 			ctx.JSON(http.StatusBadRequest, models2.Response{
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
 			})
-		case custom_errors.NewsOutletTableMissing:
+		case server_errors.NewsOutletTableMissing:
 			ctx.JSON(http.StatusInternalServerError, models2.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
-		case custom_errors.LanguageClosingTableError:
+		case server_errors.LanguageClosingTableError:
 			ctx.JSON(http.StatusInternalServerError, models2.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,

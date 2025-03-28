@@ -1,4 +1,4 @@
-package custom_errors
+package server_errors
 
 const (
 	NewsOutletNotFound          = "news outlet not found inside the database"
