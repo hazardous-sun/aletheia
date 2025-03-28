@@ -18,60 +18,36 @@ enableSection() {
 }
 
 # Parse command-line options
-while getopts ":CIVh" opt; do
-  case $opt in
-    C) # enables context section
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -C|--CONTEXT)
       echo "Enabling context section"
       enableSection 0
       ;;
-    I) # enables image section
+    -I|--IMAGE)
       echo "Enabling image section"
       enableSection 1
       ;;
-    V) # enables video section
+    -V|--VIDEO)
       echo "Enabling video section"
       enableSection 2
       ;;
-    h) # shows the usage of the script
+    -h|--HELP)
       printUsage
-      exit 2
+      exit 0
       ;;
-    \?) # handles invalid options
-      echo "Invalid option: -$OPTARG" >&2
+    -*)
+      echo "Invalid option: $1" >&2
+      printUsage
+      exit 1
+      ;;
+    *)
+      echo "Invalid argument: $1" >&2
       printUsage
       exit 1
       ;;
   esac
-done
-
-# Shift the parsed options away, leaving only positional arguments
-shift $((OPTIND - 1))
-
-# Parse the rest of the command-line options
-for arg in "$@"; do
-  case "$arg" in
-    --CONTEXT) # enables context section
-      echo "Enabling context section"
-      enableSection 0
-      ;;
-    --IMAGE) # enables image section
-      echo "Enabling image section"
-      enableSection 1
-      ;;
-    --VIDEO) # enables video section
-      echo "Enabling image section"
-      enableSection 2
-      ;;
-    --HELP) # shows the usage of the script
-      printUsage
-      exit 2
-      ;;
-    *) # handles unknown arguments
-      echo "Invalid option: $arg" >&2
-      printUsage
-      exit 1
-      ;;
-  esac
+  shift
 done
 
 # Setting environment variables
