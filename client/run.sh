@@ -4,7 +4,7 @@
 flags=(0, 0, 0) # 1. context 2. image 3. video
 
 printUsage() {
-  echo "run.sh [OPTIONS]"
+  echo "Usage: run.sh [OPTIONS]"
   echo "Inteface:"
   echo "  -C --CONTEXT \t Enables the context text field section"
   echo "  -I --IMAGE \t Enables the image check field section"
@@ -18,7 +18,7 @@ enableSection() {
 }
 
 # Parse command-line options
-while getopts ":CIV" opt; do
+while getopts ":CIVh" opt; do
   case $opt in
     C) # enables context section
       echo "Enabling context section"
@@ -31,6 +31,10 @@ while getopts ":CIV" opt; do
     V) # enables video section
       echo "Enabling video section"
       enableSection 2
+      ;;
+    h) # shows the usage of the script
+      printUsage
+      exit 2
       ;;
     \?) # handles invalid options
       echo "Invalid option: -$OPTARG" >&2
@@ -58,7 +62,7 @@ for arg in "$@"; do
       echo "Enabling image section"
       enableSection 2
       ;;
-    --HELP)
+    --HELP) # shows the usage of the script
       printUsage
       exit 2
       ;;
