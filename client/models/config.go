@@ -1,9 +1,9 @@
 package models
 
 type Config struct {
-	image   bool
-	video   bool
-	context bool
+	Image   bool
+	Video   bool
+	Context bool
 }
 
 func NewConfig(image, video, context bool) *Config {
