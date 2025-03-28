@@ -1,10 +1,10 @@
-package controller
+package models
 
-type struct NewsOutlet {
+type NewsOutlet struct {
     Url string `json:"url"`
     Name string `json:"name"`
     Language string `json:"language"`
-    credibility int `json:"credibility"`
+    Credibility int `json:"credibility"`
 }
 
 func NewNewsOutlet() NewsOutlet {
