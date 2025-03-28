@@ -1,6 +1,6 @@
 package models
 
-type ClientPackage struct {
+type PackageSent struct {
 	Url         string `json:"url"`
 	Description bool   `json:"description"`
 	Image       bool   `json:"image"`
