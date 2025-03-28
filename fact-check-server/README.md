@@ -32,7 +32,7 @@ This section of the project is a REST API built using the Gin framework in Go.
 - Manage accepted news outlets
     - [x] Add news outlets
     - [x] List all news outlets
-    - [ ] Retrieve a news outlet by ID
+    - [x] Retrieve a news outlet by ID
     - [x] Retrieve a news outlet by name
 - Dockerized environment for easy setup
 - PostgreSQL database for data storage
@@ -188,6 +188,18 @@ Finally, the Go application will be available at http://localhost:8000
       ```
 - Retrieve a news outlet by name:
     - `GET /newsOutletName/:newsOutletName`
+    - Response Example:
+      ```json
+      {
+        "id": 1,
+        "name": "example",
+        "url": "example.com",
+        "language": "english",
+        "credibility": 10
+      }
+      ```
+- Retrieve a news outlet by id:
+    - `GET /newsOutletId/:newsOutletId`
     - Response Example:
       ```json
       {
