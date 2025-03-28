@@ -37,18 +37,33 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 	err := ctx.BindJSON(&language)
 
 	if errors.Is(err, errors.New(customErrors.LanguageParsingError)) {
-		ctx.JSON(http.StatusBadRequest, err)
+		customErrors.CustomLog(customErrors.LanguageParsingError, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Message: err.Error(),
+			Status:  http.StatusBadRequest,
+		})
+		return
 	}
 
 	language, err = lc.languageUseCase.AddLanguage(language)
 
 	if err != nil {
+		customErrors.CustomLog(customErrors.LanguageNotAdded, customErrors.ErrorLevel)
 		if errors.Is(err, errors.New(customErrors.LanguageParsingError)) {
-			ctx.JSON(http.StatusBadRequest, err)
-		} else {
-			// LanguageTableMissing
-			// LanguageClosingTableError
-			ctx.JSON(http.StatusInternalServerError, err)
+			ctx.JSON(http.StatusBadRequest, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusBadRequest,
+			})
+		} else if errors.Is(err, errors.New(customErrors.LanguageTableMissing)) {
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
+		} else if errors.Is(err, errors.New(customErrors.LanguageClosingTableError)) {
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
 		}
 		return
 	}
@@ -57,7 +72,18 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.LanguageNotAdded, customErrors.ErrorLevel)
-		ctx.JSON(http.StatusInternalServerError, err)
+		if errors.Is(err, errors.New(customErrors.LanguageNotFound)) {
+			ctx.JSON(http.StatusNotFound, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusNotFound,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
+		}
+		return
 	}
 
 	ctx.JSON(http.StatusOK, createdLanguage)
@@ -78,13 +104,27 @@ func (lc *LanguageController) GetLanguages(ctx *gin.Context) {
 
 	if err != nil {
 		if errors.Is(err, errors.New(customErrors.LanguageParsingError)) {
-			ctx.JSON(http.StatusBadRequest, err)
+			ctx.JSON(http.StatusBadRequest, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusBadRequest,
+			})
+		} else if errors.Is(err, errors.New(customErrors.LanguageTableMissing)) {
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
+		} else if errors.Is(err, errors.New(customErrors.LanguageClosingTableError)) {
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
 		} else {
-			// LanguageTableMissing
-			// LanguageClosingTableError
-			ctx.JSON(http.StatusInternalServerError, err)
-			return
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
 		}
+		return
 	}
 
 	ctx.JSON(http.StatusOK, languages)
@@ -101,21 +141,33 @@ func (lc *LanguageController) GetLanguageById(ctx *gin.Context) {
 	id := ctx.Param("languageId")
 
 	if id == "" {
-		ctx.JSON(http.StatusBadRequest, models.Response{Message: apiErrors.EmptyIdError})
+		customErrors.CustomLog(customErrors.EmptyIdError, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Message: customErrors.EmptyIdError,
+			Status:  http.StatusBadRequest,
+		})
 		return
 	}
 
 	languageId, err := strconv.Atoi(id)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{Message: apiErrors.InvalidIdError})
+		customErrors.CustomLog(customErrors.InvalidIdError, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Message: customErrors.InvalidIdError,
+			Status:  http.StatusBadRequest,
+		})
 		return
 	}
 
 	language, err := lc.languageUseCase.GetLanguageById(languageId)
 
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, models.Response{Message: apiErrors.LanguageNotFound})
+		customErrors.CustomLog(customErrors.LanguageNotFound, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusNotFound, models.Response{
+			Message: err.Error(),
+			Status:  http.StatusNotFound,
+		})
 		return
 	}
 
@@ -133,14 +185,22 @@ func (lc *LanguageController) GetLanguageByName(ctx *gin.Context) {
 	name := ctx.Param("languageName")
 
 	if name == "" {
-		ctx.JSON(http.StatusBadRequest, models.Response{Message: customErrors.EmptyIdError})
+		customErrors.CustomLog(customErrors.EmptyNameError, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Message: customErrors.EmptyNameError,
+			Status:  http.StatusBadRequest,
+		})
 		return
 	}
 
 	language, err := lc.languageUseCase.GetLanguageByName(name)
 
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, models.Response{Message: customErrors.LanguageNotFound})
+		customErrors.CustomLog(customErrors.LanguageNotFound, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusNotFound, models.Response{
+			Message: err.Error(),
+			Status:  http.StatusNotFound,
+		})
 		return
 	}
 
