@@ -70,3 +70,22 @@ func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 
 	return languageList, nil
 }
+
+func (lr *LanguageRepository) GetLanguageById(id int) (*models.Language, error) {
+	query, err := lr.connection.Prepare("SELECT * FROM languages WHERE id = $1")
+
+	if err != nil {
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return nil, errors.New(custom_errors.LanguageNotFound)
+	}
+
+	var languageObj models.Language
+	err = query.QueryRow(id).Scan(&languageObj.Id, &languageObj.Name)
+
+	if err != nil {
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return nil, errors.New(custom_errors.LanguageNotFound)
+	}
+
+	return &languageObj, nil
+}
