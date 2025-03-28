@@ -15,8 +15,9 @@ func NewConfig(image, video, context bool) *Config {
 	return &Config{image, video, context}
 }
 
-func CollectConfigValues(config Config) []string {
+func CollectConfigValues() ([]string, Config) {
 	var result []string
+	config := Config{false, false, false}
 
 	for _, v := range os.Environ() {
 		switch v {
@@ -35,5 +36,5 @@ func CollectConfigValues(config Config) []string {
 		}
 	}
 
-	return result
+	return result, config
 }

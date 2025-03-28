@@ -8,8 +8,8 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func Build(a fyne.App, config *models.Config) {
-	fields := models.CollectConfigValues(*config)
+func Build(a fyne.App) {
+	fields, _ := models.CollectConfigValues()
 	ctr := buildFields(fields)
 
 	w := a.NewWindow("Client Test")
