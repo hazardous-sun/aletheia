@@ -5,6 +5,7 @@ import (
 	"ai-fact-checker/models"
 	"database/sql"
 	"errors"
+	"strings"
 )
 
 type NewsOutletRepository struct {
@@ -58,7 +59,8 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 	}
 
 	var id int
-	err = query.QueryRow(newsOutlet.Name, newsOutlet.QueryUrl, newsOutlet.HtmlSelector, languageId, newsOutlet.Credibility).Scan(&id)
+	name := strings.ToLower(newsOutlet.Name)
+	err = query.QueryRow(name, newsOutlet.QueryUrl, newsOutlet.HtmlSelector, languageId, newsOutlet.Credibility).Scan(&id)
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.NewsOutletParsingError, customErrors.ErrorLevel)
@@ -151,6 +153,7 @@ func (no *NewsOutletRepository) GetNewsOutletByName(name string) (*models.NewsOu
 
 	var newsOutletObj models.NewsOutlet
 	var languageId int
+	name = strings.ToLower(name)
 	err = query.QueryRow(name).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.QueryUrl, &newsOutletObj.HtmlSelector, &languageId, &newsOutletObj.Credibility)
 
 	if err != nil {

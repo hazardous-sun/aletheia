@@ -5,6 +5,7 @@ import (
 	"ai-fact-checker/models"
 	"database/sql"
 	"errors"
+	"strings"
 )
 
 type LanguageRepository struct {
@@ -40,7 +41,8 @@ func (lr *LanguageRepository) AddLanguage(newsOutlet models.Language) (int, erro
 	}
 
 	var id int
-	err = query.QueryRow(newsOutlet.Name).Scan(&id)
+	name := strings.ToLower(newsOutlet.Name)
+	err = query.QueryRow(name).Scan(&id)
 
 	if err != nil {
 		return -1, errors.New(customErrors.LanguageParsingError)
@@ -142,6 +144,7 @@ func (lr *LanguageRepository) GetLanguageByName(name string) (*models.Language, 
 	}
 
 	var languageObj models.Language
+	name = strings.ToLower(name)
 	err = query.QueryRow(name).Scan(&languageObj.Id, &languageObj.Name)
 
 	if err != nil {
