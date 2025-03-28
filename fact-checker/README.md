@@ -14,7 +14,7 @@ This section of the project is a REST API built using the Gin framework in Go.
   - [Languages](#languages)
   - [News Outlets](#news-outlets)
 - [Project Structure](#project-structure)
-- [Docker Compose](#docker-compose)
+- [Podman Compose](#compose)
 - [Database Initialization](#database-initialization)
 
 ## TODO
@@ -36,15 +36,15 @@ This section of the project is a REST API built using the Gin framework in Go.
     - [x] List all news outlets
     - [x] Retrieve a news outlet by ID
     - [x] Retrieve a news outlet by name
-- Dockerized environment for easy setup
+- Containerized environment for easy setup
 - PostgreSQL database for data storage
 
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Podman](https://podman.io/)
+- [Podman Compose](https://github.com/containers/podman-compose/)
 - [Go](https://golang.org/doc/install) (optional, for local development)
 
 ## Getting Started
@@ -75,7 +75,7 @@ chmod +x run.sh
 
 1. Set the necessary environment variables.
 2. Clean up any previously created containers.
-3. Start the Docker containers using podman-compose.
+3. Start the Podman containers using podman-compose.
 
 Finally, the Go application will be available at http://localhost:8000
 
@@ -228,7 +228,7 @@ The project is structured into four layers:
 3. Repository: Manages data access and interaction with the database.
 4. Model: Defines the data models and database schema.
 
-## Docker Compose
+## Compose
 
 The `docker-compose.yml` file defines two services:
 
