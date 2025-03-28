@@ -2,9 +2,9 @@
 
 set -e
 
-host="$1"
+host="$DB_HOST"
 shift
-port="$1"
+port="$DB_PORT"
 shift
 cmd="$@"
 
