@@ -47,7 +47,7 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 	languageId := language.Id
 
 	// Insert newsOutlet into the database
-	query, err := no.connection.Prepare("INSERT INTO news_outlet (name, url, language, credibility) VALUES ($1, $2, $3, $4) RETURNING id")
+	query, err := no.connection.Prepare("INSERT INTO news_outlet (name, queryurl, htmlselector, language, credibility) VALUES ($1, $2, $3, $4, $5) RETURNING id")
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -58,7 +58,7 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 	}
 
 	var id int
-	err = query.QueryRow(newsOutlet.Name, newsOutlet.Url, languageId, newsOutlet.Credibility).Scan(&id)
+	err = query.QueryRow(newsOutlet.Name, newsOutlet.QueryUrl, newsOutlet.HtmlSelector, languageId, newsOutlet.Credibility).Scan(&id)
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.NewsOutletParsingError, customErrors.ErrorLevel)
@@ -104,7 +104,8 @@ func (no *NewsOutletRepository) GetNewsOutlets() ([]models.NewsOutlet, error) {
 		err = rows.Scan(
 			&newsOutletObj.Id,
 			&newsOutletObj.Name,
-			&newsOutletObj.Url,
+			&newsOutletObj.QueryUrl,
+			&newsOutletObj.HtmlSelector,
 			&languageId,
 			&newsOutletObj.Credibility,
 		)
@@ -150,7 +151,7 @@ func (no *NewsOutletRepository) GetNewsOutletByName(name string) (*models.NewsOu
 
 	var newsOutletObj models.NewsOutlet
 	var languageId int
-	err = query.QueryRow(name).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.Url, &languageId, &newsOutletObj.Credibility)
+	err = query.QueryRow(name).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.QueryUrl, &newsOutletObj.HtmlSelector, &languageId, &newsOutletObj.Credibility)
 
 	if err != nil {
 		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
@@ -184,7 +185,7 @@ func (no *NewsOutletRepository) GetNewsOutletById(id int) (*models.NewsOutlet, e
 
 	var newsOutletObj models.NewsOutlet
 	var languageId int
-	err = query.QueryRow(id).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.Url, &languageId, &newsOutletObj.Credibility)
+	err = query.QueryRow(id).Scan(&newsOutletObj.Id, &newsOutletObj.Name, &newsOutletObj.QueryUrl, &newsOutletObj.HtmlSelector, &languageId, &newsOutletObj.Credibility)
 
 	if err != nil {
 		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
