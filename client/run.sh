@@ -14,7 +14,7 @@ printUsage() {
 }
 
 enableSection() {
-  flags[index]="$1"
+  flags["$1"]="1"
 }
 
 # Parse command-line options
@@ -51,9 +51,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Setting environment variables
-export CONTEXT=flags[0]
-export IMAGE=flags[1]
-export VIDEO=flags[2]
+export CONTEXT=${flags[0]}
+export IMAGE=${flags[1]}
+export VIDEO=${flags[2]}
 
 # Run the client application
 go run src/cmd/main.go
