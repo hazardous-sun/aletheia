@@ -138,7 +138,7 @@ Finally, the Go application will be available at http://localhost:800
         "name": "english"
       }
       ```
-- Return a language by name:
+- Retrieve a language by name:
     - `GET /languageId/:languageId`
     - Response:
       ```json
