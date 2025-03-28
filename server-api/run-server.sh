@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setting environment variables
-export DB_HOST="go-db"
+export DB_HOST="news-db"
 export DB_PORT="5432"
 export DB_USER="postgres"
 export DB_PASSWORD="1234"
