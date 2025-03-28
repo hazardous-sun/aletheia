@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -19,19 +20,23 @@ func CollectConfigValues(config Config) []string {
 
 	for _, v := range os.Environ() {
 		switch v {
-		case "--CONTEXT":
+		case "CONTEXT=1":
+			fmt.Println(v)
 			config.Context = os.Getenv(v) == "1"
-			result = append(result, v)
-		case "--IMAGE":
+			result = append(result, "CONTEXT")
+		case "IMAGE":
+			fmt.Println(v)
 			config.Image = os.Getenv(v) == "1"
 			result = append(result, v)
-		case "--VIDEO":
+		case "VIDEO":
+			fmt.Println(v)
 			config.Video = os.Getenv(v) == "1"
 			result = append(result, v)
 		default:
 			continue
 		}
 	}
+	fmt.Println(result)
 
 	return result
 }
