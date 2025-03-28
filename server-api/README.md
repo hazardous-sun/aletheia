@@ -80,6 +80,7 @@ Finally, the Go application will be available at http://localhost:800
 #### run-server.sh parameters
 
 - `-d`: deletes the `pgdata/` volume used to store the languages and news outlets
+- `-r`: deletes the images from the project before initializing the pod
 - `--DB_HOST`: overwrites the DB_HOST environment variable
     - Example: `--DB_HOST=localhost`
 - `--DB_PORT`: overwrites the DB_PORT environment variable
@@ -93,13 +94,13 @@ Finally, the Go application will be available at http://localhost:800
 
 - Create a new language
     - `POST /language`
-    - Request Body:
+    - Request Body Example:
       ```json
       {
         "name": "english"
       }
       ```
-    - Response:
+    - Response Example:
       ```json
       {
         "id": 4,
@@ -108,7 +109,7 @@ Finally, the Go application will be available at http://localhost:800
       ```
 - List all languages
     - `GET /languages`
-    - Response:
+    - Response Example:
       ```json
       [
         {
@@ -131,7 +132,7 @@ Finally, the Go application will be available at http://localhost:800
       ```
 - Retrieve a language by ID:
     - `GET /languageId/:languageId`
-    - Response:
+    - Response Example:
       ```json
       {
         "id": 3,
@@ -140,7 +141,7 @@ Finally, the Go application will be available at http://localhost:800
       ```
 - Retrieve a language by name:
     - `GET /languageName/:languageName`
-    - Response:
+    - Response Example:
       ```json
       {
         "id": 4,
@@ -148,6 +149,52 @@ Finally, the Go application will be available at http://localhost:800
       }
       ```
 
+### News Outlets
+
+- Create a new news outlet
+    - `POST /newsOutlet`
+    - Request Body Example:
+      ```json
+      {
+        "name": "example",
+        "url": "example.com",
+        "language": "english",
+        "credibility": 10
+      }
+      ```
+    - Response Example:
+      ```json
+      {
+        "id": 4,
+        "name": "german"
+      }
+      ```
+- List all news outlets
+    - `GET /newsOutlets`
+    - Response Example:
+      ```json
+      [
+        {
+          "id": 1,
+          "name": "example",
+          "url": "example.com",
+          "language": "english",
+          "credibility": 10
+        }
+      ]
+      ```
+- Retrieve a news outlet by name:
+    - `GET /newsOutletName/:newsOutletName`
+    - Response Example:
+      ```json
+      {
+        "id": 1,
+        "name": "example",
+        "url": "example.com",
+        "language": "english",
+        "credibility": 10
+      }
+      ```
 
 ## Project Structure
 
@@ -173,19 +220,20 @@ application starts.
 ```sql
 CREATE TABLE languages
 (
-  ID   SERIAL PRIMARY KEY,
-  NAME VARCHAR(255) UNIQUE NOT NULL
+    ID   SERIAL PRIMARY KEY,
+    NAME VARCHAR(255) UNIQUE NOT NULL
 );
 
 CREATE TABLE news_outlet
 (
-  ID       SERIAL PRIMARY KEY,
-  NAME     VARCHAR(255) UNIQUE NOT NULL,
-  URL      TEXT                NOT NULL,
-  LANGUAGE INT                 NOT NULL
+    ID          SERIAL PRIMARY KEY,
+    NAME        VARCHAR(255) UNIQUE NOT NULL,
+    URL         TEXT                NOT NULL,
+    LANGUAGE    INT                 NOT NULL,
+    CREDIBILITY INT                 NOT NULL
 );
 
 ALTER TABLE news_outlet
-  ADD CONSTRAINT fk_language
-    FOREIGN KEY (language) REFERENCES languages (id);
+    ADD CONSTRAINT fk_language
+        FOREIGN KEY (language) REFERENCES languages (id);
 ```
