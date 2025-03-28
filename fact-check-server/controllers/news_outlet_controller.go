@@ -4,7 +4,6 @@ import (
 	customErrors "ai-fact-checker/errors"
 	"ai-fact-checker/models"
 	"ai-fact-checker/usecases"
-	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -48,27 +47,28 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.NewsOutletNotAdded, customErrors.ErrorLevel)
-		if errors.Is(err, errors.New(customErrors.NewsOutletParsingError)) {
+		switch err.Error() {
+		case customErrors.LanguageParsingError:
 			ctx.JSON(http.StatusBadRequest, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
 			})
-		} else if errors.Is(err, errors.New(customErrors.NewsOutletTableMissing)) {
+		case customErrors.NewsOutletTableMissing:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
-		} else if errors.Is(err, errors.New(customErrors.NewsOutletClosingTableError)) {
+		case customErrors.NewsOutletClosingTableError:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
-		} else if errors.Is(err, errors.New(customErrors.LanguageNotFound)) {
+		case customErrors.LanguageNotFound:
 			ctx.JSON(http.StatusNotFound, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusNotFound,
 			})
-		} else {
+		default:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
@@ -82,12 +82,13 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.NewsOutletNotAdded, customErrors.ErrorLevel)
-		if errors.Is(err, errors.New(customErrors.NewsOutletNotFound)) {
+		switch err.Error() {
+		case customErrors.NewsOutletNotFound:
 			ctx.JSON(http.StatusNotFound, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusNotFound,
 			})
-		} else {
+		default:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
@@ -114,22 +115,23 @@ func (no *NewsOutletController) GetNewsOutlets(ctx *gin.Context) {
 
 	if err != nil {
 		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
-		if errors.Is(err, errors.New(customErrors.NewsOutletParsingError)) {
+		switch err.Error() {
+		case customErrors.NewsOutletParsingError:
 			ctx.JSON(http.StatusBadRequest, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
 			})
-		} else if errors.Is(err, errors.New(customErrors.NewsOutletTableMissing)) {
+		case customErrors.NewsOutletTableMissing:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
-		} else if errors.Is(err, errors.New(customErrors.NewsOutletClosingTableError)) {
+		case customErrors.LanguageClosingTableError:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
-		} else {
+		default:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
