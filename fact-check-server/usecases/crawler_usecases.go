@@ -41,7 +41,7 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 			fmt.Sprintf("initializing crawler %d", crawlerRepository.Crawler.Id),
 			custom_errors.InfoLevel,
 		)
-		crawlerRepository.Crawl()
+		go crawlerRepository.Crawl()
 	}
 
 	// Check for status until all the crawlers finish
