@@ -7,21 +7,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 )
 
 type CrawlerUsecase struct {
-	crawlerRepository repositories.CrawlerRepository
 }
 
 func NewCrawlerUsecase(crawlerRepository repositories.CrawlerRepository) CrawlerUsecase {
-	return CrawlerUsecase{
-		crawlerRepository: crawlerRepository,
-	}
+	return CrawlerUsecase{}
 }
 
 func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit int, query string) {
-	var crawlers []models.Crawler
+	var crawlersRepositories []repositories.CrawlerRepository
 
+	// Generate the crawlers for each news outlet returned from the database
 	for i, newsOutlet := range newsOutlets {
 		newCrawler := models.Crawler{
 			Id:           i + 1,
@@ -32,31 +31,35 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 			Status:       custom_errors.CrawlerReady,
 			PagesBodies:  make([]string, 0),
 		}
-		crawlers = append(crawlers, newCrawler)
+		crawlersRepositories = append(crawlersRepositories, repositories.NewCrawlerRepository(newCrawler))
 	}
 
-	for _, crawler := range crawlers {
+	// Initialize the crawlers
+	for _, crawlerRepository := range crawlersRepositories {
 		custom_errors.CustomLog(
-			fmt.Sprintf("initializing crawler %d", crawler.Id),
+			fmt.Sprintf("initializing crawler %d", crawlerRepository.Crawler.Id),
 			custom_errors.InfoLevel,
 		)
+		crawlerRepository.Crawl()
 	}
 
+	// Check for status until all the crawlers finish
 	var haltedCrawlers []models.Crawler
 	for {
-		for i, crawler := range crawlers {
-			if crawler.Status != custom_errors.CrawlerRunning {
-				haltedCrawlers = append(haltedCrawlers, crawler)
-				crawlers = append(crawlers[:i], crawlers[i+1:]...)
+		for i, crawlerRepository := range crawlersRepositories {
+			if crawlerRepository.Crawler.Status != custom_errors.CrawlerRunning {
+				haltedCrawlers = append(haltedCrawlers, crawlerRepository.Crawler)
+				crawlersRepositories = append(crawlersRepositories[:i], crawlersRepositories[i+1:]...)
 			}
 		}
-		if len(crawlers) == 0 {
+		if len(crawlersRepositories) == 0 {
 			break
 		}
+		time.Sleep(2 * time.Second)
 	}
 
-	// Serialize crawlers to JSON
-	jsonData, err := json.MarshalIndent(crawlers, "", "  ")
+	// Serialize crawlersRepositories to JSON
+	jsonData, err := json.MarshalIndent(crawlersRepositories, "", "  ")
 	if err != nil {
 		custom_errors.CustomLog(
 			fmt.Sprintf("unable to serialize to JSON: %v", err),
