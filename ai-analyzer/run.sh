@@ -20,7 +20,7 @@ instalAIModel() {
   _=$(ollama list | grep deepseek)
   if [[ $? != 0 ]]; then
     echo "Deepseek LLM not installed. Downloading Deepseek 1.5b model..."
-    _=$(ollama run deepseek-r1:1.5b)
+    _=$(ollama pull deepseek-r1:1.5b)
 
     if [[ $? != 0 ]]; then
       echo "An error occurred while downloading the LLM model"
@@ -35,5 +35,8 @@ installOllama
 
 # Install LLM model if needed
 instalAIModel
+
+# Activate Python virtual environment
+source ./ai-analyzer/bin/activate
 
 python3 connector.py
