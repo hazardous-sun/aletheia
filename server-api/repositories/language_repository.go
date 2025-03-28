@@ -11,8 +11,8 @@ type LanguageRepository struct {
 	connection *sql.DB
 }
 
-func NewLanguageRepository(connection *sql.DB) LanguageRepository {
-	return LanguageRepository{
+func NewLanguageRepository(connection *sql.DB) *LanguageRepository {
+	return &LanguageRepository{
 		connection: connection,
 	}
 }

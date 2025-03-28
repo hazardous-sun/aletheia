@@ -6,10 +6,10 @@ import (
 )
 
 type LanguageUseCase struct {
-    languageRepository repositories.LanguageRepository
+    languageRepository *repositories.LanguageRepository
 }
 
-func NewLanguageUsecase(repo repositories.LanguageRepository) LanguageUseCase {
+func NewLanguageUsecase(repo *repositories.LanguageRepository) LanguageUseCase {
 	return LanguageUseCase{
 		languageRepository: repo,
 	}
