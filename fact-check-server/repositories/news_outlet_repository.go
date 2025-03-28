@@ -24,6 +24,8 @@ func NewNewsOutletRepository(connection *sql.DB, languageRepository LanguageRepo
 // AddNewsOutlet :
 // Creates a new news outlet inside the database based on the model received as parameter.
 //
+// Error: will throw LanguageNotFound if the provided language is not maintained inside the database.
+//
 // Error: will throw NewsOutletTableMissing if the database is incorrectly set and the "news_outlet" table is missing.
 //
 // Error: will throw NewsOutletParsingError if for some reason it is unable to parse the values it receives from the
@@ -31,6 +33,20 @@ func NewNewsOutletRepository(connection *sql.DB, languageRepository LanguageRepo
 //
 // Error: will throw NewsOutletClosingTableError if it fails to close the database rows.
 func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int, error) {
+	// Collect newsOutlet.Language id inside the languages table
+	language, err := no.languageRepository.GetLanguageByName(newsOutlet.Language)
+
+	if err != nil {
+		customErrors.CustomLog(customErrors.LanguageNotFound, customErrors.ErrorLevel)
+		if errors.Is(err, sql.ErrNoRows) {
+			return -1, errors.New(customErrors.NewsOutletNotFound)
+		}
+		return -1, err
+	}
+
+	languageId := language.Id
+
+	// Insert newsOutlet into the database
 	query, err := no.connection.Prepare("INSERT INTO news_outlet (name, url, language, credibility) VALUES ($1, $2, $3, $4) RETURNING id")
 
 	if err != nil {
@@ -42,7 +58,7 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 	}
 
 	var id int
-	err = query.QueryRow(newsOutlet.Name, newsOutlet.Url, newsOutlet.Language, newsOutlet.Id).Scan(&id)
+	err = query.QueryRow(newsOutlet.Name, newsOutlet.Url, languageId, newsOutlet.Credibility).Scan(&id)
 
 	if err != nil {
 		customErrors.CustomLog(customErrors.NewsOutletParsingError, customErrors.ErrorLevel)

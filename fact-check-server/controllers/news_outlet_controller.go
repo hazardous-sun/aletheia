@@ -62,10 +62,16 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
+		} else if errors.Is(err, errors.New(customErrors.LanguageNotFound)) {
+			ctx.JSON(http.StatusNotFound, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusNotFound,
+			})
 		}
 		return
 	}
 
+	// Confirm it was correctly added
 	createdNewsOutlet, err := no.newsOutletUsecase.GetNewsOutletByName(newsOutlet.Name)
 
 	if err != nil {
