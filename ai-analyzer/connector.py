@@ -1,6 +1,9 @@
 import ollama
 import os
 
+ORIGINAL_POST_CONTENT = "ORIGINAL_POST_CONTENT"
+ONLINE_NEWS_CONTENT = "ONLINE_NEWS_CONTENT"
+USER_CONTEXT = "USER_CONTEXT"
 
 class InvalidPrompt(Exception):
     def __init__(self, message, code):
@@ -25,9 +28,9 @@ def main():
 
 def collect_env_variables() -> dict[str, str]:
     variables: dict[str, str] = {
-        "original_post_content": os.environ["original_post_content"],
-        "reputable_news_content": os.environ["reputable_news_content"],
-        "user_context": os.environ["user_context"]
+        ORIGINAL_POST_CONTENT: os.environ[ORIGINAL_POST_CONTENT],
+        ONLINE_NEWS_CONTENT: os.environ[ONLINE_NEWS_CONTENT],
+        USER_CONTEXT: os.environ[USER_CONTEXT]
     }
     return variables
 
@@ -35,9 +38,9 @@ def collect_env_variables() -> dict[str, str]:
 def build_prompt(
         variables: dict[str, str]
     ) -> str:
-    original_post_content = ""
-    reputable_news_content = ""
-    user_context = ""
+    original_post_content = get_content(variables, ORIGINAL_POST_CONTENT)
+    reputable_news_content = get_content(variables, ONLINE_NEWS_CONTENT)
+    user_context = get_content(variables, USER_CONTEXT)
     context: str = f"""
     You are an AI analyzer tasked with comparing the content of an original post submitted by a user against data
     gathered from reputable news sources. Your goal is to assess whether the post’s content aligns with or contradicts
@@ -64,7 +67,8 @@ def build_prompt(
 
     Reputable news sources content: "{reputable_news_content}"
     """
-    if user_context is not None:
+
+    if user_context != "":
         context = f"{context} \n\n Extra context: {user_context}"
 
     return context
