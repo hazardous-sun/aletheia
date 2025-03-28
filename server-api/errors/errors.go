@@ -6,34 +6,36 @@ import (
 )
 
 const (
-	LanguageNotFound = "language not found inside the database"
-	LanguageAlreadyExists = "language already exists inside the database"
-	LanguageTableMissing = "language table does not exist inside the database"
-	LanguageParsingError = "language row could not be parsed from the database"
+	LanguageNotFound          = "language not found inside the database"
+	LanguageAlreadyExists     = "language already exists inside the database"
+	LanguageTableMissing      = "language table does not exist inside the database"
+	LanguageParsingError      = "language row could not be parsed from the database"
 	LanguageClosingTableError = "language table could not be closed properly"
+	LanguageNotAdded          = "language was not properly added to the database"
 )
 
 const (
-	NewsOutletNotFound = "news outlet not found inside the database"
-	NewsOutletAlreadyExists = "news outlet already exists inside the database"
-	NewsOutletTableMissing = "news outlet table does not exist inside the database"
-	NewsOutletParsingError = "news outlet could not be parsed from the database"
+	NewsOutletNotFound          = "news outlet not found inside the database"
+	NewsOutletAlreadyExists     = "news outlet already exists inside the database"
+	NewsOutletTableMissing      = "news outlet table does not exist inside the database"
+	NewsOutletParsingError      = "news outlet could not be parsed from the database"
 	NewsOutletClosingTableError = "news outlet table could not be closed properly"
+	NewsOutletNotAdded          = "news outlet was not properly added to the database"
 )
 
 const (
-	EmptyIdError = "id cannot be empty"
+	EmptyIdError   = "id cannot be empty"
 	InvalidIdError = "id should be an integer"
 )
 
 const (
-	InfoLevel = "info"
+	InfoLevel    = "info"
 	WarningLevel = "warning"
-	ErrorLevel = "error"
+	ErrorLevel   = "error"
 )
 
 const (
-	errorColor = "\033[91m"
+	errorColor   = "\033[91m"
 	warningColor = "\033[93m"
 )
 
