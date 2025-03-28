@@ -16,4 +16,4 @@ CREATE TABLE news_outlet
 
 ALTER TABLE news_outlet
     ADD CONSTRAINT fk_language
-        FOREIGN KEY (LanguageId) REFERENCES languages (Id) ON DELETE CASCADE;
+        FOREIGN KEY (LanguageId) REFERENCES languages (Id) ON UPDATE CASCADE ON DELETE CASCADE;

@@ -47,7 +47,7 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 	languageId := language.Id
 
 	// Insert newsOutlet into the database
-	query, err := no.connection.Prepare("INSERT INTO news_outlet (name, queryurl, htmlselector, language, credibility) VALUES ($1, $2, $3, $4, $5) RETURNING id")
+	query, err := no.connection.Prepare("INSERT INTO news_outlet (name, queryurl, htmlselector, languageid, credibility) VALUES ($1, $2, $3, $4, $5) RETURNING id")
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

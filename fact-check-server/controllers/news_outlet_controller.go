@@ -68,6 +68,11 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 				Message: err.Error(),
 				Status:  http.StatusNotFound,
 			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
 		}
 		return
 	}
