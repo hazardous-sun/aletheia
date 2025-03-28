@@ -15,14 +15,37 @@ func NewLanguageUsecase(repo *repositories.LanguageRepository) LanguageUseCase {
 	}
 }
 
-// Read ------------------------------------------------------------------------------------------------------------------------------------
+// Create --------------------------------------------------------------------------------------------------------------
 
-// GetLanguages :
-// Returns all the languages stored in the database. Even though it may fail, it should not crash the application at any given moment.
+// AddLanguage :
+// Creates a new language inside the database based on the model received as parameter.
 //
 // Error: will throw LanguageTableMissing if the database is incorrectly set and the "languages" table is missing.
 //
-// Error: will throw LanguageParsingError if for some reason it is unable to parse the values it receives from the database.
+// Error: will throw LanguageParsingError if for some reason it is unable to parse the values it receives from the
+// database.
+//
+// Error: will throw LanguageClosingTableError if it fails to close the database rows.
+func (lu LanguageUseCase) AddLanguage(language models.Language) (models.Language, error) {
+	id, err := lu.languageRepository.AddLanguage(language)
+
+	if err != nil && id > 0 {
+		return models.Language{}, err
+	}
+
+	return language, nil
+}
+
+// Read ----------------------------------------------------------------------------------------------------------------
+
+// GetLanguages :
+// Returns all the languages stored in the database. Even though it may fail, it should not crash the application at any
+// given moment.
+//
+// Error: will throw LanguageTableMissing if the database is incorrectly set and the "languages" table is missing.
+//
+// Error: will throw LanguageParsingError if for some reason it is unable to parse the values it receives from the
+// database.
 //
 // Error: will throw LanguageClosingTableError if it fails to close the database rows.
 func (lu *LanguageUseCase) GetLanguages() ([]models.Language, error) {
@@ -30,7 +53,8 @@ func (lu *LanguageUseCase) GetLanguages() ([]models.Language, error) {
 }
 
 // GetLanguageById :
-// Returns a "language" instance by id. Even though it may fail, it should not crash the application at any given moment.
+// Returns a "language" instance by id. Even though it may fail, it should not crash the application at any given
+// moment.
 //
 // Error: will throw LanguageNotFound if a language with the provided id is not found.
 func (lu *LanguageUseCase) GetLanguageById(id int) (*models.Language, error) {

@@ -17,15 +17,24 @@ func NewLanguageRepository(connection *sql.DB) *LanguageRepository {
 	}
 }
 
-// Create ----------------------------------------------------------------------------------
+// Create --------------------------------------------------------------------------------------------------------------
 
-func (lr *LanguageRepository) CreateLanguage(newsOutlet models.NewsOutlet) (int, error) {
+// AddLanguage :
+// Creates a new language inside the database based on the model received as parameter.
+//
+// Error: will throw LanguageTableMissing if the database is incorrectly set and the "languages" table is missing.
+//
+// Error: will throw LanguageParsingError if for some reason it is unable to parse the values it receives from the
+// database.
+//
+// Error: will throw LanguageClosingTableError if it fails to close the database rows.
+func (lr *LanguageRepository) AddLanguage(newsOutlet models.Language) (int, error) {
 	query, err := lr.connection.Prepare("INSERT INTO languages (name) VALUES ($1) RETURNING id")
 
 	if err != nil {
-		if err == sql.ErrNoRows {
-			apiErrors.CustomLog(apiErrors.LanguageTableMissing, apiErrors.ErrorLevel)
-			return -1, errors.New(apiErrors.LanguageTableMissing)
+		if errors.Is(err, sql.ErrNoRows) {
+			customErrors.CustomLog(customErrors.LanguageTableMissing, customErrors.ErrorLevel)
+			return -1, errors.New(customErrors.LanguageTableMissing)
 		}
 		return -1, err
 	}
@@ -34,21 +43,29 @@ func (lr *LanguageRepository) CreateLanguage(newsOutlet models.NewsOutlet) (int,
 	err = query.QueryRow(newsOutlet.Name).Scan(&id)
 
 	if err != nil {
-		apiErrors.CustomLog(apiErrors.LanguageAlreadyExists, apiErrors.ErrorLevel)
-
+		return -1, errors.New(customErrors.LanguageParsingError)
 	}
 
-	return -1, nil
+	err = query.Close()
+
+	if err != nil {
+		customErrors.CustomLog(customErrors.LanguageClosingTableError, customErrors.ErrorLevel)
+		return -1, errors.New(customErrors.LanguageClosingTableError)
+	}
+
+	return id, nil
 }
 
-// Read ------------------------------------------------------------------------------------
+// Read ----------------------------------------------------------------------------------------------------------------
 
 // GetLanguages :
-// Returns all the languages stored in the database. Even though it may fail, it should not crash the application at any given moment.
+// Returns all the languages stored in the database. Even though it may fail, it should not crash the application at any
+// given moment.
 //
 // Error: will throw LanguageTableMissing if the database is incorrectly set and the "languages" table is missing.
 //
-// Error: will throw LanguageParsingError if for some reason it is unable to parse the values it receives from the database.
+// Error: will throw LanguageParsingError if for some reason it is unable to parse the values it receives from the
+// database.
 //
 // Error: will throw LanguageClosingTableError if it fails to close the database rows.
 func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
