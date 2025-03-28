@@ -101,6 +101,7 @@ func (no *NewsOutletController) GetNewsOutlets(ctx *gin.Context) {
 	newsOutlets, err := no.newsOutletUsecase.GetNewsOutlets()
 
 	if err != nil {
+		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
 		if errors.Is(err, errors.New(customErrors.NewsOutletParsingError)) {
 			ctx.JSON(http.StatusBadRequest, models.Response{
 				Message: err.Error(),
