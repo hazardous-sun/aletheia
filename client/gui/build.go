@@ -37,15 +37,22 @@ func collectConfiguredFields(config models.Config) []string {
 }
 
 func buildFields(fields []string) fyne.CanvasObject {
+	// Required widgets
 	requiredWidgets := make([]fyne.CanvasObject, 0)
 	requiredWidgets = buildRequiredFields(requiredWidgets)
-	requiredCtr := container.NewGridWithRows(len(requiredWidgets), requiredWidgets...)
 
+	// Optional widgets
 	optionalWidgets := make([]fyne.CanvasObject, 0)
 	optionalWidgets = buildOptionalFields(optionalWidgets, fields)
-	optionalCtr := container.NewGridWithRows(len(optionalWidgets), optionalWidgets...)
 
-	return container.NewGridWithRows(2, requiredCtr, optionalCtr)
+	widgetsCtr := container.NewGridWithRows(len(requiredWidgets)+len(optionalWidgets), append(requiredWidgets, optionalWidgets...)...)
+	return container.NewBorder(
+		widgetsCtr,
+		nil, nil, nil,
+		widget.NewButton("Send", func() {
+			fmt.Println(fmt.Sprintf("Sending"))
+		}),
+	)
 }
 
 // Required fields
