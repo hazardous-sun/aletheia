@@ -53,9 +53,14 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 		return
 	}
 
-	// TODO get the just created language and return it
+	createdLanguage, err := lc.languageUseCase.GetLanguageByName(language.Name)
 
-	ctx.JSON(http.StatusOK, language)
+	if err != nil {
+		customErrors.CustomLog(customErrors.LanguageNotAdded, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusInternalServerError, err)
+	}
+
+	ctx.JSON(http.StatusOK, createdLanguage)
 }
 
 // Read ----------------------------------------------------------------------------------------------------------------
