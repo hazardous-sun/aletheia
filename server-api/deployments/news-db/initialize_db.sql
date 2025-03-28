@@ -1,0 +1,15 @@
+CREATE TABLE languages (
+    ID SERIAL PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE news_outlet (
+    ID SERIAL PRIMARY KEY,
+    NAME UNIQUE NOT NULL,
+    URL TEXT NOT NULL,
+    LANGUAGE INT NOT NULL
+);
+
+ALTER TABLE news_outlet
+ADD CONSTRAINT fk_language
+FOREIGN KEY (language) REFERENCES languages(id);
