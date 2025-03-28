@@ -11,6 +11,12 @@ type LanguageRepository struct {
 	connection *sql.DB
 }
 
+func NewLanguageRepository(connection *sql.DB) LanguageRepository {
+	return LanguageRepository{
+		connection: connection,
+	}
+}
+
 // Create ----------------------------------------------------------------------------------
 
 func (lr *LanguageRepository) CreateLanguage(newsOutlet models.NewsOutlet) (int, error) {
