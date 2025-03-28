@@ -75,7 +75,7 @@ chmod +x run-server.sh
 2. Clean up any previously created containers.
 3. Start the Docker containers using podman-compose.
 
-Finally, the Go application will be available at http://localhost:800
+Finally, the Go application will be available at http://localhost:8000
 
 #### run-server.sh parameters
 
@@ -165,8 +165,11 @@ Finally, the Go application will be available at http://localhost:800
     - Response Example:
       ```json
       {
-        "id": 4,
-        "name": "german"
+        "id": 1,
+        "name": "example",
+        "url": "example.com",
+        "language": "english",
+        "credibility": 10
       }
       ```
 - List all news outlets
@@ -209,10 +212,10 @@ The project is structured into four layers:
 
 The `docker-compose.yml` file defines two services:
 
-- **fact-check-api**: The Go application server.
+- **fact-check-server**: The Go application server.
 - **news-db**: The PostgreSQL database.
 
-The `fact-check-api` service depends on the `news-db` service, ensuring that the database is up and running before the
+The `fact-check-server` service depends on the `news-db` service, ensuring that the database is up and running before the
 application starts.
 
 ## Database Initialization
