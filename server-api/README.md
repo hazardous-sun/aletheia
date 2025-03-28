@@ -129,7 +129,7 @@ Finally, the Go application will be available at http://localhost:800
         }
       ]
       ```
-- Retrieve a product by ID:
+- Retrieve a language by ID:
     - `GET /languageId/:languageId`
     - Response:
       ```json
@@ -138,6 +138,16 @@ Finally, the Go application will be available at http://localhost:800
         "name": "english"
       }
       ```
+- Retrieve a language by name:
+    - `GET /languageName/:languageName`
+    - Response:
+      ```json
+      {
+        "id": 4,
+        "name": "german"
+      }
+      ```
+
 
 ## Project Structure
 
