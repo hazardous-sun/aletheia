@@ -17,8 +17,10 @@ func NewDatabaseRepository(connection *sql.DB) DatabaseRepository {
 	}
 }
 
+// Create ----------------------------------------------------------------------------------
+
 func (dr *DatabaseRepository) CreateLanguage(newsOutlet models.NewsOutlet) (int, error) {
-	query, err := dr.connection.Prepare("INSERT INTO languages (name) VALUES ($1) RETURNING id")
+	_, err := dr.connection.Prepare("INSERT INTO languages (name) VALUES ($1) RETURNING id")
 	
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -29,4 +31,42 @@ func (dr *DatabaseRepository) CreateLanguage(newsOutlet models.NewsOutlet) (int,
 	}
 	
 	return -1, nil
+}
+
+// Read ------------------------------------------------------------------------------------
+
+func (dr *DatabaseRepository) GetLanguages() ([]models.Language, error) {
+	query := "SELECT * FROM languages"
+	rows, err := dr.connection.Query(query)
+
+	if err != nil {
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return []models.Language{}, errors.New(custom_errors.LanguageTableMissing)
+	}
+
+	var languageList []models.Language
+	var languageObj models.Language
+
+	for rows.Next() {
+		err = rows.Scan(
+			&languageObj.Id,
+			&languageObj.Name,
+		)
+
+		if err != nil {
+			custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+			return []models.Language{}, errors.New(custom_errors.LanguageParsingError)
+		}
+
+		languageList = append(languageList, languageObj)
+	}
+
+	err = rows.Close()
+
+	if err != nil {
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return []models.Language{}, errors.New(custom_errors.LanguageClosingTableError)
+	}
+
+	return languageList, nil
 }
