@@ -49,14 +49,14 @@ func buildOptionalFields(windowWidgets []fyne.CanvasObject, fields []string) []f
 	flagsValues := models.NewConfig(false, false, false)
 	for _, v := range fields {
 		switch v {
+		case "CONTEXT":
+			windowWidgets = append(windowWidgets, buildEntryContainerField("Context:"))
 		case "IMAGE":
 			windowWidgets = append(windowWidgets, buildCheckField("Image:", flagsValues))
 		case "VIDEO":
 			windowWidgets = append(windowWidgets, buildCheckField("Video:", flagsValues))
-		case "CONTEXT":
-			windowWidgets = append(windowWidgets, buildEntryContainerField("Context:"))
 		default:
-			fmt.Println("unknown")
+			continue
 		}
 	}
 	return windowWidgets
