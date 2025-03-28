@@ -36,7 +36,7 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 	var language models.Language
 	err := ctx.BindJSON(&language)
 
-	if errors.Is(err, errors.New(customErrors.LanguageParsingError)) {
+	if err != nil {
 		customErrors.CustomLog(customErrors.LanguageParsingError, customErrors.ErrorLevel)
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Message: err.Error(),
