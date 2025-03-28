@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  fact-check-server:
+    container_name: fact-check-server
+    image: fact-check-server
+    build:
+      context: .
+      dockerfile: deployments/fact-check-server/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - news-db
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+  news-db:
+    container_name: news-db
+    image: postgres-go-api
+    build:
+      context: .
+      dockerfile: deployments/news-db/Dockerfile
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
