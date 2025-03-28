@@ -22,7 +22,7 @@ The client is a simple GUI developed in Go using the Fyne framework where the us
 like to fact-check, along with some other inputs such as extra context and flags informing if the application should
 also fact-check an image, or video.
 
-### [Server API](fact-checker/README.md)
+### [Server API](server-api/README.md)
 
 The Server API was also developed in Go, using the Gin framework. It continuously listens for requests and, when it 
 receives one, it collects the data from the package, that should contain a URL and possibly some context, starts a 
