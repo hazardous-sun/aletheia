@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fact-ckert-client/gui"
-	"fact-ckert-client/models"
+	"fact-ckert-client/src/gui"
+	"fact-ckert-client/src/models"
 	"fyne.io/fyne/v2/app"
 )
 

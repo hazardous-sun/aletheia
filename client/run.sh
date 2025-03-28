@@ -80,4 +80,4 @@ export IMAGE=flags[1]
 export VIDEO=flags[2]
 
 # Run the client application
-go run cmd/main.go
+go run src/cmd/main.go
