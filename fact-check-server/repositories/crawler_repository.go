@@ -23,6 +23,8 @@ func NewCrawlerRepository(crawler models.Crawler) CrawlerRepository {
 }
 
 func (cr *CrawlerRepository) Crawl() {
+	cr.crawler.Status = custom_errors.CrawlerRunning
+
 	// crawler.QueryUrl should not be empty
 	if cr.crawler.QueryUrl == "" {
 		custom_errors.CustomLog(
