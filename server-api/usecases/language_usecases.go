@@ -26,10 +26,10 @@ func NewLanguageUsecase(repo *repositories.LanguageRepository) LanguageUseCase {
 // database.
 //
 // Error: will throw LanguageClosingTableError if it fails to close the database rows.
-func (lu LanguageUseCase) AddLanguage(language models.Language) (models.Language, error) {
+func (lu *LanguageUseCase) AddLanguage(language models.Language) (models.Language, error) {
 	id, err := lu.languageRepository.AddLanguage(language)
 
-	if err != nil && id > 0 {
+	if err != nil && id < 0 {
 		return models.Language{}, err
 	}
 
