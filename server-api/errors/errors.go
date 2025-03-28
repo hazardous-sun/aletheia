@@ -22,6 +22,11 @@ const (
 )
 
 const (
+	EmptyIdError = "id cannot be empty"
+	InvalidIdError = "id should be an integer"
+)
+
+const (
 	InfoLevel = "info"
 	WarningLevel = "warning"
 	ErrorLevel = "error"
