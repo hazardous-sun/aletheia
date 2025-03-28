@@ -22,7 +22,7 @@ func (cr *CrawlerRepository) Crawl() error {
 	// crawler.QueryUrl should not be empty
 	if cr.crawler.QueryUrl == "" {
 		custom_errors.CustomLog(
-			"crawler failed because it was initialized without an URL to query",
+			fmt.Sprintf("crawler %d failed because it was initialized without an URL to query", cr.crawler.Id),
 			custom_errors.WarningLevel,
 		)
 		return errors.New(custom_errors.CrawlerEmptyQueryUrl)
@@ -31,7 +31,7 @@ func (cr *CrawlerRepository) Crawl() error {
 	// crawler.Query should not be empty
 	if cr.crawler.Query == "" {
 		custom_errors.CustomLog(
-			fmt.Sprintf("crawler querying %s failed because query was empty", cr.crawler.QueryUrl),
+			fmt.Sprintf("crawler %d failed because query was empty", cr.crawler.Id),
 			custom_errors.WarningLevel,
 		)
 		return errors.New(custom_errors.CrawlerEmptyQuery)
@@ -42,7 +42,7 @@ func (cr *CrawlerRepository) Crawl() error {
 		// crawler.QueryUrl should not be empty
 		if cr.crawler.QueryUrl == "" {
 			custom_errors.CustomLog(
-				fmt.Sprintf("crawler querying %s failed because HTML selector was empty", cr.crawler.QueryUrl),
+				fmt.Sprintf("crawler %d failed because HTML selector was empty", cr.crawler.Id),
 				custom_errors.WarningLevel,
 			)
 			return errors.New(custom_errors.CrawlerEmptyQueryUrl)
@@ -55,7 +55,7 @@ func (cr *CrawlerRepository) Crawl() error {
 		// crawler.QueryUrl should not be empty
 		if cr.crawler.QueryUrl == "" {
 			custom_errors.CustomLog(
-				fmt.Sprintf("crawler querying %s failed because page bodies was initialized with values already maintained", cr.crawler.QueryUrl),
+				fmt.Sprintf("crawler %d failed because its page bodies was initialized with values already maintained", cr.crawler.Id),
 				custom_errors.WarningLevel,
 			)
 			return errors.New(custom_errors.CrawlerEmptyQueryUrl)
@@ -78,23 +78,29 @@ func (cr *CrawlerRepository) Crawl() error {
 			return
 		}
 
-		// Extract the main article link
+		// Extract the URL
 		link := e.Attr("href")
 		if link != "" {
-			results = append(results, link)
+			cr.crawler.PagesBodies = append(results, link)
 		}
 	})
 
 	c.OnRequest(func(r *colly.Request) {
-		custom_errors.CustomLog(fmt.Sprintf("Visiting: %s", r.URL.String()), custom_errors.InfoLevel)
+		custom_errors.CustomLog(
+			fmt.Sprintf("crawler %d visiting: %s", cr.crawler.Id, searchURL),
+			custom_errors.InfoLevel)
 	})
 
 	c.OnError(func(_ *colly.Response, err error) {
-		fmt.Println("Error:", err)
+		custom_errors.CustomLog(
+			fmt.Sprintf("crawler %d failed: %s", cr.crawler.Id, searchURL),
+			custom_errors.ErrorLevel)
 	})
 
 	if err := c.Visit(searchURL); err != nil {
-		fmt.Println("Visit error:", err)
+		custom_errors.CustomLog(
+			fmt.Sprintf("crawler %d visit error: %s", cr.crawler.Id, searchURL),
+			custom_errors.ErrorLevel)
 	}
 
 	// Fetch and save the body content of each link
