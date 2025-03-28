@@ -1,5 +1,20 @@
 #!/bin/bash
 
+printUsage() {
+  echo "Usage: run.sh [OPTIONS]"
+  echo "Pod:"
+  echo "  -r \t Resets the project images"
+  echo "  -d \t Deletes the previously stored data"
+  echo "Postgres database:"
+  echo "  --DB_HOST= \t Value used to identify the container where the database is running"
+  echo "  --DB_PORT= \t Value used to identify the port where the database is running"
+  echo "  --DB_NAME= \t Value passed to POSTGRES_DB during the database initialization"
+  echo "  --DB_PASSWORD= \t Value passed to POSTGRES_PASSWORD during the database initialization"
+  echo "  --DB_USER= \t Value passed to POSTGRES_USER during the database initialization"
+  echo "Miscelaneous:"
+  echo "  -h --HELP \t Shows the script usage"
+}
+
 # Cleanup previously created containers of this project
 podman-compose down
 
@@ -11,18 +26,21 @@ export DB_PASSWORD="1234"
 export DB_NAME="postgres"
 
 # Parse command-line options
-while getopts ":dr" opt; do
+while getopts ":dhr" opt; do
   case $opt in
-    r) # reset project images
-      echo "Clearing previous project images..."
-      podman image rm news-db fact-check-api
-      ;;
-    d) # delete previously stored data
+    d) # deletes previously stored data
       echo "Running 'rm pgdata -r'..."
       sudo rm pgdata -r
       ;;
-    \?)
-      # Handle invalid options
+    r) # resets project images
+      echo "Clearing previous project images..."
+      podman image rm news-db fact-check-api
+      ;;
+    h) # shows the usage of the scrip
+      printUsage
+      exit 2
+      ;;
+    \?) # handles invalid options
       echo "Invalid option: -$OPTARG" >&2
       exit 1
       ;;
@@ -60,6 +78,9 @@ for arg in "$@"; do
       export DB_NAME="$VALUE"
       echo "DB_NAME value overwritten"
       ;;
+    --HELP)
+      printUsage
+      exit 2
     *)
       # Handle unknown arguments
       echo "Unknown argument: $arg" >&2
