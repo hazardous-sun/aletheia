@@ -59,6 +59,55 @@ func (no *NewsOutletRepository) AddNewsOutlet(newsOutlet models.NewsOutlet) (int
 
 // Read ----------------------------------------------------------------------------------------------------------------
 
+// GetNewsOutlets :
+// Returns all the news outlets stored in the database. Even though it may fail, it should not crash the application at
+// any given moment.
+//
+// Error: will throw NewsOutletTableMissing if the database is incorrectly set and the "news_outlet" table is missing.
+//
+// Error: will throw NewsOutletParsingError if for some reason it is unable to parse the values it receives from the
+// database.
+//
+// Error: will throw NewsOutletClosingTableError if it fails to close the database rows.
+func (no *NewsOutletRepository) GetNewsOutlets() ([]models.NewsOutlet, error) {
+	query := "SELECT * FROM news_outlet"
+	rows, err := no.connection.Query(query)
+
+	if err != nil {
+		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
+		return []models.NewsOutlet{}, errors.New(customErrors.NewsOutletTableMissing)
+	}
+
+	var newsOutletList []models.NewsOutlet
+	var newsOutletObj models.NewsOutlet
+
+	for rows.Next() {
+		err = rows.Scan(
+			&newsOutletObj.Id,
+			&newsOutletObj.Name,
+			&newsOutletObj.Url,
+			&newsOutletObj.Language,
+			&newsOutletObj.Credibility,
+		)
+
+		if err != nil {
+			customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
+			return []models.NewsOutlet{}, errors.New(customErrors.NewsOutletParsingError)
+		}
+
+		newsOutletList = append(newsOutletList, newsOutletObj)
+	}
+
+	err = rows.Close()
+
+	if err != nil {
+		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
+		return []models.NewsOutlet{}, errors.New(customErrors.NewsOutletClosingTableError)
+	}
+
+	return newsOutletList, nil
+}
+
 // GetNewsOutletByName :
 // Returns a "NewsOutlet" instance by name. Even though it may fail, it should not crash the application at any given
 // moment.

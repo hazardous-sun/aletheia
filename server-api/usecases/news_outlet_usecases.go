@@ -38,6 +38,20 @@ func (no *NewsOutletUseCase) AddNewsOutlet(newsOutlet models.NewsOutlet) (models
 
 // Read ----------------------------------------------------------------------------------------------------------------
 
+// GetNewsOutlets :
+// Returns all the news outlets stored in the database. Even though it may fail, it should not crash the application at
+// any given moment.
+//
+// Error: will throw NewsOutletTableMissing if the database is incorrectly set and the "news_outlet" table is missing.
+//
+// Error: will throw NewsOutletParsingError if for some reason it is unable to parse the values it receives from the
+// database.
+//
+// Error: will throw NewsOutletClosingTableError if it fails to close the database rows.
+func (no *NewsOutletUseCase) GetNewsOutlets() ([]models.NewsOutlet, error) {
+	return no.newsOutletRepository.GetNewsOutlets()
+}
+
 // GetNewsOutletByName :
 // Returns a "NewsOutlet" instance by name. Even though it may fail, it should not crash the application at any given
 // moment.

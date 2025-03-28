@@ -95,7 +95,7 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 // Returns all the languages stored in the database. Even though it may fail, it should not crash the application at any
 // given moment.
 //
-// Error: will return StatusBadRequest if the requet is invalid.
+// Error: will return StatusBadRequest if the body is invalid.
 //
 // Error: will return StatusInternalServerError if there's a problem while closing the "language" table or if it is
 // missing.

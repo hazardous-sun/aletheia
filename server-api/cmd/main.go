@@ -54,6 +54,7 @@ func main() {
 	// ---------- Create
 	server.POST("newsOutlet", newsOutletController.AddNewsOutlet)
 	// ---------- Read
+	server.GET("newsOutlets", newsOutletController.GetNewsOutlets)
 	server.GET("newsOutletName/:newsOutletName", newsOutletController.GetNewsOutletByName)
 	// -----------------------------------------------------------------------------------------------------------------
 

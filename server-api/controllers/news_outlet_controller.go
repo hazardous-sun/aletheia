@@ -24,12 +24,12 @@ func NewNewsOutletController(usecase usecases.NewsOutletUseCase) NewsOutletContr
 // AddNewsOutlet :
 // Creates a new news outlet inside the database based on the model received as parameter.
 //
-// Error: will throw NewsOutletTableMissing if the database is incorrectly set and the "news_outlet" table is missing.
+// Error: will throw LanguageTableMissing if the database is incorrectly set and the "languages" table is missing.
 //
-// Error: will throw NewsOutletParsingError if for some reason it is unable to parse the values it receives from the
+// Error: will throw LanguageParsingError if for some reason it is unable to parse the values it receives from the
 // database.
 //
-// Error: will throw NewsOutletClosingTableError if it fails to close the database rows.
+// Error: will throw LanguageClosingTableError if it fails to close the database rows.
 func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 	var newsOutlet models.NewsOutlet
 	err := ctx.BindJSON(&newsOutlet)
@@ -89,11 +89,52 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 
 // Read ----------------------------------------------------------------------------------------------------------------
 
+// GetNewsOutlets :
+// Returns all the news outlets stored in the database. Even though it may fail, it should not crash the application at
+// any given moment.
+//
+// Error: will return StatusBadRequest if the body is invalid.
+//
+// Error: will return StatusInternalServerError if there's a problem while closing the "news_outlet" table or if it is
+// missing.
+func (no *NewsOutletController) GetNewsOutlets(ctx *gin.Context) {
+	newsOutlets, err := no.newsOutletUsecase.GetNewsOutlets()
+
+	if err != nil {
+		if errors.Is(err, errors.New(customErrors.NewsOutletParsingError)) {
+			ctx.JSON(http.StatusBadRequest, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusBadRequest,
+			})
+		} else if errors.Is(err, errors.New(customErrors.NewsOutletTableMissing)) {
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
+		} else if errors.Is(err, errors.New(customErrors.NewsOutletClosingTableError)) {
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, models.Response{
+				Message: err.Error(),
+				Status:  http.StatusInternalServerError,
+			})
+		}
+		return
+	}
+
+	ctx.JSON(http.StatusOK, newsOutlets)
+}
+
 // GetNewsOutletByName :
 // Returns a "NewsOutlet" instance by name. Even though it may fail, it should not crash the application at any given
 // moment.
 //
-// Error: will throw NewsOutletNotFound if a news outlet with the provided name is not found.
+// Error: will return StatusBadRequest if the body is invalid.
+//
+// Error: will return StatusNotFound if a news outlet with the provided name is not found.
 func (no *NewsOutletController) GetNewsOutletByName(ctx *gin.Context) {
 	name := ctx.Param("newsOutletName")
 
