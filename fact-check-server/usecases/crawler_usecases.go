@@ -6,6 +6,7 @@ import (
 	"ai-fact-checker/repositories"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"time"
 )
@@ -58,21 +59,28 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 		time.Sleep(2 * time.Second)
 	}
 
-	// Serialize crawlersRepositories to JSON
+	// Saving the results
+
+	// Serialize the slice to JSON
 	jsonData, err := json.MarshalIndent(crawlersRepositories, "", "  ")
 	if err != nil {
-		custom_errors.CustomLog(
-			fmt.Sprintf("unable to serialize to JSON: %v", err),
-			custom_errors.ErrorLevel,
-		)
+		log.Fatalf("Error serializing to JSON: %v", err)
 	}
 
-	// Write the JSON data to a file named "results"
-	err = os.WriteFile("results", jsonData, 0644)
+	// Open the file in append mode, create it if it doesn't exist, and set write permissions
+	file, err := os.OpenFile("results", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		custom_errors.CustomLog(
-			fmt.Sprintf("unable to write to file: %v", err),
-			custom_errors.ErrorLevel,
-		)
+		log.Fatalf("Error opening file: %v", err)
+	}
+	defer file.Close()
+
+	// Write the JSON data to the file
+	if _, err := file.Write(jsonData); err != nil {
+		log.Fatalf("Error writing to file: %v", err)
+	}
+
+	// Add a newline after appending data for better readability
+	if _, err := file.WriteString("\n"); err != nil {
+		log.Fatalf("Error writing newline to file: %v", err)
 	}
 }
