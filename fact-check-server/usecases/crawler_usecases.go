@@ -62,7 +62,7 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 	// Saving the results
 
 	// Serialize the slice to JSON
-	jsonData, err := json.MarshalIndent(crawlersRepositories, "", "  ")
+	jsonData, err := json.MarshalIndent(haltedCrawlers, "", "  ")
 	if err != nil {
 		log.Fatalf("Error serializing to JSON: %v", err)
 	}
