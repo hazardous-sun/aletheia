@@ -3,8 +3,8 @@
 printUsage() {
   echo "Usage: run.sh [OPTIONS]"
   echo "Pod:"
-  echo -e "  -r \t \t \t Resets the project images"
-  echo -e "  -d \t \t \t Deletes the previously stored data"
+  echo -e "  -r --RESET \t \t Resets the project images"
+  echo -e "  -d -- DELETE \t \t Deletes the previously stored data"
   echo -e "Postgres database:"
   echo -e "  --DB_HOST= \t \t Value used to identify the container where the database is running"
   echo -e "  --DB_PORT= \t \t Value used to identify the port where the database is running"
@@ -15,8 +15,8 @@ printUsage() {
   echo -e "  -h --HELP \t \t Shows the script usage"
 }
 
-# Parse command-line options
-while getopts ":dhr" opt; do
+# Parse short options
+while getopts ":drh" opt; do
   case $opt in
     d) # deletes previously stored data
       echo "Running 'rm pgdata -r'..."
@@ -26,7 +26,7 @@ while getopts ":dhr" opt; do
       echo "Clearing previous project images..."
       podman image rm news-db fact-check-api
       ;;
-    h) # shows the usage of the scrip
+    h) # shows the usage of the script
       printUsage
       exit 2
       ;;
@@ -41,9 +41,17 @@ done
 # Shift the parsed options away, leaving only positional arguments
 shift $((OPTIND - 1))
 
-# Overwrite default values for the environment variables
+# Parse long options
 for arg in "$@"; do
   case "$arg" in
+    --DELETE)
+      echo "Running 'rm pgdata -r'..."
+      sudo rm pgdata -r
+      ;;
+    --RESET)
+      echo "Clearing previous project images..."
+      podman image rm news-db fact-check-api
+      ;;
     --DB_HOST=*)
       VALUE="${arg#*=}"
       export DB_HOST="$VALUE"
