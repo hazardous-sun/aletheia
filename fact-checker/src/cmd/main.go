@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fact-checker-server/controllers"
-	"fact-checker-server/db"
-	customErros "fact-checker-server/errors"
-	"fact-checker-server/repositories"
-	"fact-checker-server/usecases"
+	controllers2 "fact-checker-server/src/controllers"
+	"fact-checker-server/src/db"
+	customErros "fact-checker-server/src/errors"
+	repositories2 "fact-checker-server/src/repositories"
+	usecases2 "fact-checker-server/src/usecases"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,20 +21,20 @@ func main() {
     }
 
 	// Initializing the repository layer
-	languageRepository := repositories.NewLanguageRepository(dbConnection)
-	languageUsecase := usecases.NewLanguageUsecase(languageRepository)
-	languageController := controllers.NewLanguageController(languageUsecase)
+	languageRepository := repositories2.NewLanguageRepository(dbConnection)
+	languageUsecase := usecases2.NewLanguageUsecase(languageRepository)
+	languageController := controllers2.NewLanguageController(languageUsecase)
 
 	// Initializing the use case layer
 
 	// Initializing the controller layer
-	newsOutletRepository := repositories.NewNewsOutletRepository(dbConnection, *languageRepository)
-	newsOutletUsecase := usecases.NewNewsOutletUsecase(newsOutletRepository)
-	newsOutletController := controllers.NewNewsOutletController(newsOutletUsecase)
+	newsOutletRepository := repositories2.NewNewsOutletRepository(dbConnection, *languageRepository)
+	newsOutletUsecase := usecases2.NewNewsOutletUsecase(newsOutletRepository)
+	newsOutletController := controllers2.NewNewsOutletController(newsOutletUsecase)
 
 	// Initializing crawlers
-	crawlerUsecase := usecases.NewCrawlerUsecase()
-	crawlerController := controllers.NewCrawlerController(crawlerUsecase, newsOutletUsecase)
+	crawlerUsecase := usecases2.NewCrawlerUsecase()
+	crawlerController := controllers2.NewCrawlerController(crawlerUsecase, newsOutletUsecase)
 
 	// Initialize the API server
 	server := gin.Default()

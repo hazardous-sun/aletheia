@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	custom_errors "fact-checker-server/errors"
-	"fact-checker-server/models"
+	custom_errors2 "fact-checker-server/src/errors"
+	"fact-checker-server/src/models"
 	"fmt"
 	"io"
 	"net/http"
@@ -34,45 +34,45 @@ func NewCrawlerRepository(crawler models.Crawler) CrawlerRepository {
 */
 
 func (cr *CrawlerRepository) Crawl() {
-	cr.Crawler.Status = custom_errors.CrawlerRunning
+	cr.Crawler.Status = custom_errors2.CrawlerRunning
 
 	// crawler.QueryUrl should not be empty
 	if cr.Crawler.QueryUrl == "" {
-		custom_errors.CustomLog(
+		custom_errors2.CustomLog(
 			fmt.Sprintf("crawler %d failed because it was initialized without an URL to query", cr.Crawler.Id),
-			custom_errors.WarningLevel,
+			custom_errors2.WarningLevel,
 		)
-		cr.Crawler.Status = custom_errors.CrawlerEmptyQueryUrl
+		cr.Crawler.Status = custom_errors2.CrawlerEmptyQueryUrl
 		return
 	}
 
 	// crawler.Query should not be empty
 	if cr.Crawler.Query == "" {
-		custom_errors.CustomLog(
+		custom_errors2.CustomLog(
 			fmt.Sprintf("crawler %d failed because query was empty", cr.Crawler.Id),
-			custom_errors.WarningLevel,
+			custom_errors2.WarningLevel,
 		)
-		cr.Crawler.Status = custom_errors.CrawlerEmptyQuery
+		cr.Crawler.Status = custom_errors2.CrawlerEmptyQuery
 		return
 	}
 
 	// crawler.HtmlSelector should not be empty
 	if cr.Crawler.HtmlSelector == "" {
-		custom_errors.CustomLog(
+		custom_errors2.CustomLog(
 			fmt.Sprintf("crawler %d failed because HTML selector was empty", cr.Crawler.Id),
-			custom_errors.WarningLevel,
+			custom_errors2.WarningLevel,
 		)
-		cr.Crawler.Status = custom_errors.CrawlerEmptyHtmlSelector
+		cr.Crawler.Status = custom_errors2.CrawlerEmptyHtmlSelector
 		return
 	}
 
 	// crawler.PagesBodies should be empty
 	if len(cr.Crawler.PagesBodies) > 0 {
-		custom_errors.CustomLog(
+		custom_errors2.CustomLog(
 			fmt.Sprintf("crawler %d failed because its page bodies was initialized with values already maintained", cr.Crawler.Id),
-			custom_errors.WarningLevel,
+			custom_errors2.WarningLevel,
 		)
-		cr.Crawler.Status = custom_errors.CrawlerFilledPagesBodies
+		cr.Crawler.Status = custom_errors2.CrawlerFilledPagesBodies
 		return
 	}
 
@@ -99,28 +99,28 @@ func (cr *CrawlerRepository) Crawl() {
 	})
 
 	c.OnRequest(func(r *colly.Request) {
-		custom_errors.CustomLog(
+		custom_errors2.CustomLog(
 			fmt.Sprintf("crawler %d visiting: %s", cr.Crawler.Id, searchURL),
-			custom_errors.InfoLevel)
+			custom_errors2.InfoLevel)
 	})
 
 	c.OnError(func(_ *colly.Response, err error) {
-		custom_errors.CustomLog(
+		custom_errors2.CustomLog(
 			fmt.Sprintf("crawler %d failed: %s", cr.Crawler.Id, searchURL),
-			custom_errors.ErrorLevel)
+			custom_errors2.ErrorLevel)
 	})
 
 	if err := c.Visit(searchURL); err != nil {
-		custom_errors.CustomLog(
+		custom_errors2.CustomLog(
 			fmt.Sprintf("crawler %d visit error: %s", cr.Crawler.Id, searchURL),
-			custom_errors.ErrorLevel)
+			custom_errors2.ErrorLevel)
 	}
 
 	// Fetch and save the body content of each link
 	for _, link := range results {
 		collectCandidateBody(cr, link)
 	}
-	cr.Crawler.Status = custom_errors.CrawlerSucceeded
+	cr.Crawler.Status = custom_errors2.CrawlerSucceeded
 }
 
 func collectCandidateBody(cr *CrawlerRepository, link string) {
@@ -136,18 +136,18 @@ func collectCandidateBody(cr *CrawlerRepository, link string) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			custom_errors.CustomLog(
-				custom_errors.CrawlerClosingPageError,
-				custom_errors.WarningLevel,
+			custom_errors2.CustomLog(
+				custom_errors2.CrawlerClosingPageError,
+				custom_errors2.WarningLevel,
 			)
 		}
 	}(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		custom_errors.CustomLog(
+		custom_errors2.CustomLog(
 			fmt.Sprintf("unable to read body from %s: %v", link, err),
-			custom_errors.ErrorLevel,
+			custom_errors2.ErrorLevel,
 		)
 		return
 	}
@@ -156,9 +156,9 @@ func collectCandidateBody(cr *CrawlerRepository, link string) {
 	// Store the body
 	cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, string(body))
 
-	custom_errors.CustomLog(
+	custom_errors2.CustomLog(
 		fmt.Sprintf("added %s crawler %d pagebodies", link),
-		custom_errors.ErrorLevel,
+		custom_errors2.ErrorLevel,
 	)
 }
 

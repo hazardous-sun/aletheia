@@ -1,8 +1,8 @@
 package usecases
 
 import (
-	"fact-checker-server/models"
-	"fact-checker-server/repositories"
+	"fact-checker-server/src/models"
+	"fact-checker-server/src/repositories"
 )
 
 type LanguageUseCase struct {

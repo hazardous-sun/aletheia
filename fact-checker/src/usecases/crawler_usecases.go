@@ -2,9 +2,9 @@ package usecases
 
 import (
 	"encoding/json"
-	custom_errors "fact-checker-server/errors"
-	"fact-checker-server/models"
-	"fact-checker-server/repositories"
+	custom_errors2 "fact-checker-server/src/errors"
+	models2 "fact-checker-server/src/models"
+	"fact-checker-server/src/repositories"
 	"fmt"
 	"log"
 	"os"
@@ -18,18 +18,18 @@ func NewCrawlerUsecase() CrawlerUsecase {
 	return CrawlerUsecase{}
 }
 
-func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit int, query string) {
+func (cu *CrawlerUsecase) Crawl(newsOutlets []models2.NewsOutlet, pagesToVisit int, query string) {
 	var crawlersRepositories []repositories.CrawlerRepository
 
 	// Generate the crawlers for each news outlet returned from the database
 	for i, newsOutlet := range newsOutlets {
-		newCrawler := models.Crawler{
+		newCrawler := models2.Crawler{
 			Id:           i + 1,
 			PagesToVisit: pagesToVisit,
 			Query:        query,
 			QueryUrl:     newsOutlet.QueryUrl,
 			HtmlSelector: newsOutlet.HtmlSelector,
-			Status:       custom_errors.CrawlerReady,
+			Status:       custom_errors2.CrawlerReady,
 			PagesBodies:  make([]string, 0),
 		}
 		crawlersRepositories = append(crawlersRepositories, repositories.NewCrawlerRepository(newCrawler))
@@ -37,18 +37,18 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 
 	// Initialize the crawlers
 	for _, crawlerRepository := range crawlersRepositories {
-		custom_errors.CustomLog(
+		custom_errors2.CustomLog(
 			fmt.Sprintf("initializing crawler %d", crawlerRepository.Crawler.Id),
-			custom_errors.InfoLevel,
+			custom_errors2.InfoLevel,
 		)
 		go crawlerRepository.Crawl()
 	}
 
 	// Check for status until all the crawlers finish
-	var haltedCrawlers []models.Crawler
+	var haltedCrawlers []models2.Crawler
 	for {
 		for i, crawlerRepository := range crawlersRepositories {
-			if crawlerRepository.Crawler.Status != custom_errors.CrawlerRunning {
+			if crawlerRepository.Crawler.Status != custom_errors2.CrawlerRunning {
 				haltedCrawlers = append(haltedCrawlers, crawlerRepository.Crawler)
 				crawlersRepositories = append(crawlersRepositories[:i], crawlersRepositories[i+1:]...)
 			}

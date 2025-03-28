@@ -3,8 +3,8 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	customErrors "fact-checker-server/errors"
-	"fact-checker-server/models"
+	"fact-checker-server/src/errors"
+	"fact-checker-server/src/models"
 	"github.com/lib/pq"
 	"strings"
 )
@@ -35,8 +35,8 @@ func (lr *LanguageRepository) AddLanguage(newsOutlet models.Language) (int, erro
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			customErrors.CustomLog(customErrors.LanguageTableMissing, customErrors.ErrorLevel)
-			return -1, errors.New(customErrors.LanguageTableMissing)
+			custom_errors.CustomLog(custom_errors.LanguageTableMissing, custom_errors.ErrorLevel)
+			return -1, errors.New(custom_errors.LanguageTableMissing)
 		}
 		return -1, err
 	}
@@ -49,19 +49,19 @@ func (lr *LanguageRepository) AddLanguage(newsOutlet models.Language) (int, erro
 		var pqErr *pq.Error
 		if errors.As(err, &pqErr) {
 			if pqErr.Code == "23505" && pqErr.Constraint == "languages_name_key" {
-				customErrors.CustomLog(customErrors.LanguageAlreadyExists, customErrors.ErrorLevel)
-				return -1, errors.New(customErrors.LanguageAlreadyExists)
+				custom_errors.CustomLog(custom_errors.LanguageAlreadyExists, custom_errors.ErrorLevel)
+				return -1, errors.New(custom_errors.LanguageAlreadyExists)
 			}
 		}
-		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
-		return -1, errors.New(customErrors.LanguageParsingError)
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return -1, errors.New(custom_errors.LanguageParsingError)
 	}
 
 	err = query.Close()
 
 	if err != nil {
-		customErrors.CustomLog(customErrors.LanguageClosingTableError, customErrors.ErrorLevel)
-		return -1, errors.New(customErrors.LanguageClosingTableError)
+		custom_errors.CustomLog(custom_errors.LanguageClosingTableError, custom_errors.ErrorLevel)
+		return -1, errors.New(custom_errors.LanguageClosingTableError)
 	}
 
 	return id, nil
@@ -84,8 +84,8 @@ func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 	rows, err := lr.connection.Query(query)
 
 	if err != nil {
-		apiErrors.CustomLog(err.Error(), apiErrors.ErrorLevel)
-		return []models.Language{}, errors.New(apiErrors.LanguageTableMissing)
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return []models.Language{}, errors.New(custom_errors.LanguageTableMissing)
 	}
 
 	var languageList []models.Language
@@ -98,8 +98,8 @@ func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 		)
 
 		if err != nil {
-			apiErrors.CustomLog(err.Error(), apiErrors.ErrorLevel)
-			return []models.Language{}, errors.New(apiErrors.LanguageParsingError)
+			custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+			return []models.Language{}, errors.New(custom_errors.LanguageParsingError)
 		}
 
 		languageList = append(languageList, languageObj)
@@ -108,8 +108,8 @@ func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 	err = rows.Close()
 
 	if err != nil {
-		apiErrors.CustomLog(err.Error(), apiErrors.ErrorLevel)
-		return []models.Language{}, errors.New(apiErrors.LanguageClosingTableError)
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return []models.Language{}, errors.New(custom_errors.LanguageClosingTableError)
 	}
 
 	return languageList, nil
@@ -124,16 +124,16 @@ func (lr *LanguageRepository) GetLanguageById(id int) (*models.Language, error) 
 	query, err := lr.connection.Prepare("SELECT * FROM languages WHERE id = $1")
 
 	if err != nil {
-		apiErrors.CustomLog(err.Error(), apiErrors.ErrorLevel)
-		return nil, errors.New(apiErrors.LanguageNotFound)
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return nil, errors.New(custom_errors.LanguageNotFound)
 	}
 
 	var languageObj models.Language
 	err = query.QueryRow(id).Scan(&languageObj.Id, &languageObj.Name)
 
 	if err != nil {
-		apiErrors.CustomLog(err.Error(), apiErrors.ErrorLevel)
-		return nil, errors.New(apiErrors.LanguageNotFound)
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return nil, errors.New(custom_errors.LanguageNotFound)
 	}
 
 	return &languageObj, nil
@@ -148,7 +148,7 @@ func (lr *LanguageRepository) GetLanguageByName(name string) (*models.Language, 
 	query, err := lr.connection.Prepare("SELECT * FROM languages WHERE name = $1")
 
 	if err != nil {
-		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
 		return nil, err
 	}
 
@@ -157,8 +157,8 @@ func (lr *LanguageRepository) GetLanguageByName(name string) (*models.Language, 
 	err = query.QueryRow(name).Scan(&languageObj.Id, &languageObj.Name)
 
 	if err != nil {
-		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
-		return nil, errors.New(customErrors.LanguageNotFound)
+		custom_errors.CustomLog(err.Error(), custom_errors.ErrorLevel)
+		return nil, errors.New(custom_errors.LanguageNotFound)
 	}
 
 	return &languageObj, nil

@@ -6,7 +6,7 @@ services:
     image: fact-check-api
     build:
       context: .
-      dockerfile: deployments/fact-check-server/Dockerfile
+      dockerfile: src/deployments/fact-check-server/Dockerfile
     ports:
       - "8000:8000"
     depends_on:
@@ -22,7 +22,7 @@ services:
     image: news-db
     build:
       context: .
-      dockerfile: deployments/news-db/Dockerfile
+      dockerfile: src/deployments/news-db/Dockerfile
     environment:
       POSTGRES_PASSWORD: 1234
       POSTGRES_USER: postgres

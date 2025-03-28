@@ -21,7 +21,7 @@ This section of the project is a REST API built using the Gin framework in Go.
 
 - Apply security measures to Gin to block communication with proxies
 - Develop authentication measures for the API calls
-- Update [crawlers repository](repositories/crawler_repository.go#138) to correctly collect the data from the website it
+- Update [crawlers repository](src/repositories/crawler_repository.go#138) to correctly collect the data from the website it
   visits
 
 ## Features
