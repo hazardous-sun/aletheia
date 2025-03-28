@@ -14,7 +14,7 @@ printUsage() {
 }
 
 enableSection() {
-  flags[index] = $1
+  flags[index]="$1"
 }
 
 # Parse command-line options
