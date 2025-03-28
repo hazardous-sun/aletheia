@@ -135,6 +135,7 @@ func (cr *CrawlerRepository) Crawl() {
 			continue
 		}
 
+		// TODO the bodies are not being correctly stored here, the sites are not being visited
 		// Store the body
 		cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, string(body))
 

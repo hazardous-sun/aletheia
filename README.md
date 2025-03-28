@@ -2,7 +2,7 @@
 
 ## Features
 
-- [Server API](fact-check-server/README.md)
+- [Server API](database-server/README.md)
 
 ### Stack
 
