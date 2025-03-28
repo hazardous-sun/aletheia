@@ -4,6 +4,7 @@ import (
 	apiErrors "ai-fact-checker/errors"
 	"ai-fact-checker/models"
 	"ai-fact-checker/usecases"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -35,14 +36,14 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 	var language models.Language
 	err := ctx.BindJSON(&language)
 
-	if err.Error() == customErrors.LanguageParsingError {
+	if errors.Is(err, errors.New(customErrors.LanguageParsingError)) {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
 	language, err = lc.languageUseCase.AddLanguage(language)
 
 	if err != nil {
-		if err.Error() == customErrors.LanguageParsingError {
+		if errors.Is(err, errors.New(customErrors.LanguageParsingError)) {
 			ctx.JSON(http.StatusBadRequest, err)
 		} else {
 			// LanguageTableMissing
@@ -51,6 +52,8 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 		}
 		return
 	}
+
+	// TODO get the just created language and return it
 
 	ctx.JSON(http.StatusOK, language)
 }
@@ -69,7 +72,7 @@ func (lc *LanguageController) GetLanguages(ctx *gin.Context) {
 	languages, err := lc.languageUseCase.GetLanguages()
 
 	if err != nil {
-		if err.Error() == customErrors.LanguageParsingError {
+		if errors.Is(err, errors.New(customErrors.LanguageParsingError)) {
 			ctx.JSON(http.StatusBadRequest, err)
 		} else {
 			// LanguageTableMissing
