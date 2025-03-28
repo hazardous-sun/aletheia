@@ -1,7 +1,7 @@
 FROM docker.io/postgres:12
 
 # Set environment variables
-ENV POSTGRES_USER={$DB_USER}
+ENV POSTGRES_USER=${DB_USER}
 ENV POSTGRES_PASSWORD=${DB_PASSWORD}
 ENV POSTGRES_DB=${DB_NAME}
 
