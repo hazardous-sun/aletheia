@@ -1,8 +1,8 @@
-# Athena
+# Fact Checker
 
-## Server API
+## Features
 
-- [TODO](server-api/README.md#todo)
+- [Server API](server-api/README.md)
 
 ### Stack
 
