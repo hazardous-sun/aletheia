@@ -21,22 +21,19 @@ func CollectConfigValues(config Config) []string {
 	for _, v := range os.Environ() {
 		switch v {
 		case "CONTEXT=1":
-			fmt.Println(v)
-			config.Context = os.Getenv(v) == "1"
+			config.Context = true
 			result = append(result, "CONTEXT")
-		case "IMAGE":
+		case "IMAGE=1":
+			config.Image = true
+			result = append(result, "IMAGE")
+		case "VIDEO=1":
 			fmt.Println(v)
-			config.Image = os.Getenv(v) == "1"
-			result = append(result, v)
-		case "VIDEO":
-			fmt.Println(v)
-			config.Video = os.Getenv(v) == "1"
-			result = append(result, v)
+			config.Video = true
+			result = append(result, "VIDEO")
 		default:
 			continue
 		}
 	}
-	fmt.Println(result)
 
 	return result
 }
