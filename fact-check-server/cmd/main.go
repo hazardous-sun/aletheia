@@ -34,7 +34,7 @@ func main() {
 
 	// Initializing crawlers
 	crawlerUsecase := usecases.NewCrawlerUsecase()
-	crawlerController := controllers.NewCrawlerController(crawlerUsecase)
+	crawlerController := controllers.NewCrawlerController(crawlerUsecase, newsOutletUsecase)
 
 	// Initialize the API server
 	server := gin.Default()

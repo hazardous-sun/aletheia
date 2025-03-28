@@ -13,9 +13,10 @@ type CrawlerController struct {
 	newsOutletUseCase usecases.NewsOutletUseCase
 }
 
-func NewCrawlerController(crawler usecases.CrawlerUsecase) CrawlerController {
+func NewCrawlerController(crawler usecases.CrawlerUsecase, newsOutletUseCase usecases.NewsOutletUseCase) CrawlerController {
 	return CrawlerController{
-		crawlerUseCase: crawler,
+		crawlerUseCase:    crawler,
+		newsOutletUseCase: newsOutletUseCase,
 	}
 }
 
