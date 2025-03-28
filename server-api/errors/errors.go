@@ -36,6 +36,7 @@ const (
 )
 
 const (
+	defaultColor = "\033[0m"
 	errorColor   = "\033[91m"
 	warningColor = "\033[93m"
 )
@@ -43,10 +44,10 @@ const (
 func CustomLog(message string, level string) {
 	switch level {
 	case InfoLevel:
-		log.Println(fmt.Sprintf("info: %s", message))
+		log.Println(fmt.Sprintf("%sinfo: %s %s", defaultColor, message, defaultColor))
 	case WarningLevel:
-		log.Println(fmt.Sprintf("%swarning: %s", warningColor, message))
+		log.Println(fmt.Sprintf("%swarning: %s %s", warningColor, message, defaultColor))
 	case ErrorLevel:
-		log.Println(fmt.Sprintf("%serror: %s", errorColor, message))
+		log.Println(fmt.Sprintf("%serror: %s %s", errorColor, message, defaultColor))
 	}
 }
