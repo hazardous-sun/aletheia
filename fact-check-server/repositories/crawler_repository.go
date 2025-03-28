@@ -16,6 +16,12 @@ type CrawlerRepository struct {
 	crawler models.Crawler
 }
 
+func NewCrawlerRepository(crawler models.Crawler) CrawlerRepository {
+	return CrawlerRepository{
+		crawler: crawler,
+	}
+}
+
 func (cr *CrawlerRepository) Crawl() {
 	// crawler.QueryUrl should not be empty
 	if cr.crawler.QueryUrl == "" {
