@@ -2,7 +2,7 @@ FROM docker.io/golang:1.23-alpine as builder
 
 WORKDIR /go/build
 
-COPY . .
+COPY ../../. .
 
 RUN go mod download
 
@@ -11,6 +11,9 @@ RUN go build -o fact-check-server src/cmd/main.go
 #-----------------------------------------------------------------------------------------------------------------------
 
 FROM alpine:latest
+
+ENV DB_HOST=${DB_HOST}
+ENV DB_PORT=${DB_PORT}
 
 # Install netcat (nc) for the wait-for-db.sh script
 RUN apk add --no-cache netcat-openbsd
@@ -24,4 +27,4 @@ COPY --from=builder /go/build/fact-check-server /fact-check-server
 
 EXPOSE 8000
 
-CMD ["/wait-for-db.sh", "news-db", "5432", "./fact-check-server"]
+CMD ["/wait-for-db.sh", "$DB_HOST", "$DB_PORT", "./fact-check-server"]

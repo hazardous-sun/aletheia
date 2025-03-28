@@ -76,32 +76,32 @@ while [[ $# -gt 0 ]]; do
       clearImages
       ;;
     --DB_HOST=*)
-      VALUE="${arg#*=}"
+      VALUE="${1#*=}"
       export DB_HOST="$VALUE"
       echo "DB_HOST value overwritten"
       ;;
     --DB_PORT=*)
-      VALUE="${arg#*=}"
+      VALUE="${1#*=}"
       export DB_PORT="$VALUE"
       echo "DB_PORT value overwritten"
       ;;
     --DB_USER=*)
-      VALUE="${arg#*=}"
+      VALUE="${1#*=}"
       export DB_USER="$VALUE"
       echo "DB_USER value overwritten"
       ;;
     --DB_PASSWORD=*)
-      VALUE="${arg#*=}"
+      VALUE="${1#*=}"
       export DB_PASSWORD="$VALUE"
       echo "DB_PASSWORD value overwritten"
       ;;
     --DB_NAME=*)
-      VALUE="${arg#*=}"
+      VALUE="${1#*=}"
       export DB_NAME="$VALUE"
       echo "DB_NAME value overwritten"
       ;;
     --SERVER_PORT=*)
-      VALUE="${arg#*=}"
+      VALUE="${1#*=}"
       export SERVER_PORT="$VALUE"
       echo "SERVER_PORT value overwritten"
       ;;
