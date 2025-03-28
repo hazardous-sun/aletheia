@@ -1,8 +1,8 @@
 package usecases
 
 import (
-	"ai-fact-checker/models"
-	"ai-fact-checker/repositories"
+	"fact-checker-server/models"
+	"fact-checker-server/repositories"
 )
 
 type NewsOutletUseCase struct {

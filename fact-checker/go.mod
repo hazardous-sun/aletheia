@@ -1,4 +1,4 @@
-module ai-fact-checker
+module fact-checker-server
 
 go 1.23.3
 

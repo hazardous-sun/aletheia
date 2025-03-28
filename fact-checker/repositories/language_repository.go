@@ -1,10 +1,10 @@
 package repositories
 
 import (
-	apiErrors "ai-fact-checker/errors"
-	"ai-fact-checker/models"
 	"database/sql"
 	"errors"
+	customErrors "fact-checker-server/errors"
+	"fact-checker-server/models"
 	"github.com/lib/pq"
 	"strings"
 )

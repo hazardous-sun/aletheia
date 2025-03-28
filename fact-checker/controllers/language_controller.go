@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	apiErrors "ai-fact-checker/errors"
-	"ai-fact-checker/models"
-	"ai-fact-checker/usecases"
+	customErrors "fact-checker-server/errors"
+	"fact-checker-server/models"
+	"fact-checker-server/usecases"
 	"net/http"
 	"strconv"
 

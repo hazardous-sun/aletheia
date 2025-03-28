@@ -1,11 +1,11 @@
 package main
 
 import (
-	"ai-fact-checker/server-api/controllers"
-	"ai-fact-checker/server-api/db"
-	custom_errors "ai-fact-checker/server-api/errors"
-	"ai-fact-checker/server-api/repositories"
-	"ai-fact-checker/server-api/usecases"
+	"fact-checker-server/controllers"
+	"fact-checker-server/db"
+	customErros "fact-checker-server/errors"
+	"fact-checker-server/repositories"
+	"fact-checker-server/usecases"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

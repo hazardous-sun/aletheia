@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	custom_errors "ai-fact-checker/errors"
-	"ai-fact-checker/models"
+	custom_errors "fact-checker-server/errors"
+	"fact-checker-server/models"
 	"fmt"
 	"io"
 	"net/http"

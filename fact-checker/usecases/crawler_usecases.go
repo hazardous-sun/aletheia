@@ -1,10 +1,10 @@
 package usecases
 
 import (
-	custom_errors "ai-fact-checker/errors"
-	"ai-fact-checker/models"
-	"ai-fact-checker/repositories"
 	"encoding/json"
+	custom_errors "fact-checker-server/errors"
+	"fact-checker-server/models"
+	"fact-checker-server/repositories"
 	"fmt"
 	"log"
 	"os"
