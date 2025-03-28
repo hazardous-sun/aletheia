@@ -14,7 +14,7 @@ import (
 type CrawlerUsecase struct {
 }
 
-func NewCrawlerUsecase(crawlerRepository repositories.CrawlerRepository) CrawlerUsecase {
+func NewCrawlerUsecase() CrawlerUsecase {
 	return CrawlerUsecase{}
 }
 

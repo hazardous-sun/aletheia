@@ -32,8 +32,12 @@ func main() {
 	newsOutletUsecase := usecases.NewNewsOutletUsecase(newsOutletRepository)
 	newsOutletController := controllers.NewNewsOutletController(newsOutletUsecase)
 
-    // Initialize the API server
-    server := gin.Default()
+	// Initializing crawlers
+	crawlerUsecase := usecases.NewCrawlerUsecase()
+	crawlerController := controllers.NewCrawlerController(crawlerUsecase)
+
+	// Initialize the API server
+	server := gin.Default()
 
 	// Setting up HTTP paths in the API server -------------------------------------------------------------------------
 	server.GET("/ping", func(ctx *gin.Context) {
@@ -57,6 +61,8 @@ func main() {
 	server.GET("newsOutlets", newsOutletController.GetNewsOutlets)
 	server.GET("newsOutletName/:newsOutletName", newsOutletController.GetNewsOutletByName)
 	server.GET("newsOutletId/:newsOutletId", newsOutletController.GetNewsOutletById)
+	// ----- Crawlers
+	server.POST("crawl", crawlerController.Crawl)
 	// -----------------------------------------------------------------------------------------------------------------
 
     if err != nil {
