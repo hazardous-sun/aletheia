@@ -66,3 +66,18 @@ func (lu *LanguageUseCase) GetLanguageById(id int) (*models.Language, error) {
 
 	return language, nil
 }
+
+// GetLanguageByName :
+// Returns a "language" instance by name. Even though it may fail, it should not crash the application at any given
+// moment.
+//
+// Error: will throw LanguageNotFound if a language with the provided name is not found.
+func (lu *LanguageUseCase) GetLanguageByName(name string) (*models.Language, error) {
+	language, err := lu.languageRepository.GetLanguageByName(name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return language, nil
+}

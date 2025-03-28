@@ -44,7 +44,8 @@ func main() {
 	server.POST("language", languageController.AddLanguage)
 	// ---------- Read
 	server.GET("languages", languageController.GetLanguages)
-	server.GET("language/:languageId", languageController.GetLanguageById)
+	server.GET("languageId/:languageId", languageController.GetLanguageById)
+	server.GET("languageName/:languageName", languageController.GetLanguageByName)
 	// -----
 	// ----- News Outlets
 	// -----------------------------------------------------------------------------------------------------------------

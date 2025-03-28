@@ -105,7 +105,8 @@ func (lr *LanguageRepository) GetLanguages() ([]models.Language, error) {
 }
 
 // GetLanguageById :
-// Returns a "language" instance by id. Even though it may fail, it should not crash the application at any given moment.
+// Returns a "language" instance by id. Even though it may fail, it should not crash the application at any given
+// moment.
 //
 // Error: will throw LanguageNotFound if a language with the provided id is not found.
 func (lr *LanguageRepository) GetLanguageById(id int) (*models.Language, error) {
@@ -122,6 +123,30 @@ func (lr *LanguageRepository) GetLanguageById(id int) (*models.Language, error) 
 	if err != nil {
 		apiErrors.CustomLog(err.Error(), apiErrors.ErrorLevel)
 		return nil, errors.New(apiErrors.LanguageNotFound)
+	}
+
+	return &languageObj, nil
+}
+
+// GetLanguageByName :
+// Returns a "language" instance by name. Even though it may fail, it should not crash the application at any given
+// moment.
+//
+// Error: will throw LanguageNotFound if a language with the provided name is not found.
+func (lr *LanguageRepository) GetLanguageByName(name string) (*models.Language, error) {
+	query, err := lr.connection.Prepare("SELECT * FROM languages WHERE name = $1")
+
+	if err != nil {
+		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
+		return nil, errors.New(customErrors.LanguageNotFound)
+	}
+
+	var languageObj models.Language
+	err = query.QueryRow(name).Scan(&languageObj.Id, &languageObj.Name)
+
+	if err != nil {
+		customErrors.CustomLog(err.Error(), customErrors.ErrorLevel)
+		return nil, errors.New(customErrors.LanguageNotFound)
 	}
 
 	return &languageObj, nil

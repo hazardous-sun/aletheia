@@ -89,7 +89,7 @@ func (lc *LanguageController) GetLanguages(ctx *gin.Context) {
 // Returns a "language" instance by id. Even though it may fail, it should not crash the application at any given
 // moment.
 //
-// Error: will return StatusBadRequest if the request is invalid.
+// Error: will return StatusBadRequest if the body is invalid.
 //
 // Error: will return StatusNotFound if a language with the provided id is not found.
 func (lc *LanguageController) GetLanguageById(ctx *gin.Context) {
@@ -111,6 +111,31 @@ func (lc *LanguageController) GetLanguageById(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, models.Response{Message: apiErrors.LanguageNotFound})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, language)
+}
+
+// GetLanguageByName :
+// Returns a "language" instance by name. Even though it may fail, it should not crash the application at any given
+// moment.
+//
+// Error: will return StatusBadRequest if the body is invalid.
+//
+// Error: will return StatusNotFound if a language with the provided name is not found.
+func (lc *LanguageController) GetLanguageByName(ctx *gin.Context) {
+	name := ctx.Param("languageName")
+
+	if name == "" {
+		ctx.JSON(http.StatusBadRequest, models.Response{Message: customErrors.EmptyIdError})
+		return
+	}
+
+	language, err := lc.languageUseCase.GetLanguageByName(name)
+
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, models.Response{Message: customErrors.LanguageNotFound})
 		return
 	}
 
