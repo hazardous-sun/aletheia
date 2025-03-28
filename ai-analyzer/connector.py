@@ -20,7 +20,7 @@ def main():
     variables: dict[str, str] = collect_env_variables()
 
     # Build the prompt
-    prompt_context: str = build_prompt()
+    prompt_context: str = build_prompt(variables)
 
     # Prompt the AI model
     prompt(prompt_context)
