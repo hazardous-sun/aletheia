@@ -1,7 +1,6 @@
 package main
 
 import (
-	"ai-fact-checker/server-api/controller"
 	"ai-fact-checker/server-api/controllers"
 	"ai-fact-checker/server-api/db"
 	custom_errors "ai-fact-checker/server-api/errors"
