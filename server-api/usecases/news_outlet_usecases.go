@@ -35,3 +35,20 @@ func (no *NewsOutletUseCase) AddNewsOutlet(newsOutlet models.NewsOutlet) (models
 
 	return newsOutlet, nil
 }
+
+// Read ----------------------------------------------------------------------------------------------------------------
+
+// GetNewsOutletByName :
+// Returns a "NewsOutlet" instance by name. Even though it may fail, it should not crash the application at any given
+// moment.
+//
+// Error: will throw NewsOutletNotFound if a news outlet with the provided name is not found.
+func (no *NewsOutletUseCase) GetNewsOutletByName(name string) (*models.NewsOutlet, error) {
+	language, err := no.newsOutletRepository.GetNewsOutletByName(name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return language, nil
+}

@@ -86,3 +86,36 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, createdNewsOutlet)
 }
+
+// Read ----------------------------------------------------------------------------------------------------------------
+
+// GetNewsOutletByName :
+// Returns a "NewsOutlet" instance by name. Even though it may fail, it should not crash the application at any given
+// moment.
+//
+// Error: will throw NewsOutletNotFound if a news outlet with the provided name is not found.
+func (no *NewsOutletController) GetNewsOutletByName(ctx *gin.Context) {
+	name := ctx.Param("newsOutletName")
+
+	if name == "" {
+		customErrors.CustomLog(customErrors.EmptyNameError, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Message: customErrors.EmptyNameError,
+			Status:  http.StatusBadRequest,
+		})
+		return
+	}
+
+	newsOutlet, err := no.newsOutletUsecase.GetNewsOutletByName(name)
+
+	if err != nil {
+		customErrors.CustomLog(customErrors.NewsOutletNotFound, customErrors.ErrorLevel)
+		ctx.JSON(http.StatusNotFound, models.Response{
+			Message: err.Error(),
+			Status:  http.StatusNotFound,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, newsOutlet)
+}
