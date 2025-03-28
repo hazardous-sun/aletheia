@@ -118,44 +118,48 @@ func (cr *CrawlerRepository) Crawl() {
 
 	// Fetch and save the body content of each link
 	for _, link := range results {
-		if !strings.HasPrefix(link, "http") {
-			link = "https:" + link // Ensure the link has a valid scheme
-		}
-
-		resp, err := http.Get(link)
-		if err != nil {
-			fmt.Printf("Error fetching %s: %v\n", link, err)
-			continue
-		}
-		defer func(Body io.ReadCloser) {
-			err := Body.Close()
-			if err != nil {
-				custom_errors.CustomLog(
-					custom_errors.CrawlerClosingPageError,
-					custom_errors.WarningLevel,
-				)
-			}
-		}(resp.Body)
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			custom_errors.CustomLog(
-				fmt.Sprintf("unable to read body from %s: %v", link, err),
-				custom_errors.ErrorLevel,
-			)
-			continue
-		}
-
-		// TODO the bodies are not being correctly stored here, the sites are not being visited
-		// Store the body
-		cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, string(body))
-
-		custom_errors.CustomLog(
-			fmt.Sprintf("added %s crawler %d pagebodies", link),
-			custom_errors.ErrorLevel,
-		)
+		collectCandidateBody(cr, link)
 	}
 	cr.Crawler.Status = custom_errors.CrawlerSucceeded
+}
+
+func collectCandidateBody(cr *CrawlerRepository, link string) {
+	if !strings.HasPrefix(link, "http") {
+		link = "https:" + link // Ensure the link has a valid scheme
+	}
+
+	resp, err := http.Get(link)
+	if err != nil {
+		fmt.Printf("Error fetching %s: %v\n", link, err)
+		return
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			custom_errors.CustomLog(
+				custom_errors.CrawlerClosingPageError,
+				custom_errors.WarningLevel,
+			)
+		}
+	}(resp.Body)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		custom_errors.CustomLog(
+			fmt.Sprintf("unable to read body from %s: %v", link, err),
+			custom_errors.ErrorLevel,
+		)
+		return
+	}
+
+	// TODO the bodies are not being correctly stored here, the sites are not being visited
+	// Store the body
+	cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, string(body))
+
+	custom_errors.CustomLog(
+		fmt.Sprintf("added %s crawler %d pagebodies", link),
+		custom_errors.ErrorLevel,
+	)
 }
 
 // Replaces `N_FIRST_(\d+)` with the current iteration
