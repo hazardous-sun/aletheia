@@ -117,7 +117,7 @@ Finally, the Go application will be available at http://localhost:800
           "name": "spanish"
         },
         {
-        "id": 2,
+          "id": 2,
           "name": "portuguese"
         },
         {
