@@ -6,11 +6,11 @@ flags=(0, 0, 0) # 1. context 2. image 3. video
 printUsage() {
   echo "Usage: run.sh [OPTIONS]"
   echo "Inteface:"
-  echo "  -C --CONTEXT \t Enables the context text field section"
-  echo "  -I --IMAGE \t Enables the image check field section"
-  echo "  -V --VIDEO \y Enables the video check field section"
+  echo -e "  -C --CONTEXT \t Enables the context text field section"
+  echo -e "  -I --IMAGE \t Enables the image check field section"
+  echo -e "  -V --VIDEO \y Enables the video check field section"
   echo "Miscelaneous:"
-  echo "  -h --HELP \t Shows the script usage"
+  echo -e "  -h --HELP \t Shows the script usage"
 }
 
 enableSection() {
