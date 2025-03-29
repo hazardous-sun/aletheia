@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 installOllama() {
   curl -fsSL https://ollama.com/install.sh | sh
@@ -16,7 +16,7 @@ installAIModel
 
 # Initialize and activate a Python virtual environment
 python -m venv ai-analyzer
-source ai-ananlyzer/bin/activate
+source ai-analyzer/bin/activate
 
 # Download required libraries
 pip install -r requirements.txt
