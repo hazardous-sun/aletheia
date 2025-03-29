@@ -1,6 +1,7 @@
 import ollama
 import os
 
+# Define the environment variable names
 ORIGINAL_POST_CONTENT = "ORIGINAL_POST_CONTENT"
 ONLINE_NEWS_CONTENT = "ONLINE_NEWS_CONTENT"
 USER_CONTEXT = "USER_CONTEXT"
@@ -28,22 +29,22 @@ def main():
 
 def collect_env_variables() -> dict[str, str]:
     variables: dict[str, str] = {
-        ORIGINAL_POST_CONTENT: os.environ[ORIGINAL_POST_CONTENT],
-        ONLINE_NEWS_CONTENT: os.environ[ONLINE_NEWS_CONTENT],
-        USER_CONTEXT: os.environ[USER_CONTEXT]
+        ORIGINAL_POST_CONTENT: os.environ.get(ORIGINAL_POST_CONTENT, ""),
+        ONLINE_NEWS_CONTENT: os.environ.get(ONLINE_NEWS_CONTENT, ""),
+        USER_CONTEXT: os.environ.get(USER_CONTEXT, "")
     }
     return variables
 
 
 def build_prompt(
         variables: dict[str, str]
-    ) -> str:
+) -> str:
     original_post_content = get_content(variables, ORIGINAL_POST_CONTENT)
     reputable_news_content = get_content(variables, ONLINE_NEWS_CONTENT)
     user_context = get_content(variables, USER_CONTEXT)
     context: str = f"""
     You are an AI analyzer tasked with comparing the content of an original post submitted by a user against data
-    gathered from reputable news sources. Your goal is to assess whether the post’s content aligns with or contradicts
+    gathered from reputable news sources. Your goal is to assess whether the post's content aligns with or contradicts
     the information from these sources. Your analysis must be honest, accurate, and strictly based on the data provided
     to you. Follow these guidelines:
       1. Honesty and Accuracy:
@@ -53,7 +54,7 @@ def build_prompt(
         post.
       2. Relevance Check:
         - Before comparing the post to the news data, analyze whether the news articles are relevant to the topic of the
-        original post. If the news data does not relate to the post’s topic, clearly state that no relevant information
+        original post. If the news data does not relate to the post's topic, clearly state that no relevant information
         was found.
         - Use semantic analysis to determine if the news articles discuss the same subject, event, or claim as the
         original post.
@@ -75,10 +76,12 @@ def build_prompt(
 
 
 def get_content(variables: dict[str, str], section: str) -> str:
-    temp = variables.get(section)
+    temp = variables.get(section, "")
 
-    if section != "user_context" and temp is None:
-        raise InvalidPrompt(f"{section} cannot be None", 1)
+    if section != USER_CONTEXT and temp == "":
+        raise InvalidPrompt(f"{section} cannot be empty", 1)
+
+    return temp
 
 
 def prompt(prompt_context: str):
