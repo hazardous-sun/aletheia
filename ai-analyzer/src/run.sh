@@ -15,7 +15,7 @@ installOllama
 installAIModel
 
 # Initialize and activate a Python virtual environment
-python -m venv ai-analyzer
+python3 -m venv ai-analyzer
 source ai-analyzer/bin/activate
 
 # Download required libraries
