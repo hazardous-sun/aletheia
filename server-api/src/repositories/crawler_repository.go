@@ -154,11 +154,12 @@ func collectCandidateBody(cr *CrawlerRepository, link string) {
 
 	// TODO the bodies are not being correctly stored here, the sites are not being visited
 	// Store the body
-	cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, string(body))
+	candidateBody := string(body)
+	cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, candidateBody)
 
 	custom_errors2.Log(
-		fmt.Sprintf("added %s crawler %d pagebodies", link),
-		custom_errors2.ErrorLevel,
+		fmt.Sprintf("added %s to crawler %d pagebodies", link, cr.Crawler.Id),
+		custom_errors2.InfoLevel,
 	)
 }
 
