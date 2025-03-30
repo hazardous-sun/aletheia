@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+ERROR="\033[31m"
+NC="\033[0m"
+
 printUsage() {
   echo "Usage: run.sh [OPTIONS]"
   echo "Container:"
@@ -10,6 +13,28 @@ printUsage() {
 
 # Setting environment variables
 export PORT="7654"
+
+# Parse command-line options
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --PORT=*)
+      VALUE="${1#*=}"
+      if [ "$VALUE" == "" ]; then
+        echo -e "${ERROR}error: PORT value cannot be empty${NC}"
+        printUsage
+        exit 1
+      fi
+      export PORT="$VALUE"
+      echo "PORT value overwritten"
+      ;;
+    *)
+      echo "Invalid argument: $1" >&2
+      printUsage
+      exit 1
+      ;;
+  esac
+  shift
+done
 
 # Build the Docker image
 podman build . -t ai-analyzer

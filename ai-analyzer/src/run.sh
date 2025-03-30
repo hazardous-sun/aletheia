@@ -15,7 +15,7 @@ installOllama
 ollama serve > /dev/null 2>&1 &
 
 # Wait a few seconds to ensure the service is up
-sleep 5
+#sleep 5
 
 # Install LLM model if needed
 installAIModel
