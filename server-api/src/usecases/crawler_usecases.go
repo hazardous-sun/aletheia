@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"encoding/json"
-	custom_errors2 "fact-checker-server/src/errors"
+	"fact-checker-server/src/errors"
 	models2 "fact-checker-server/src/models"
 	"fact-checker-server/src/repositories"
 	"fmt"
@@ -29,7 +29,7 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models2.NewsOutlet, pagesToVisit i
 			Query:        query,
 			QueryUrl:     newsOutlet.QueryUrl,
 			HtmlSelector: newsOutlet.HtmlSelector,
-			Status:       custom_errors2.CrawlerReady,
+			Status:       server_errors.CrawlerReady,
 			PagesBodies:  make([]string, 0),
 		}
 		crawlersRepositories = append(crawlersRepositories, repositories.NewCrawlerRepository(newCrawler))
@@ -37,9 +37,9 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models2.NewsOutlet, pagesToVisit i
 
 	// Initialize the crawlers
 	for _, crawlerRepository := range crawlersRepositories {
-		custom_errors2.Log(
+		server_errors.Log(
 			fmt.Sprintf("initializing crawler %d", crawlerRepository.Crawler.Id),
-			custom_errors2.InfoLevel,
+			server_errors.InfoLevel,
 		)
 		go crawlerRepository.Crawl()
 	}
@@ -48,7 +48,7 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models2.NewsOutlet, pagesToVisit i
 	var haltedCrawlers []models2.Crawler
 	for {
 		for i, crawlerRepository := range crawlersRepositories {
-			if crawlerRepository.Crawler.Status != custom_errors2.CrawlerRunning {
+			if crawlerRepository.Crawler.Status != server_errors.CrawlerRunning {
 				haltedCrawlers = append(haltedCrawlers, crawlerRepository.Crawler)
 				crawlersRepositories = append(crawlersRepositories[:i], crawlersRepositories[i+1:]...)
 			}
