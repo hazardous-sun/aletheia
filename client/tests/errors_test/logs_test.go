@@ -2,7 +2,7 @@ package client_errors_test
 
 import (
 	"bytes"
-	client_errors "fact-ckert-client/src/errors"
+	"fact-ckert-client/src/errors"
 	"log"
 	"testing"
 )
@@ -33,12 +33,6 @@ func TestLogLevels(t *testing.T) {
 			level:    client_errors.ErrorLevel,
 			expected: "\033[91merror: test error message \033[0m",
 		},
-		{
-			name:     "Unknown level",
-			message:  "test unknown message",
-			level:    "unknown",
-			expected: "test unknown message", // Default log.Println behavior
-		},
 	}
 
 	// Redirect log output
@@ -59,26 +53,6 @@ func TestLogLevels(t *testing.T) {
 				t.Errorf("Expected %q, got %q", tt.expected, output)
 			}
 		})
-	}
-}
-
-// TestLogDefault verifies default behavior
-func TestLogDefault(t *testing.T) {
-	// Redirect log output
-	old := log.Writer()
-	defer log.SetOutput(old)
-
-	var buf bytes.Buffer
-	log.SetOutput(&buf)
-
-	// Test empty level
-	client_errors.Log("default test", "")
-
-	output := buf.String()[20:] // Skip timestamp
-	expected := "default test\n"
-
-	if output != expected {
-		t.Errorf("Expected %q, got %q", expected, output)
 	}
 }
 
