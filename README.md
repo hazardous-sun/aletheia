@@ -31,3 +31,8 @@ predefined news outlets.
 
 The AI Analyzer compares the data gathered by the crawlers against the original post submitted by the client, assessing 
 whether the post’s content aligns with information from other sources.
+
+## Contributing
+
+Feel free to contribute to the project, just make sure to run `git config core.hooksPath .githooks` first to activate 
+the project hooks.
