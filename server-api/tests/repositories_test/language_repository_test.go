@@ -3,9 +3,9 @@ package repositories_test
 import (
 	"database/sql"
 	"errors"
+	"fact-checker-server/src/errors"
 	"fact-checker-server/src/models"
 	"fact-checker-server/src/repositories"
-	"fact-checker-server/src/errors"
 	"github.com/lib/pq"
 	"testing"
 
