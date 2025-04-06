@@ -3,6 +3,7 @@ package models
 import (
 	"aletheia-client/src/errors"
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"strconv"
@@ -27,17 +28,38 @@ const (
 // Will fail if the "PORT" environment variable is not initialized as a valid integer.
 func NewConfig() (Config, error) {
 	config := Config{"", false, false, false}
-	// Get the values for each field from the environment variables
-	err := getValue(&config, Port)
+
+	// Get the PORT value from the environment variables
+	err := getPort(&config)
 
 	if err != nil {
 		client_errors.Log(err.Error(), client_errors.ErrorLevel)
 		return Config{}, err
 	}
 
-	_ = getValue(&config, Context)
-	_ = getValue(&config, Image)
-	_ = getValue(&config, Video)
+	// Define the flags
+	contextFlag := flag.Bool("C", false, "Context parameter")
+	contextFlagLong := flag.Bool("CONTEXT", false, "Context parameter (long form)")
+	imageFlag := flag.Bool("I", false, "Image parameter")
+	imageFlagLong := flag.Bool("IMAGE", false, "Image parameter (long form)")
+	videoFlag := flag.Bool("V", false, "Video parameter")
+	videoFlagLong := flag.Bool("VIDEO", false, "Video parameter (long form)")
+
+	// Parse the flags
+	flag.Parse()
+
+	// Check which flags were set
+	if *contextFlag || *contextFlagLong {
+		config.Context = true
+	}
+
+	if *imageFlag || *imageFlagLong {
+		config.Image = true
+	}
+
+	if *videoFlag || *videoFlagLong {
+		config.Video = true
+	}
 
 	// Check if the Port field was initialized
 	if config.Port == "" {
@@ -51,39 +73,23 @@ func NewConfig() (Config, error) {
 	return config, nil
 }
 
-func getValue(config *Config, field string) error {
-	value, exists := os.LookupEnv(field)
-	switch field {
-	case Port:
-		// Log the port value being used
-		client_errors.Log(fmt.Sprintf("PORT = '%s'", value), client_errors.InfoLevel)
+func getPort(config *Config) error {
+	value, _ := os.LookupEnv(Port)
+	// Log the port value being used
+	client_errors.Log(fmt.Sprintf("PORT = '%s'", value), client_errors.InfoLevel)
 
-		// Pass value to the struct
-		config.Port = value
+	// Pass value to the struct
+	config.Port = value
 
-		// Check if the port is a valid integer
-		_, err := strconv.Atoi(config.Port)
+	// Check if the port is a valid integer
+	_, err := strconv.Atoi(config.Port)
 
-		if err != nil {
-			err := errors.New(client_errors.InvalidPortValue)
-			return err
-		}
-
-		config.Port = value
-	case Context:
-		// Log the port value being used
-		client_errors.Log(fmt.Sprintf("CONTEXT = '%v'", exists), client_errors.InfoLevel)
-		config.Context = exists
-	case Image:
-		// Log the port value being used
-		client_errors.Log(fmt.Sprintf("IMAGE = '%v'", exists), client_errors.InfoLevel)
-		config.Image = exists
-	case Video:
-		// Log the port value being used
-		client_errors.Log(fmt.Sprintf("VIDEO = '%v'", exists), client_errors.InfoLevel)
-		config.Video = exists
+	if err != nil {
+		err := errors.New(client_errors.InvalidPortValue)
+		return err
 	}
 
+	config.Port = value
 	return nil
 }
 

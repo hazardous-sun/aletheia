@@ -2,6 +2,7 @@ package models_test
 
 import (
 	"aletheia-client/src/models"
+	"flag"
 	"os"
 	"testing"
 )
@@ -25,9 +26,14 @@ func setupEnv(env map[string]string) func() {
 	}
 }
 
+func resetFlags() {
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+}
+
 func TestNewConfig_WithValidPort(t *testing.T) {
 	cleanup := setupEnv(map[string]string{"PORT": "8080"})
 	defer cleanup()
+	defer resetFlags()
 
 	config, err := models.NewConfig()
 	if err != nil {
@@ -40,13 +46,13 @@ func TestNewConfig_WithValidPort(t *testing.T) {
 }
 
 func TestNewConfig_WithAllFields(t *testing.T) {
-	cleanup := setupEnv(map[string]string{
-		"PORT":    "8080",
-		"CONTEXT": "1",
-		"IMAGE":   "1",
-		"VIDEO":   "1",
-	})
+	cleanup := setupEnv(map[string]string{"PORT": "8080"})
 	defer cleanup()
+	defer resetFlags()
+
+	// Set flags
+	os.Args = []string{"test", "-C", "-I", "-V"}
+	flag.Parse()
 
 	config, err := models.NewConfig()
 	if err != nil {
@@ -68,6 +74,7 @@ func TestNewConfig_WithAllFields(t *testing.T) {
 func TestNewConfig_WithMissingPort(t *testing.T) {
 	cleanup := setupEnv(map[string]string{})
 	defer cleanup()
+	defer resetFlags()
 
 	_, err := models.NewConfig()
 	if err == nil {
@@ -78,6 +85,7 @@ func TestNewConfig_WithMissingPort(t *testing.T) {
 func TestNewConfig_WithInvalidPort(t *testing.T) {
 	cleanup := setupEnv(map[string]string{"PORT": "notanumber"})
 	defer cleanup()
+	defer resetFlags()
 
 	_, err := models.NewConfig()
 	if err == nil {
@@ -89,26 +97,31 @@ func TestNewConfig_WithOptionalFields(t *testing.T) {
 	tests := []struct {
 		name     string
 		env      map[string]string
+		args     []string
 		expected models.Config
 	}{
 		{
 			"Only CONTEXT",
-			map[string]string{"PORT": "8080", "CONTEXT": "1"},
+			map[string]string{"PORT": "8080"},
+			[]string{"test", "-C"},
 			models.Config{Port: "8080", Context: true},
 		},
 		{
 			"Only IMAGE",
-			map[string]string{"PORT": "8080", "IMAGE": "1"},
+			map[string]string{"PORT": "8080"},
+			[]string{"test", "-I"},
 			models.Config{Port: "8080", Image: true},
 		},
 		{
 			"Only VIDEO",
-			map[string]string{"PORT": "8080", "VIDEO": "1"},
+			map[string]string{"PORT": "8080"},
+			[]string{"test", "-V"},
 			models.Config{Port: "8080", Video: true},
 		},
 		{
 			"CONTEXT and IMAGE",
-			map[string]string{"PORT": "8080", "CONTEXT": "1", "IMAGE": "1"},
+			map[string]string{"PORT": "8080"},
+			[]string{"test", "-C", "-I"},
 			models.Config{Port: "8080", Context: true, Image: true},
 		},
 	}
@@ -117,6 +130,60 @@ func TestNewConfig_WithOptionalFields(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cleanup := setupEnv(tt.env)
 			defer cleanup()
+			defer resetFlags()
+
+			// Set flags for this test case
+			os.Args = tt.args
+			flag.Parse()
+
+			config, err := models.NewConfig()
+			if err != nil {
+				t.Fatalf("Expected no error, got %v", err)
+			}
+
+			if config != tt.expected {
+				t.Errorf("Expected %+v, got %+v", tt.expected, config)
+			}
+		})
+	}
+}
+
+func TestNewConfig_WithLongFormFlags(t *testing.T) {
+	tests := []struct {
+		name     string
+		env      map[string]string
+		args     []string
+		expected models.Config
+	}{
+		{
+			"CONTEXT long form",
+			map[string]string{"PORT": "8080"},
+			[]string{"test", "--CONTEXT"},
+			models.Config{Port: "8080", Context: true},
+		},
+		{
+			"IMAGE long form",
+			map[string]string{"PORT": "8080"},
+			[]string{"test", "--IMAGE"},
+			models.Config{Port: "8080", Image: true},
+		},
+		{
+			"VIDEO long form",
+			map[string]string{"PORT": "8080"},
+			[]string{"test", "--VIDEO"},
+			models.Config{Port: "8080", Video: true},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cleanup := setupEnv(tt.env)
+			defer cleanup()
+			defer resetFlags()
+
+			// Set flags for this test case
+			os.Args = tt.args
+			flag.Parse()
 
 			config, err := models.NewConfig()
 			if err != nil {
