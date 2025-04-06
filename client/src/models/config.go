@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fact-ckert-client/src/errors"
+	"fmt"
 	"os"
 	"strconv"
 )
@@ -54,6 +55,9 @@ func getValue(config *Config, field string) error {
 	value, exists := os.LookupEnv(field)
 	switch field {
 	case Port:
+		// Log the port value being used
+		client_errors.Log(fmt.Sprintf("PORT = '%s'", value), client_errors.InfoLevel)
+
 		// Check if the port is a valid integer
 		_, err := strconv.Atoi(config.Port)
 
@@ -64,10 +68,16 @@ func getValue(config *Config, field string) error {
 
 		config.Port = value
 	case Context:
+		// Log the port value being used
+		client_errors.Log(fmt.Sprintf("CONTEXT = '%b'", exists), client_errors.InfoLevel)
 		config.Context = exists
 	case Image:
+		// Log the port value being used
+		client_errors.Log(fmt.Sprintf("IMAGE = '%b'", exists), client_errors.InfoLevel)
 		config.Image = exists
 	case Video:
+		// Log the port value being used
+		client_errors.Log(fmt.Sprintf("VIDEO = '%b'", exists), client_errors.InfoLevel)
 		config.Video = exists
 	}
 
