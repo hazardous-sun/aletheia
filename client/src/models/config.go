@@ -72,15 +72,15 @@ func getValue(config *Config, field string) error {
 		config.Port = value
 	case Context:
 		// Log the port value being used
-		client_errors.Log(fmt.Sprintf("CONTEXT = '%b'", exists), client_errors.InfoLevel)
+		client_errors.Log(fmt.Sprintf("CONTEXT = '%v'", exists), client_errors.InfoLevel)
 		config.Context = exists
 	case Image:
 		// Log the port value being used
-		client_errors.Log(fmt.Sprintf("IMAGE = '%b'", exists), client_errors.InfoLevel)
+		client_errors.Log(fmt.Sprintf("IMAGE = '%v'", exists), client_errors.InfoLevel)
 		config.Image = exists
 	case Video:
 		// Log the port value being used
-		client_errors.Log(fmt.Sprintf("VIDEO = '%b'", exists), client_errors.InfoLevel)
+		client_errors.Log(fmt.Sprintf("VIDEO = '%v'", exists), client_errors.InfoLevel)
 		config.Video = exists
 	}
 
