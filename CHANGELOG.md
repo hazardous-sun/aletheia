@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 ### 🚀 Features
 
 - Added more logs to Config
+- Added an API Connector struct that will be used by the client to communicate with the server
+- Now the GUI can communicate with the server
 
 ### 🐛 Bug Fixes
 
@@ -21,6 +23,8 @@ All notable changes to this project will be documented in this file.
 - Refactored the logic for building the GUI
 - Refactored the unit tests to the fit the new model for the Config struct
 - Adjusted the type used for logging the value of the check fields
+- Adjusted the run script
+- Now the client GUI fields are initialized with a mix of environment variables and flags
 
 ### 📚 Documentation
 
