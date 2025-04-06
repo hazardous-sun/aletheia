@@ -1,15 +1,15 @@
 package main
 
 import (
-	controllers2 "fact-checker-server/src/controllers"
-	"fact-checker-server/src/db"
-	customErros "fact-checker-server/src/errors"
-	repositories2 "fact-checker-server/src/repositories"
-	usecases2 "fact-checker-server/src/usecases"
+	controllers2 "aletheia-server/src/controllers"
+	"aletheia-server/src/db"
+	customErros "aletheia-server/src/errors"
+	repositories2 "aletheia-server/src/repositories"
+	usecases2 "aletheia-server/src/usecases"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-) 
+)
 
 func main() {
 	// Initialize the Database server

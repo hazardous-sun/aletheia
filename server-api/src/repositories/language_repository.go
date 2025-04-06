@@ -1,10 +1,10 @@
 package repositories
 
 import (
+	"aletheia-server/src/errors"
+	"aletheia-server/src/models"
 	"database/sql"
 	"errors"
-	"fact-checker-server/src/errors"
-	"fact-checker-server/src/models"
 	"github.com/lib/pq"
 	"strings"
 )

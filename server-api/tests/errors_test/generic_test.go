@@ -1,7 +1,7 @@
 package server_errors
 
 import (
-	server_errors "fact-checker-server/src/errors"
+	server_errors "aletheia-server/src/errors"
 	"testing"
 )
 

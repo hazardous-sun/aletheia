@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"fact-checker-server/src/errors"
-	models2 "fact-checker-server/src/models"
-	"fact-checker-server/src/usecases"
+	"aletheia-server/src/errors"
+	models2 "aletheia-server/src/models"
+	"aletheia-server/src/usecases"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"

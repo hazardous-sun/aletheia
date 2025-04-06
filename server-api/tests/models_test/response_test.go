@@ -1,8 +1,8 @@
 package models_test
 
 import (
+	"aletheia-server/src/models"
 	"encoding/json"
-	"fact-checker-server/src/models"
 	"testing"
 )
 

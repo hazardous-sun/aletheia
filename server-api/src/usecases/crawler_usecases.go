@@ -1,10 +1,10 @@
 package usecases
 
 import (
+	"aletheia-server/src/errors"
+	models2 "aletheia-server/src/models"
+	"aletheia-server/src/repositories"
 	"encoding/json"
-	"fact-checker-server/src/errors"
-	models2 "fact-checker-server/src/models"
-	"fact-checker-server/src/repositories"
 	"fmt"
 	"log"
 	"os"

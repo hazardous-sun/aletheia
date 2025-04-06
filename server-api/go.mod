@@ -1,4 +1,4 @@
-module fact-checker-server
+module aletheia-server
 
 go 1.23.3
 

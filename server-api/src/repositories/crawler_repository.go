@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"fact-checker-server/src/errors"
-	"fact-checker-server/src/models"
+	"aletheia-server/src/errors"
+	"aletheia-server/src/models"
 	"fmt"
 	"io"
 	"net/http"

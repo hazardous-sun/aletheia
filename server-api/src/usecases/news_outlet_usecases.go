@@ -1,8 +1,8 @@
 package usecases
 
 import (
-	"fact-checker-server/src/models"
-	"fact-checker-server/src/repositories"
+	"aletheia-server/src/models"
+	"aletheia-server/src/repositories"
 )
 
 type NewsOutletUseCase struct {

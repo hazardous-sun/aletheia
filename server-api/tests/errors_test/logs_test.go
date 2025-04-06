@@ -1,8 +1,8 @@
 package server_errors
 
 import (
+	"aletheia-server/src/errors"
 	"bytes"
-	"fact-checker-server/src/errors"
 	"log"
 	"os"
 	"strings"
