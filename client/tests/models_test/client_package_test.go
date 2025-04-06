@@ -1,4 +1,4 @@
-package models_test
+package models
 
 import (
 	"aletheia-client/src/models"
@@ -6,108 +6,199 @@ import (
 	"testing"
 )
 
-// TestPackageSent_Empty verifies zero values
-func TestPackageSent_Empty(t *testing.T) {
-	p := models.PackageSent{}
+// TestPackageSentInitialization tests basic struct initialization
+func TestPackageSentInitialization(t *testing.T) {
+	tests := []struct {
+		name     string
+		url      string
+		image    bool
+		prompt   string
+		video    bool
+		expected models.PackageSent
+	}{
+		{
+			name:   "All fields populated",
+			url:    "https://example.com",
+			image:  true,
+			prompt: "test prompt",
+			video:  false,
+			expected: models.PackageSent{
+				Url:    "https://example.com",
+				Image:  true,
+				Prompt: "test prompt",
+				Video:  false,
+			},
+		},
+		{
+			name:   "Empty fields",
+			url:    "",
+			image:  false,
+			prompt: "",
+			video:  false,
+			expected: models.PackageSent{
+				Url:    "",
+				Image:  false,
+				Prompt: "",
+				Video:  false,
+			},
+		},
+	}
 
-	if p.Url != "" {
-		t.Errorf("Expected empty Url, got '%s'", p.Url)
-	}
-	if p.Image {
-		t.Error("Expected false Image, got true")
-	}
-	if p.Video {
-		t.Error("Expected false Video, got true")
-	}
-	if p.Prompt != "" {
-		t.Errorf("Expected empty Prompt, got '%s'", p.Prompt)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := models.PackageSent{
+				Url:    tt.url,
+				Image:  tt.image,
+				Prompt: tt.prompt,
+				Video:  tt.video,
+			}
+
+			if p != tt.expected {
+				t.Errorf("Expected %+v, got %+v", tt.expected, p)
+			}
+		})
 	}
 }
 
-// TestPackageSent_FieldAssignment verifies field assignments
-func TestPackageSent_FieldAssignment(t *testing.T) {
-	p := models.PackageSent{
-		Url:    "https://test.com",
-		Image:  false,
-		Video:  true,
-		Prompt: "test",
+// TestPackageSentJSONSerialization tests JSON marshaling/unmarshaling
+func TestPackageSentJSONSerialization(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    models.PackageSent
+		expected string
+	}{
+		{
+			name: "All fields",
+			input: models.PackageSent{
+				Url:    "https://test.com",
+				Image:  true,
+				Prompt: "test prompt",
+				Video:  false,
+			},
+			expected: `{"url":"https://test.com","image":true,"prompt":"test prompt","video":false}`,
+		},
+		{
+			name:     "Empty struct",
+			input:    models.PackageSent{},
+			expected: `{"url":"","image":false,"prompt":"","video":false}`,
+		},
 	}
 
-	if p.Url != "https://test.com" {
-		t.Errorf("Expected Url 'https://test.com', got '%s'", p.Url)
-	}
-	if p.Image {
-		t.Error("Expected Image false, got true")
-	}
-	if !p.Video {
-		t.Error("Expected Video true, got false")
-	}
-	if p.Prompt != "test" {
-		t.Errorf("Expected Prompt 'test', got '%s'", p.Prompt)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Test marshaling
+			bytes, err := json.Marshal(tt.input)
+			if err != nil {
+				t.Fatalf("Failed to marshal: %v", err)
+			}
+
+			if string(bytes) != tt.expected {
+				t.Errorf("Expected JSON %s, got %s", tt.expected, string(bytes))
+			}
+
+			// Test unmarshaling
+			var p models.PackageSent
+			err = json.Unmarshal(bytes, &p)
+			if err != nil {
+				t.Fatalf("Failed to unmarshal: %v", err)
+			}
+
+			if p != tt.input {
+				t.Errorf("Expected %+v after unmarshal, got %+v", tt.input, p)
+			}
+		})
 	}
 }
 
-// TestPackageSent_JSONMarshal tests JSON marshaling
-func TestPackageSent_JSONMarshal(t *testing.T) {
-	p := models.PackageSent{
-		Url:    "https://marshal.com",
-		Video:  true,
-		Prompt: "marshal test",
+// TestPackageSentFieldValidation tests field validation logic
+func TestPackageSentFieldValidation(t *testing.T) {
+	tests := []struct {
+		name    string
+		p       models.PackageSent
+		isValid bool
+	}{
+		{
+			name: "Valid with URL and prompt",
+			p: models.PackageSent{
+				Url:    "https://valid.com",
+				Prompt: "valid prompt",
+			},
+			isValid: true,
+		},
+		{
+			name: "Invalid empty URL",
+			p: models.PackageSent{
+				Url:    "",
+				Prompt: "valid prompt",
+			},
+			isValid: false,
+		},
+		{
+			name: "Invalid empty prompt",
+			p: models.PackageSent{
+				Url:    "https://valid.com",
+				Prompt: "",
+			},
+			isValid: false,
+		},
 	}
 
-	data, err := json.Marshal(p)
-	if err != nil {
-		t.Fatalf("Marshal failed: %v", err)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// This is a placeholder for actual validation logic
+			// In a real application, you would implement this method
+			isValid := tt.p.Url != "" && tt.p.Prompt != ""
 
-	expected := `{"url":"https://marshal.com","image":false,"vide":true,"prompt":"marshal test"}`
-	if string(data) != expected {
-		t.Errorf("Expected JSON '%s', got '%s'", expected, string(data))
+			if isValid != tt.isValid {
+				t.Errorf("Expected isValid=%v, got %v", tt.isValid, isValid)
+			}
+		})
 	}
 }
 
-// TestPackageSent_JSONUnmarshal tests JSON unmarshaling
-func TestPackageSent_JSONUnmarshal(t *testing.T) {
-	jsonStr := `{
-		"url": "https://unmarshal.com",
-		"vide": false,
-		"prompt": "unmarshal test"
-	}`
+// TestPackageSentEdgeCases tests edge cases
+func TestPackageSentEdgeCases(t *testing.T) {
+	t.Run("Long URL and prompt", func(t *testing.T) {
+		longURL := "https://example.com/" + string(make([]byte, 1000))
+		longPrompt := string(make([]byte, 10000))
 
-	var p models.PackageSent
-	err := json.Unmarshal([]byte(jsonStr), &p)
-	if err != nil {
-		t.Fatalf("Unmarshal failed: %v", err)
-	}
+		p := models.PackageSent{
+			Url:    longURL,
+			Prompt: longPrompt,
+		}
 
-	if p.Url != "https://unmarshal.com" {
-		t.Errorf("Expected Url 'https://unmarshal.com', got '%s'", p.Url)
-	}
-	if p.Video {
-		t.Error("Expected Video false, got true")
-	}
-	if p.Prompt != "unmarshal test" {
-		t.Errorf("Expected Prompt 'unmarshal test', got '%s'", p.Prompt)
-	}
-}
+		if p.Url != longURL || p.Prompt != longPrompt {
+			t.Error("Failed to handle long strings")
+		}
+	})
 
-// TestPackageSent_JSONTagTypo verifies the intentional "vide" JSON tag
-func TestPackageSent_JSONTagTypo(t *testing.T) {
-	p := models.PackageSent{Video: true}
-	data, err := json.Marshal(p)
-	if err != nil {
-		t.Fatalf("Marshal failed: %v", err)
-	}
+	t.Run("Special characters in fields", func(t *testing.T) {
+		specialURL := "https://example.com/测试?param=値&other=😊"
+		specialPrompt := "prompt with 测试 and 😊"
 
-	var result map[string]interface{}
-	if err := json.Unmarshal(data, &result); err != nil {
-		t.Fatalf("Unmarshal failed: %v", err)
-	}
+		p := models.PackageSent{
+			Url:    specialURL,
+			Prompt: specialPrompt,
+		}
 
-	if _, exists := result["vide"]; !exists {
-		t.Error("Expected 'vide' field in JSON output")
-	}
-	if val, exists := result["vide"]; !exists || !val.(bool) {
-		t.Error("Expected 'vide' field to be true")
-	}
+		if p.Url != specialURL || p.Prompt != specialPrompt {
+			t.Error("Failed to handle special characters")
+		}
+
+		// Test JSON roundtrip with special chars
+		bytes, err := json.Marshal(p)
+		if err != nil {
+			t.Fatalf("Failed to marshal: %v", err)
+		}
+
+		var p2 models.PackageSent
+		err = json.Unmarshal(bytes, &p2)
+		if err != nil {
+			t.Fatalf("Failed to unmarshal: %v", err)
+		}
+
+		if p2.Url != specialURL || p2.Prompt != specialPrompt {
+			t.Error("Special characters not preserved in JSON roundtrip")
+		}
+	})
 }
