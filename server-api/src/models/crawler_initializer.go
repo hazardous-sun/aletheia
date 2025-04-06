@@ -1,6 +1,6 @@
 package models
 
 type CrawlerInitializer struct {
-	Query        string `json:"query"`
 	PagesToVisit int    `json:"pagesToVisit"`
+	Query        string `json:"query"`
 }

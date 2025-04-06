@@ -3,9 +3,9 @@ package models
 type Crawler struct {
 	Id           int
 	PagesToVisit int
-	Query        string
-	QueryUrl     string
 	HtmlSelector string
 	Status       string
+	Query        string
+	QueryUrl     string
 	PagesBodies  []string
 }
