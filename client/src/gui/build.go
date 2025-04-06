@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var Url string = ""
+var PostUrl string = ""
 var Image bool = false
 var Prompt string = ""
 var Video bool = false
@@ -43,7 +43,7 @@ func buildFields(config models.Config) fyne.CanvasObject {
 		widgetsCtr,
 		nil, nil, nil,
 		widget.NewButton("Send", func() {
-			fmt.Println(fmt.Sprintf("Sending"))
+			sendPackage(config)
 		}),
 	)
 }
@@ -107,4 +107,20 @@ func buildCheckField(labelText string) fyne.CanvasObject {
 		fmt.Sprintf("%s:", strings.ToTitle(labelText)),
 		behavior,
 	)
+}
+
+func sendPackage(config models.Config) {
+	packageSent := models.PackageSent{
+		Url:    PostUrl,
+		Image:  Image,
+		Prompt: Prompt,
+		Video:  Video,
+	}
+	apiConnector := models.NewAPIConnector(PostUrl)
+	response, err := apiConnector.SendPackage(fmt.Sprintf("localhost:%s", config.Port), packageSent)
+	if err != nil {
+		client_errors.Log(err.Error(), client_errors.ErrorLevel)
+	} else {
+		client_errors.Log(fmt.Sprintf("%v", response), client_errors.InfoLevel)
+	}
 }

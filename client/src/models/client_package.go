@@ -1,9 +1,8 @@
 package models
 
 type PackageSent struct {
-	Url         string `json:"url"`
-	Description bool   `json:"description"`
-	Image       bool   `json:"image"`
-	Video       bool   `json:"vide"`
-	Prompt      string `json:"prompt"`
+	Url    string `json:"url"`
+	Image  bool   `json:"image"`
+	Prompt string `json:"prompt"`
+	Video  bool   `json:"vide"`
 }
