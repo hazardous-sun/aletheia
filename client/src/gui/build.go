@@ -1,30 +1,42 @@
 package gui
 
 import (
+	"fact-ckert-client/src/errors"
 	"fact-ckert-client/src/models"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"strings"
 )
 
+var Url string = ""
+var Context string = ""
+var Image bool = false
+var Video bool = false
+
 func Build(a fyne.App) {
-	fields, _ := models.CollectConfigValues()
-	ctr := buildFields(fields)
+	config, err := models.NewConfig()
+
+	// Check if there were errors while generating the Config struct
+	if err != nil {
+		client_errors.Log(err.Error(), client_errors.ErrorLevel)
+		return
+	}
+
+	ctr := buildFields(config)
 
 	w := a.NewWindow("Client Test")
 	w.SetContent(ctr)
 	w.ShowAndRun()
 }
 
-func buildFields(fields []string) fyne.CanvasObject {
+func buildFields(config models.Config) fyne.CanvasObject {
 	// Required widgets
-	requiredWidgets := make([]fyne.CanvasObject, 0)
-	requiredWidgets = buildRequiredFields(requiredWidgets)
+	requiredWidgets := buildRequiredFields()
 
 	// Optional widgets
-	optionalWidgets := make([]fyne.CanvasObject, 0)
-	optionalWidgets = buildOptionalFields(optionalWidgets, fields)
+	optionalWidgets := buildOptionalFields(config)
 
 	widgetsCtr := container.NewGridWithRows(len(requiredWidgets)+len(optionalWidgets), append(requiredWidgets, optionalWidgets...)...)
 	return container.NewBorder(
@@ -37,7 +49,8 @@ func buildFields(fields []string) fyne.CanvasObject {
 }
 
 // Required fields
-func buildRequiredFields(windowWidgets []fyne.CanvasObject) []fyne.CanvasObject {
+func buildRequiredFields() []fyne.CanvasObject {
+	windowWidgets := make([]fyne.CanvasObject, 0)
 	// Required fields
 	urlField := buildEntryContainerField("URL:")
 	windowWidgets = append(windowWidgets, urlField)
@@ -45,20 +58,24 @@ func buildRequiredFields(windowWidgets []fyne.CanvasObject) []fyne.CanvasObject 
 }
 
 // Optional fields
-func buildOptionalFields(windowWidgets []fyne.CanvasObject, fields []string) []fyne.CanvasObject {
-	flagsValues := models.NewConfig(false, false, false)
-	for _, v := range fields {
-		switch v {
-		case "CONTEXT":
-			windowWidgets = append(windowWidgets, buildEntryContainerField("Context:"))
-		case "IMAGE":
-			windowWidgets = append(windowWidgets, buildCheckField("Image:", flagsValues))
-		case "VIDEO":
-			windowWidgets = append(windowWidgets, buildCheckField("Video:", flagsValues))
-		default:
-			continue
-		}
+func buildOptionalFields(config models.Config) []fyne.CanvasObject {
+	windowWidgets := make([]fyne.CanvasObject, 0)
+
+	// Check if the Context entry field should be displayed
+	if config.Context {
+		windowWidgets = append(windowWidgets, buildEntryContainerField("Context:"))
 	}
+
+	// Check if the Image check field should be displayed
+	if config.Image {
+		windowWidgets = append(windowWidgets, buildCheckField(models.Image))
+	}
+
+	// Check if the Image check field should be displayed
+	if config.Video {
+		windowWidgets = append(windowWidgets, buildCheckField(models.Video))
+	}
+
 	return windowWidgets
 }
 
@@ -71,11 +88,23 @@ func buildEntryContainerField(labelText string) fyne.CanvasObject {
 	)
 }
 
-func buildCheckField(labelText string, flagsValues *models.Config) fyne.CanvasObject {
+func buildCheckField(labelText string) fyne.CanvasObject {
+	var behavior func(bool)
+
+	if labelText == models.Image {
+		behavior = func(check bool) {
+			Image = check
+		}
+	} else if labelText == models.Video {
+		behavior = func(check bool) {
+			Video = check
+		}
+	} else {
+		panic("invalid field: " + labelText)
+	}
+
 	return widget.NewCheck(
-		labelText,
-		func(checked bool) {
-			flagsValues.Image = checked
-		},
+		fmt.Sprintf("%s:", strings.ToTitle(labelText)),
+		behavior,
 	)
 }
