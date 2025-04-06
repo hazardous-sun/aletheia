@@ -1,11 +1,11 @@
 package main
 
 import (
-	controllers2 "aletheia-server/src/controllers"
+	"aletheia-server/src/controllers"
 	"aletheia-server/src/db"
-	customErros "aletheia-server/src/errors"
-	repositories2 "aletheia-server/src/repositories"
-	usecases2 "aletheia-server/src/usecases"
+	"aletheia-server/src/errors"
+	"aletheia-server/src/repositories"
+	"aletheia-server/src/usecases"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,25 +16,25 @@ func main() {
 	dbConnection, err := db.ConnectDB()
 
 	if err != nil {
-		customErros.Log(err.Error(), customErros.ErrorLevel)
+		server_errors.Log(err.Error(), server_errors.ErrorLevel)
 		return
 	}
 
 	// Initializing the repository layer
-	languageRepository := repositories2.NewLanguageRepository(dbConnection)
-	languageUsecase := usecases2.NewLanguageUsecase(languageRepository)
-	languageController := controllers2.NewLanguageController(languageUsecase)
+	languageRepository := repositories.NewLanguageRepository(dbConnection)
+	languageUsecase := usecases.NewLanguageUsecase(languageRepository)
+	languageController := controllers.NewLanguageController(languageUsecase)
 
 	// Initializing the use case layer
 
 	// Initializing the controller layer
-	newsOutletRepository := repositories2.NewNewsOutletRepository(dbConnection, *languageRepository)
-	newsOutletUsecase := usecases2.NewNewsOutletUsecase(newsOutletRepository)
-	newsOutletController := controllers2.NewNewsOutletController(newsOutletUsecase)
+	newsOutletRepository := repositories.NewNewsOutletRepository(dbConnection, *languageRepository)
+	newsOutletUsecase := usecases.NewNewsOutletUsecase(newsOutletRepository)
+	newsOutletController := controllers.NewNewsOutletController(newsOutletUsecase)
 
 	// Initializing crawlers
-	crawlerUsecase := usecases2.NewCrawlerUsecase()
-	crawlerController := controllers2.NewCrawlerController(crawlerUsecase, newsOutletUsecase)
+	crawlerUsecase := usecases.NewCrawlerUsecase()
+	crawlerController := controllers.NewCrawlerController(crawlerUsecase, newsOutletUsecase)
 
 	// Initialize the API server
 	server := gin.Default()
@@ -46,6 +46,7 @@ func main() {
 			"status":  http.StatusOK,
 		})
 	})
+
 	// ----- Languages
 	// ---------- Create
 	server.POST("language", languageController.AddLanguage)
@@ -53,7 +54,7 @@ func main() {
 	server.GET("languages", languageController.GetLanguages)
 	server.GET("languageId/:languageId", languageController.GetLanguageById)
 	server.GET("languageName/:languageName", languageController.GetLanguageByName)
-	// -----
+
 	// ----- News Outlets
 	// ---------- Create
 	server.POST("newsOutlet", newsOutletController.AddNewsOutlet)
@@ -61,6 +62,7 @@ func main() {
 	server.GET("newsOutlets", newsOutletController.GetNewsOutlets)
 	server.GET("newsOutletName/:newsOutletName", newsOutletController.GetNewsOutletByName)
 	server.GET("newsOutletId/:newsOutletId", newsOutletController.GetNewsOutletById)
+
 	// ----- Crawlers
 	server.POST("crawl", crawlerController.Crawl)
 	// -----------------------------------------------------------------------------------------------------------------
@@ -68,7 +70,7 @@ func main() {
 	err = server.Run(":8000")
 
 	if err != nil {
-		customErros.Log(err.Error(), customErros.ErrorLevel)
+		server_errors.Log(err.Error(), server_errors.ErrorLevel)
 		return
 	}
 }

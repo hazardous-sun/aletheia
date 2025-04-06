@@ -2,18 +2,18 @@ package controllers
 
 import (
 	"aletheia-server/src/errors"
-	models2 "aletheia-server/src/models"
-	usecases2 "aletheia-server/src/usecases"
+	"aletheia-server/src/models"
+	"aletheia-server/src/usecases"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type CrawlerController struct {
-	crawlerUseCase    usecases2.CrawlerUsecase
-	newsOutletUseCase usecases2.NewsOutletUseCase
+	crawlerUseCase    usecases.CrawlerUsecase
+	newsOutletUseCase usecases.NewsOutletUseCase
 }
 
-func NewCrawlerController(crawler usecases2.CrawlerUsecase, newsOutletUseCase usecases2.NewsOutletUseCase) CrawlerController {
+func NewCrawlerController(crawler usecases.CrawlerUsecase, newsOutletUseCase usecases.NewsOutletUseCase) CrawlerController {
 	return CrawlerController{
 		crawlerUseCase:    crawler,
 		newsOutletUseCase: newsOutletUseCase,
@@ -21,12 +21,12 @@ func NewCrawlerController(crawler usecases2.CrawlerUsecase, newsOutletUseCase us
 }
 
 func (cr *CrawlerController) Crawl(ctx *gin.Context) {
-	var crawlersInitializer models2.CrawlerInitializer
+	var crawlersInitializer models.CrawlerInitializer
 	err := ctx.BindJSON(&crawlersInitializer)
 
 	if err != nil {
 		server_errors.Log(server_errors.InvalidParameters, server_errors.ErrorLevel)
-		ctx.JSON(http.StatusBadRequest, models2.Response{
+		ctx.JSON(http.StatusBadRequest, models.Response{
 			Message: err.Error(),
 			Status:  http.StatusBadRequest,
 		})
@@ -39,22 +39,22 @@ func (cr *CrawlerController) Crawl(ctx *gin.Context) {
 		server_errors.Log(err.Error(), server_errors.ErrorLevel)
 		switch err.Error() {
 		case server_errors.NewsOutletParsingError:
-			ctx.JSON(http.StatusBadRequest, models2.Response{
+			ctx.JSON(http.StatusBadRequest, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
 			})
 		case server_errors.NewsOutletTableMissing:
-			ctx.JSON(http.StatusInternalServerError, models2.Response{
+			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
 		case server_errors.LanguageClosingTableError:
-			ctx.JSON(http.StatusInternalServerError, models2.Response{
+			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
 		default:
-			ctx.JSON(http.StatusInternalServerError, models2.Response{
+			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusInternalServerError,
 			})
