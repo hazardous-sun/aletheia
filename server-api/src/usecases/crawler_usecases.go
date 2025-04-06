@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"aletheia-server/src/errors"
-	models2 "aletheia-server/src/models"
+	"aletheia-server/src/models"
 	"aletheia-server/src/repositories"
 	"encoding/json"
 	"fmt"
@@ -18,12 +18,12 @@ func NewCrawlerUsecase() CrawlerUsecase {
 	return CrawlerUsecase{}
 }
 
-func (cu *CrawlerUsecase) Crawl(newsOutlets []models2.NewsOutlet, pagesToVisit int, query string) {
+func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit int, query string) {
 	var crawlersRepositories []repositories.CrawlerRepository
 
 	// Generate the crawlers for each news outlet returned from the database
 	for i, newsOutlet := range newsOutlets {
-		newCrawler := models2.Crawler{
+		newCrawler := models.Crawler{
 			Id:           i + 1,
 			PagesToVisit: pagesToVisit,
 			Query:        query,
@@ -45,7 +45,7 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models2.NewsOutlet, pagesToVisit i
 	}
 
 	// Check for status until all the crawlers finish
-	var haltedCrawlers []models2.Crawler
+	var haltedCrawlers []models.Crawler
 	for {
 		for i, crawlerRepository := range crawlersRepositories {
 			if crawlerRepository.Crawler.Status != server_errors.CrawlerRunning {
