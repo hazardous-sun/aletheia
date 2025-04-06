@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 
 - Added more logs to Config
 
+### 🐛 Bug Fixes
+
+- The value for Config.Port was not being passed before checking if it was a valid integer, making the unit tests always fail
+
 ### 🚜 Refactor
 
 - Refactored the Config struct and added a Port field to it
@@ -16,11 +20,14 @@ All notable changes to this project will be documented in this file.
 - Refactored the run script
 - Refactored the logic for building the GUI
 - Refactored the unit tests to the fit the new model for the Config struct
+- Adjusted the type used for logging the value of the check fields
 
 ### 📚 Documentation
 
 - Added more error messages
 - Initialized git cliff
+- Renamed the module to aletheia-client
+- Renamed the module to aletheia-server
 
 ### 🧪 Testing
 
