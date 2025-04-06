@@ -1,4 +1,4 @@
-module fact-ckert-client
+module aletheia-client
 
 go 1.24.0
 

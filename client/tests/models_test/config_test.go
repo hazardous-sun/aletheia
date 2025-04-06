@@ -1,7 +1,7 @@
 package models_test
 
 import (
-	"fact-ckert-client/src/models"
+	"aletheia-client/src/models"
 	"os"
 	"testing"
 )

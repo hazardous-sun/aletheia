@@ -1,8 +1,8 @@
 package models_test
 
 import (
+	"aletheia-client/src/models"
 	"encoding/json"
-	"fact-ckert-client/src/models"
 	"testing"
 )
 

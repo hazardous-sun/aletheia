@@ -1,8 +1,8 @@
 package models
 
 import (
+	"aletheia-client/src/errors"
 	"errors"
-	"fact-ckert-client/src/errors"
 	"fmt"
 	"os"
 	"strconv"

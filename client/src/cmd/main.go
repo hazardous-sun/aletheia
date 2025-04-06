@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fact-ckert-client/src/gui"
+	"aletheia-client/src/gui"
 	"fyne.io/fyne/v2/app"
 )
 

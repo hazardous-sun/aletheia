@@ -1,8 +1,8 @@
 package client_errors_test
 
 import (
+	"aletheia-client/src/errors"
 	"bytes"
-	"fact-ckert-client/src/errors"
 	"log"
 	"testing"
 )

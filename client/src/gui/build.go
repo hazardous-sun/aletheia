@@ -1,8 +1,8 @@
 package gui
 
 import (
-	"fact-ckert-client/src/errors"
-	"fact-ckert-client/src/models"
+	"aletheia-client/src/errors"
+	"aletheia-client/src/models"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
