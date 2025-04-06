@@ -13,9 +13,6 @@ func TestPackageSent_Empty(t *testing.T) {
 	if p.Url != "" {
 		t.Errorf("Expected empty Url, got '%s'", p.Url)
 	}
-	if p.Description {
-		t.Error("Expected false Description, got true")
-	}
 	if p.Image {
 		t.Error("Expected false Image, got true")
 	}
@@ -30,18 +27,14 @@ func TestPackageSent_Empty(t *testing.T) {
 // TestPackageSent_FieldAssignment verifies field assignments
 func TestPackageSent_FieldAssignment(t *testing.T) {
 	p := models.PackageSent{
-		Url:         "https://test.com",
-		Description: true,
-		Image:       false,
-		Video:       true,
-		Prompt:      "test",
+		Url:    "https://test.com",
+		Image:  false,
+		Video:  true,
+		Prompt: "test",
 	}
 
 	if p.Url != "https://test.com" {
 		t.Errorf("Expected Url 'https://test.com', got '%s'", p.Url)
-	}
-	if !p.Description {
-		t.Error("Expected Description true, got false")
 	}
 	if p.Image {
 		t.Error("Expected Image false, got true")
@@ -67,7 +60,7 @@ func TestPackageSent_JSONMarshal(t *testing.T) {
 		t.Fatalf("Marshal failed: %v", err)
 	}
 
-	expected := `{"url":"https://marshal.com","description":false,"image":false,"vide":true,"prompt":"marshal test"}`
+	expected := `{"url":"https://marshal.com","image":false,"vide":true,"prompt":"marshal test"}`
 	if string(data) != expected {
 		t.Errorf("Expected JSON '%s', got '%s'", expected, string(data))
 	}
@@ -77,7 +70,6 @@ func TestPackageSent_JSONMarshal(t *testing.T) {
 func TestPackageSent_JSONUnmarshal(t *testing.T) {
 	jsonStr := `{
 		"url": "https://unmarshal.com",
-		"description": true,
 		"vide": false,
 		"prompt": "unmarshal test"
 	}`
@@ -90,9 +82,6 @@ func TestPackageSent_JSONUnmarshal(t *testing.T) {
 
 	if p.Url != "https://unmarshal.com" {
 		t.Errorf("Expected Url 'https://unmarshal.com', got '%s'", p.Url)
-	}
-	if !p.Description {
-		t.Error("Expected Description true, got false")
 	}
 	if p.Video {
 		t.Error("Expected Video false, got true")
