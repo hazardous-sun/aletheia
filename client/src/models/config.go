@@ -10,17 +10,17 @@ import (
 )
 
 type Config struct {
-	Port    string `json:"port"`
-	Image   bool   `json:"image"`
-	Video   bool   `json:"video"`
-	Context bool   `json:"context"`
+	Port   string `json:"port"`
+	Image  bool   `json:"image"`
+	Video  bool   `json:"video"`
+	Prompt bool   `json:"prompt"`
 }
 
 const (
-	Port    = "PORT"
-	Context = "CONTEXT"
-	Image   = "IMAGE"
-	Video   = "VIDEO"
+	Port   = "PORT"
+	Prompt = "PROMPT"
+	Image  = "IMAGE"
+	Video  = "VIDEO"
 )
 
 // NewConfig :
@@ -38,8 +38,8 @@ func NewConfig() (Config, error) {
 	}
 
 	// Define the flags
-	contextFlag := flag.Bool("C", false, "Context parameter")
-	contextFlagLong := flag.Bool("CONTEXT", false, "Context parameter (long form)")
+	promptFlag := flag.Bool("P", false, "Prompt parameter")
+	promptFlagLong := flag.Bool("PROMPT", false, "Prompt parameter (long form)")
 	imageFlag := flag.Bool("I", false, "Image parameter")
 	imageFlagLong := flag.Bool("IMAGE", false, "Image parameter (long form)")
 	videoFlag := flag.Bool("V", false, "Video parameter")
@@ -49,8 +49,8 @@ func NewConfig() (Config, error) {
 	flag.Parse()
 
 	// Check which flags were set
-	if *contextFlag || *contextFlagLong {
-		config.Context = true
+	if *promptFlag || *promptFlagLong {
+		config.Prompt = true
 	}
 
 	if *imageFlag || *imageFlagLong {
@@ -95,8 +95,8 @@ func getPort(config *Config) error {
 
 // Warn if there are fields that will not be displayed
 func warnMissingFields(config Config) {
-	if !config.Context {
-		client_errors.Log(client_errors.UninitializedContext, client_errors.WarningLevel)
+	if !config.Prompt {
+		client_errors.Log(client_errors.UninitializedPrompt, client_errors.WarningLevel)
 	}
 	if !config.Image {
 		client_errors.Log(client_errors.UninitializedImage, client_errors.WarningLevel)

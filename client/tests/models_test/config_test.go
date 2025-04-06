@@ -51,7 +51,7 @@ func TestNewConfig_WithAllFields(t *testing.T) {
 	defer resetFlags()
 
 	// Set flags
-	os.Args = []string{"test", "-C", "-I", "-V"}
+	os.Args = []string{"test", "-P", "-I", "-V"}
 	flag.Parse()
 
 	config, err := models.NewConfig()
@@ -60,10 +60,10 @@ func TestNewConfig_WithAllFields(t *testing.T) {
 	}
 
 	expected := models.Config{
-		Port:    "8080",
-		Context: true,
-		Image:   true,
-		Video:   true,
+		Port:   "8080",
+		Prompt: true,
+		Image:  true,
+		Video:  true,
 	}
 
 	if config != expected {
@@ -101,10 +101,10 @@ func TestNewConfig_WithOptionalFields(t *testing.T) {
 		expected models.Config
 	}{
 		{
-			"Only CONTEXT",
+			"Only PROMPT",
 			map[string]string{"PORT": "8080"},
-			[]string{"test", "-C"},
-			models.Config{Port: "8080", Context: true},
+			[]string{"test", "-P"},
+			models.Config{Port: "8080", Prompt: true},
 		},
 		{
 			"Only IMAGE",
@@ -119,10 +119,10 @@ func TestNewConfig_WithOptionalFields(t *testing.T) {
 			models.Config{Port: "8080", Video: true},
 		},
 		{
-			"CONTEXT and IMAGE",
+			"PROMPT and IMAGE",
 			map[string]string{"PORT": "8080"},
-			[]string{"test", "-C", "-I"},
-			models.Config{Port: "8080", Context: true, Image: true},
+			[]string{"test", "-P", "-I"},
+			models.Config{Port: "8080", Prompt: true, Image: true},
 		},
 	}
 
@@ -156,10 +156,10 @@ func TestNewConfig_WithLongFormFlags(t *testing.T) {
 		expected models.Config
 	}{
 		{
-			"CONTEXT long form",
+			"PROMPT long form",
 			map[string]string{"PORT": "8080"},
-			[]string{"test", "--CONTEXT"},
-			models.Config{Port: "8080", Context: true},
+			[]string{"test", "--PROMPT"},
+			models.Config{Port: "8080", Prompt: true},
 		},
 		{
 			"IMAGE long form",

@@ -11,8 +11,8 @@ import (
 )
 
 var Url string = ""
-var Context string = ""
 var Image bool = false
+var Prompt string = ""
 var Video bool = false
 
 func Build(a fyne.App) {
@@ -61,9 +61,9 @@ func buildRequiredFields() []fyne.CanvasObject {
 func buildOptionalFields(config models.Config) []fyne.CanvasObject {
 	windowWidgets := make([]fyne.CanvasObject, 0)
 
-	// Check if the Context entry field should be displayed
-	if config.Context {
-		windowWidgets = append(windowWidgets, buildEntryContainerField("Context:"))
+	// Check if the Prompt entry field should be displayed
+	if config.Prompt {
+		windowWidgets = append(windowWidgets, buildEntryContainerField("Prompt:"))
 	}
 
 	// Check if the Image check field should be displayed
