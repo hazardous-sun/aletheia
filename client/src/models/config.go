@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	client_errors "fact-ckert-client/src/errors"
+	"fact-ckert-client/src/errors"
 	"os"
 	"strconv"
 )
