@@ -18,3 +18,6 @@ chmod +x ./client
 
 # Run the client application
 ./client $@
+
+# Remove compiled code
+rm client
