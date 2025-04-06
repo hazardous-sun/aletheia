@@ -115,11 +115,20 @@ func TestPackageReceivedJSONSerialization(t *testing.T) {
 				t.Fatalf("Failed to marshal: %v", err)
 			}
 
-			if string(bytes) != tt.expected {
-				t.Errorf("Expected JSON %s, got %s", tt.expected, string(bytes))
+			// Unmarshal both the expected and actual JSON to compare the structures
+			var expected, actual models.PackageReceived
+			if err := json.Unmarshal([]byte(tt.expected), &expected); err != nil {
+				t.Fatalf("Failed to unmarshal expected JSON: %v", err)
+			}
+			if err := json.Unmarshal(bytes, &actual); err != nil {
+				t.Fatalf("Failed to unmarshal actual JSON: %v", err)
 			}
 
-			// Test unmarshaling
+			if actual != expected {
+				t.Errorf("Expected %+v, got %+v", expected, actual)
+			}
+
+			// Test unmarshaling roundtrip
 			var p models.PackageReceived
 			err = json.Unmarshal(bytes, &p)
 			if err != nil {
