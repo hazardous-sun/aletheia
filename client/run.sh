@@ -10,6 +10,9 @@ printUsage() {
   echo -e "  -h --HELP \t Shows the script usage"
 }
 
+# Set the port used to communicate with the server
+export PORT="8000"
+
 # Build the client application
 go build -v -o client src/cmd/main.go
 
@@ -17,7 +20,7 @@ go build -v -o client src/cmd/main.go
 chmod +x ./client
 
 # Run the client application
-./client $@
+./client "$@"
 
 # Remove compiled code
 rm client
