@@ -58,6 +58,9 @@ func getValue(config *Config, field string) error {
 		// Log the port value being used
 		client_errors.Log(fmt.Sprintf("PORT = '%s'", value), client_errors.InfoLevel)
 
+		// Pass value to the struct
+		config.Port = value
+
 		// Check if the port is a valid integer
 		_, err := strconv.Atoi(config.Port)
 
