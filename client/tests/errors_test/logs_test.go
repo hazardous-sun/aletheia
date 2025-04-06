@@ -19,7 +19,7 @@ func TestLogLevels(t *testing.T) {
 			name:     "Info level",
 			message:  "test info message",
 			level:    client_errors.InfoLevel,
-			expected: "\033[0minfo: test info message \033[0m",
+			expected: "\033[0;36minfo: test info message \033[0m",
 		},
 		{
 			name:     "Warning level",
