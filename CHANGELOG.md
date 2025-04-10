@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file.
 - Initialized git cliff
 - Renamed the module to aletheia-client
 - Renamed the module to aletheia-server
+- Added an Excalidraw file with the models for the project
 
 ### 🧪 Testing
 
