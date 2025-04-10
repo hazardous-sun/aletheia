@@ -34,7 +34,7 @@ whether the post’s content aligns with information from other sources.
 
 ## Contributing
 
-Feel free to contribute to the project, just make sure to run the [dev-setup.sh](dev-setup.sh) script first, to set up
+Feel free to contribute to the project, just make sure to run the [`dev-setup.sh`](dev-setup.sh) script first, to set up
 the correct Git configs for the project. Currently, the setup script activates the project hooks, maintained under the
 [`.githooks`](docs/.githooks) directory, and sets [`.gitmessage`](docs/.gitmessage) as the commit template message.
 Also, be sure to update [`CHANGELOG.md`](CHANGELOG.md). The project is currently using
