@@ -8,7 +8,7 @@ This project implements a "fact-checking" tool (note the quotes) developed in Go
 into the rabbit holes of fake news by providing a way to verify if an online post aligns with information from reputable 
 news sources. The tool works by crawling predefined online news outlets, gathering the latest news on a specific topic, 
 and analyzing the content using AI to compare it with the original post. The flow of this process is outlined in 
-[`diagrams/`](/diagrams).
+[`diagrams/`](/docs/diagrams).
 
 However, as Isabella Blagden’s quote suggests, if everyone in the world were to lie about a topic (or if no one even 
 talked about it), this tool would be unable to fact-check effectively. Thus, it is not an infallible oracle, but rather 
