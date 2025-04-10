@@ -4,7 +4,7 @@ ERROR="\033[31m"
 NC="\033[0m"
 
 # Check if the commit message starts with a valid keyword
-if ! grep -qE "^(feat|fix|doc|perf|refactor|style|test|chore|revert|security)" "$1"; then
-  echo -e "${ERROR}error: Commit message must start with one of: feat, fix, doc, perf, refactor, style, test, chore, revert, security${NC}" >&2
+if ! grep -qE "^(feat|fix|doc|perf|refactor|style|test|chore|revert|security|other)" "$1"; then
+  echo -e "${ERROR}error: Commit message must start with one of: feat, fix, doc, perf, refactor, style, test, chore, revert, security, other${NC}" >&2
   exit 1
 fi

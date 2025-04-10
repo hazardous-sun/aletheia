@@ -6,13 +6,14 @@
 #   - feat:     🚀 New feature
 #   - fix:      🐛 Bug fix
 #   - doc:      📚 Documentation changes
-#   - perf:     ⚡ Performance improvement
+#   - perf:     ⚡  Performance improvement
 #   - refactor: 🚜 Code refactoring
 #   - style:    🎨 Styling changes (formatting, etc.)
 #   - test:     🧪 Test-related changes
 #   - chore:    ⚙️ Miscellaneous tasks (CI, dependencies, etc.)
 #   - revert:   ◀️ Revert a previous commit
-#   - security: 🛡️ Security-related changes (mention in body)
+#   - security: 🛡️  Security-related changes (mention in body)
+#   - other:       Changes not directly related to any of the topics above
 #
 # Example: "feat: add user authentication"
 #
