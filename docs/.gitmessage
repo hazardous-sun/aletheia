@@ -1,0 +1,20 @@
+# Commit Message Template
+# Start your commit message with one of the following keywords for CHANGELOG generation:
+#   - feat:     🚀 New feature
+#   - fix:      🐛 Bug fix
+#   - doc:      📚 Documentation changes
+#   - perf:     ⚡ Performance improvement
+#   - refactor: 🚜 Code refactoring
+#   - style:    🎨 Styling changes (formatting, etc.)
+#   - test:     🧪 Test-related changes
+#   - chore:    ⚙️ Miscellaneous tasks (CI, dependencies, etc.)
+#   - revert:   ◀️ Revert a previous commit
+#   - security: 🛡️ Security-related changes (mention in body)
+#
+# Example: "feat: add user authentication"
+#
+# <type>(<scope>): <subject>
+# <BLANK LINE>
+# <body> (optional)
+# <BLANK LINE>
+# <footer> (optional)
