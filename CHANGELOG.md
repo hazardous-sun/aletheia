@@ -19,6 +19,8 @@ All notable changes to this project will be documented in this file.
 ### 💼 Other
 
 - Updated CHANGELOG.md
+- Updated CHANGELOG.md
+- Fixed a typo in README.md
 
 ### 🚜 Refactor
 
