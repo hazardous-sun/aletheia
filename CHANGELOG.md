@@ -16,6 +16,10 @@ All notable changes to this project will be documented in this file.
 - The value for Config.Port was not being passed before checking if it was a valid integer, making the unit tests always fail
 - Made pre-commit hook executable
 
+### 💼 Other
+
+- Updated CHANGELOG.md
+
 ### 🚜 Refactor
 
 - Refactored the Config struct and added a Port field to it
@@ -40,6 +44,7 @@ All notable changes to this project will be documented in this file.
 - Added a pre-commit hook to guarantee the commit message is using one of the parsers for git-cliff
 - Added a template for the Git commit message
 - Updated README.md 'Contributing' section
+- Added an 'other' section to the commit-msg hook
 
 ### 🧪 Testing
 
