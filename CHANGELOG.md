@@ -9,10 +9,12 @@ All notable changes to this project will be documented in this file.
 - Added more logs to Config
 - Added an API Connector struct that will be used by the client to communicate with the server
 - Now the GUI can communicate with the server
+- Added a 'dev-setup.sh' script
 
 ### 🐛 Bug Fixes
 
 - The value for Config.Port was not being passed before checking if it was a valid integer, making the unit tests always fail
+- Made pre-commit hook executable
 
 ### 🚜 Refactor
 
@@ -25,6 +27,8 @@ All notable changes to this project will be documented in this file.
 - Adjusted the type used for logging the value of the check fields
 - Adjusted the run script
 - Now the client GUI fields are initialized with a mix of environment variables and flags
+- Adjusted the commit template
+- Renamed 'pre-commit' hook to 'commit-msg'
 
 ### 📚 Documentation
 
@@ -33,6 +37,9 @@ All notable changes to this project will be documented in this file.
 - Renamed the module to aletheia-client
 - Renamed the module to aletheia-server
 - Added an Excalidraw file with the models for the project
+- Added a pre-commit hook to guarantee the commit message is using one of the parsers for git-cliff
+- Added a template for the Git commit message
+- Updated README.md 'Contributing' section
 
 ### 🧪 Testing
 
