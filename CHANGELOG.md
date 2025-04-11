@@ -21,6 +21,8 @@ All notable changes to this project will be documented in this file.
 - Updated CHANGELOG.md
 - Updated CHANGELOG.md
 - Fixed a typo in README.md
+- Updated CHANGELOG.md
+- Removed unused diagram
 
 ### 🚜 Refactor
 
@@ -35,6 +37,7 @@ All notable changes to this project will be documented in this file.
 - Now the client GUI fields are initialized with a mix of environment variables and flags
 - Adjusted the commit template
 - Renamed 'pre-commit' hook to 'commit-msg'
+- Replaced the original drawio diagrams by excalidraw diagrams
 
 ### 📚 Documentation
 
