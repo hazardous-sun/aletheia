@@ -1,263 +1,211 @@
-# Fact Check Server
+# Server API
 
-This section of the project is a REST API built using the Gin framework in Go.
+A REST API built using the Gin framework in Go for managing languages and news outlets, with web crawling capabilities
+to collect news data.
 
 ## Table of Contents
 
-- [TODO](#todo)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
     - [Environment Variables](#environment-variables)
     - [Running the Application](#running-the-application)
 - [API Endpoints](#api-endpoints)
-  - [Languages](#languages)
-  - [News Outlets](#news-outlets)
+    - [Languages](#languages)
+    - [News Outlets](#news-outlets)
+    - [Crawlers](#crawlers)
 - [Project Structure](#project-structure)
-- [Podman Compose](#compose)
-- [Database Initialization](#database-initialization)
-
-## TODO
-
-- Apply security measures to Gin to block communication with proxies
-- Develop authentication measures for the API calls
-- Update [crawlers repository](src/repositories/crawler_repository.go#138) to correctly collect the data from the website it
-  visits
+- [Database](#database)
+- [Testing](#testing)
+- [TODO](#todo)
 
 ## Features
 
-- Manage accepted languages
-    - [x] Add languages
-    - [x] List all languages
-    - [x] Retrieve a language by ID
-    - [x] Retrieve a language by name
-- Manage accepted news outlets
-    - [x] Add news outlets
-    - [x] List all news outlets
-    - [x] Retrieve a news outlet by ID
-    - [x] Retrieve a news outlet by name
-- Containerized environment for easy setup
-- PostgreSQL database for data storage
+- **Language Management**:
+    - Add new languages
+    - List all languages
+    - Retrieve language by ID or name
+
+- **News Outlet Management**:
+    - Add news outlets with associated language
+    - List all news outlets
+    - Retrieve outlet by ID or name
+    - Store credibility scores
+
+- **Web Crawling**:
+    - Crawl news outlets using configured query URLs and HTML selectors
+    - Store crawled page bodies for analysis
+
+- **Containerized Environment**:
+    - Docker/Podman setup for easy deployment
+    - PostgreSQL database integration
 
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
-- [Podman](https://podman.io/)
-- [Podman Compose](https://github.com/containers/podman-compose/)
-- [Go](https://golang.org/doc/install) (optional, for local development)
+- [Podman](https://podman.io/) or Docker
+- [Podman Compose](https://github.com/containers/podman-compose/) or Docker Compose
+- [Go](https://golang.org/doc/install) (for local development)
 
 ## Getting Started
 
 ### Environment Variables
 
-The application requires the following environment variables to be set:
+The application requires these environment variables:
 
-- `DB_HOST`: The hostname of the PostgreSQL database (default: `news-db`).
-- `DB_PORT`: The port of the PostgreSQL database (default: `5432`).
-- `DB_USER`: The username for the PostgreSQL database (default: `postgres`).
-- `DB_PASSWORD`: The password for the PostgreSQL database (default: `1234`).
-- `DB_NAME`: The name of the PostgreSQL database (default: `postgres`).
-
-These variables are set in the [`run.sh`](run.sh) script.
+| Variable    | Description              | Default Value |
+|-------------|--------------------------|---------------|
+| DB_HOST     | PostgreSQL database host | `news-db`     |
+| DB_PORT     | PostgreSQL database port | `5432`        |
+| DB_USER     | PostgreSQL username      | `postgres`    |
+| DB_PASSWORD | PostgreSQL password      | `1234`        |
+| DB_NAME     | PostgreSQL database name | `postgres`    |
+| SERVER_PORT | Port for the API server  | `8000`        |
 
 ### Running the Application
 
-```bash
-# Make the run.sh script executable:
-chmod +x run.sh
+1. Make the run script executable:
+   bash
+   chmod +x run.sh
 
-# Initialize the API server
-./run.sh
-```
+2. Start the application:
+   bash
+   ./run.sh
 
-#### The [run.sh](run.sh) script will:
+The script will:
 
-1. Set the necessary environment variables.
-2. Clean up any previously created containers.
-3. Start the Podman containers using podman-compose.
+1. Set environment variables
+2. Clean up previous containers
+3. Build and start the containers
+4. The API will be available at http://localhost:8000
 
-Finally, the Go application will be available at http://localhost:8000
+#### Script Options:
 
-#### run.sh parameters
-
-- `-d`: deletes the `pgdata/` volume used to store the languages and news outlets
-- `-r`: deletes the images from the project before initializing the pod
-- `--DB_HOST`: overwrites the DB_HOST environment variable
-    - Example: `--DB_HOST=localhost`
-- `--DB_PORT`: overwrites the DB_PORT environment variable
-- `--DB_USER`: overwrites the DB_USER environment variable
-- `--DB_PASSWORD`: overwrites the DB_PASSWORD environment variable
-- `--DB_NAME`: overwrites the DB_NAME environment variable
+- `-C` or `--CLEAR`: Deletes the `pgdata/` volume
+- `-R` or `--RESET`: Deletes project images before initialization
+- `--DB_*`: Override specific database connection parameters
+- `--SERVER_PORT`: Override the server port
 
 ## API Endpoints
 
 ### Languages
 
-- Create a new language
-    - `POST /language`
-    - Request Body Example:
-      ```json
-      {
-        "name": "english"
-      }
-      ```
-    - Response Example:
-      ```json
-      {
-        "id": 4,
-        "name": "german"
-      }
-      ```
-- List all languages
-    - `GET /languages`
-    - Response Example:
-      ```json
-      [
-        {
-          "id": 1,
-          "name": "spanish"
-        },
-        {
-          "id": 2,
-          "name": "portuguese"
-        },
-        {
-          "id": 3,
-          "name": "english"
-        },
-        {
-          "id": 4,
-          "name": "german"
-        }
-      ]
-      ```
-- Retrieve a language by ID:
-    - `GET /languageId/:languageId`
-    - Response Example:
-      ```json
-      {
-        "id": 3,
-        "name": "english"
-      }
-      ```
-- Retrieve a language by name:
-    - `GET /languageName/:languageName`
-    - Response Example:
-      ```json
-      {
-        "id": 4,
-        "name": "german"
-      }
-      ```
+- **Create Language**:
+
+  POST /language
+
+  Request Body:
+  json
+  {
+  "name": "english"
+  }
+
+- **List Languages**:
+
+  GET /languages
+
+- **Get Language by ID**:
+
+  GET /languageId/:languageId
+
+- **Get Language by Name**:
+
+  GET /languageName/:languageName
 
 ### News Outlets
 
-- Create a new news outlet
-    - `POST /newsOutlet`
-    - The `QueryUrl` field should contain `KEYWORDS_HERE` at the position used to store the search query
-    - Request Body Example:
-      ```json
-      {
-        "Name": "G1",
-        "QueryUrl": "https://g1.globo.com/busca/?q=KEYWORDS_HERE",
-        "HtmlSelector": ".widget--info__text-container a",
-        "language": "portuguese",
-        "credibility": 50
-      }
-      ```
-    - Response Example:
-      ```json
-      {
-        "id": 1,
-        "name": "example",
-        "queryurl": "example.com",
-        "htmlselector": "example example",
-        "language": "english",
-        "credibility": 10
-      }
-      ```
-- List all news outlets
-    - `GET /newsOutlets`
-    - Response Example:
-      ```json
-      [
-        {
-          "id": 1,
-          "name": "example",
-          "queryurl": "example.com",
-          "htmlselector": "example example",
-          "language": "english",
-          "credibility": 10
-        }
-      ]
-      ```
-- Retrieve a news outlet by name:
-    - `GET /newsOutletName/:newsOutletName`
-    - Response Example:
-      ```json
-      {
-        "id": 1,
-        "name": "example",
-        "queryurl": "example.com",
-        "htmlselector": "example example",
-        "language": "english",
-        "credibility": 10
-      }
-      ```
-- Retrieve a news outlet by id:
-    - `GET /newsOutletId/:newsOutletId`
-    - Response Example:
-      ```json
-      {
-        "id": 1,
-        "name": "example",
-        "queryurl": "example.com",
-        "htmlselector": "example example",
-        "language": "english",
-        "credibility": 10
-      }
-      ```
+- **Create News Outlet**:
+
+  POST /newsOutlet
+
+  Request Body:
+  json
+  {
+  "Name": "Example News",
+  "QueryUrl": "https://example.com/search?q=KEYWORDS_HERE",
+  "HtmlSelector": ".article a",
+  "language": "english",
+  "credibility": 80
+  }
+
+- **List News Outlets**:
+
+  GET /newsOutlets
+
+- **Get Outlet by ID**:
+
+  GET /newsOutletId/:newsOutletId
+
+- **Get Outlet by Name**:
+
+  GET /newsOutletName/:newsOutletName
+
+### Crawlers
+
+- **Start Crawling**:
+
+  POST /crawl
+
+  Request Body:
+  json
+  {
+  "pagesToVisit": 5,
+  "query": "latest news"
+  }
 
 ## Project Structure
 
-The project is structured into four layers:
+The project follows a layered architecture:
 
-1. Controller: Handles HTTP requests and responses.
-2. Use Case: Contains the business logic.
-3. Repository: Manages data access and interaction with the database.
-4. Model: Defines the data models and database schema.
+src/
+├── cmd/ # Main application entry point
+├── controllers/ # HTTP request handlers
+├── db/ # Database connection and configuration
+├── deployments/ # Container deployment files
+├── errors/ # Custom error definitions
+├── models/ # Data structures
+├── repositories/ # Database interaction layer
+└── usecases/ # Business logic
 
-## Compose
+## Database
 
-The `docker-compose.yml` file defines two services:
+The PostgreSQL database is initialized with these tables:
 
-- **fact-check-server**: The Go application server.
-- **news-db**: The PostgreSQL database.
-
-The `fact-check-server` service depends on the `news-db` service, ensuring that the database is up and running before the
-application starts.
-
-## Database Initialization
-
-```sql
-CREATE TABLE languages
-(
-    Id   SERIAL PRIMARY KEY,
-    Name VARCHAR(255) UNIQUE NOT NULL
+sql
+CREATE TABLE languages (
+Id SERIAL PRIMARY KEY,
+Name VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE news_outlet
-(
-    Id           SERIAL PRIMARY KEY,
-    Name         VARCHAR(255) UNIQUE NOT NULL,
-    QueryUrl     TEXT                NOT NULL,
-    HtmlSelector TEXT                NOT NULL,
-    LanguageId   INT                 NOT NULL,
-    Credibility  INT                 NOT NULL
+CREATE TABLE news_outlet (
+Id SERIAL PRIMARY KEY,
+Name VARCHAR(255) UNIQUE NOT NULL,
+QueryUrl TEXT NOT NULL,
+HtmlSelector TEXT NOT NULL,
+LanguageId INT NOT NULL,
+Credibility INT NOT NULL,
+FOREIGN KEY (LanguageId) REFERENCES languages (Id)
+ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-ALTER TABLE news_outlet
-    ADD CONSTRAINT fk_language
-        FOREIGN KEY (LanguageId) REFERENCES languages (Id) ON UPDATE CASCADE ON DELETE CASCADE;
-```
+## Testing
+
+The project includes comprehensive tests for:
+
+- Error handling
+- Data models
+- API responses
+
+Run tests with:
+bash
+go test ./...
+
+## TODO
+
+- Implement security measures for Gin to block proxy communication
+- Develop authentication for API endpoints
+- Improve crawler repository to correctly collect website data
+- Add more comprehensive error handling
+- Implement rate limiting
+- Add API documentation (Swagger/OpenAPI)
