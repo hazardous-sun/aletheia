@@ -158,6 +158,7 @@ The script will:
 
 The project follows a layered architecture:
 
+```
 src/
 ├── cmd/ # Main application entry point
 ├── controllers/ # HTTP request handlers
@@ -167,6 +168,7 @@ src/
 ├── models/ # Data structures
 ├── repositories/ # Database interaction layer
 └── usecases/ # Business logic
+```
 
 ## Database
 
