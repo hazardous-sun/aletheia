@@ -174,7 +174,7 @@ src/
 
 The PostgreSQL database is initialized with these tables:
 
-sql
+```sql
 CREATE TABLE languages (
 Id SERIAL PRIMARY KEY,
 Name VARCHAR(255) UNIQUE NOT NULL
@@ -190,6 +190,7 @@ Credibility INT NOT NULL,
 FOREIGN KEY (LanguageId) REFERENCES languages (Id)
 ON UPDATE CASCADE ON DELETE CASCADE
 );
+```
 
 ## Testing
 
@@ -200,8 +201,9 @@ The project includes comprehensive tests for:
 - API responses
 
 Run tests with:
-bash
+```bash
 go test ./...
+```
 
 ## TODO
 
