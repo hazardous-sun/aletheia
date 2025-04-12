@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 - Fixed a typo in README.md
 - Updated CHANGELOG.md
 - Removed unused diagram
+- Updated CHANGELOG.md
 
 ### 🚜 Refactor
 
