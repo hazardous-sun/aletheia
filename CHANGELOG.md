@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 - Updated CHANGELOG.md
 - Removed unused diagram
 - Updated CHANGELOG.md
+- Updated CHANGELOG.md
 
 ### 🚜 Refactor
 
