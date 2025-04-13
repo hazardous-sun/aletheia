@@ -7,30 +7,29 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: [ '1.19', '1.20', '1.21.x' ]
-        module: [ 'server-api', 'client' ]  # Add all your module directories here
+        module: [ 'server-api', 'client' ]
 
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Go ${{ matrix.go-version }}
+
+      - name: Setup Go 1.23
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
-      
+          go-version: '1.23.x'
+
       - name: Display Go version
         run: go version
-      
+
       - name: Install dependencies for ${{ matrix.module }}
         working-directory: ./${{ matrix.module }}
         run: |
           go mod download
           go mod verify
-      
+
       - name: Build ${{ matrix.module }}
         working-directory: ./${{ matrix.module }}
         run: go build -v ./...
-      
+
       - name: Test ${{ matrix.module }}
         working-directory: ./${{ matrix.module }}
         run: go test -v ./...
