@@ -13,7 +13,7 @@ type QueryParser struct {
 	QueryUrl       string
 }
 
-func (qp *QueryParser) generateNewsSearchURL() string {
+func (qp *QueryParser) Parse() string {
 	qp.NewsOutletName = strings.TrimSpace(qp.NewsOutletName)
 	if qp.NewsOutletName == "" {
 		server_errors.Log(server_errors.EmptyNewsOutletName, server_errors.ErrorLevel)
