@@ -13,3 +13,13 @@ const (
 	CrawlerFilledPagesBodies = "crawler filled pages bodies needs to be empty"
 	CrawlerClosingPageError  = "crawler did not close the page properly"
 )
+
+const (
+	NoCrawlersInitialized = "no crawlers were initialized"
+)
+
+const (
+	JSONSerializationFailed = "unable to serialize JSON:"
+	FileOpenError           = "unable to open file:"
+	FileWriteError          = "unable to write file:"
+)

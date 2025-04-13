@@ -6,7 +6,6 @@ import (
 	"aletheia-server/src/repositories"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"time"
 )
@@ -23,11 +22,21 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 
 	// Generate the crawlers for each news outlet returned from the database
 	for i, newsOutlet := range newsOutlets {
+		queryParser := models.QueryParser{
+			NewsOutletName: newsOutlet.Name,
+			QueryParam:     query,
+			QueryUrl:       newsOutlet.QueryUrl,
+		}
+		finalQuery := queryParser.Parse()
+
+		if finalQuery == "" {
+			continue
+		}
+
 		newCrawler := models.Crawler{
 			Id:           i + 1,
 			PagesToVisit: pagesToVisit,
-			Query:        query,
-			QueryUrl:     newsOutlet.QueryUrl,
+			Query:        finalQuery,
 			HtmlSelector: newsOutlet.HtmlSelector,
 			Status:       server_errors.CrawlerReady,
 			PagesBodies:  make([]string, 0),
@@ -35,7 +44,20 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 		crawlersRepositories = append(crawlersRepositories, repositories.NewCrawlerRepository(newCrawler))
 	}
 
-	// Initialize the crawlers
+	// Check if at least one crawler was generated
+	if len(crawlersRepositories) == 0 {
+		server_errors.Log(server_errors.NoCrawlersInitialized, server_errors.ErrorLevel)
+		return
+	}
+
+	initializeCrawlers(crawlersRepositories)
+	haltedCrawlers := collectCrawlersResults(crawlersRepositories)
+
+	// Saving the results
+	saveResults(haltedCrawlers)
+}
+
+func initializeCrawlers(crawlersRepositories []repositories.CrawlerRepository) {
 	for _, crawlerRepository := range crawlersRepositories {
 		server_errors.Log(
 			fmt.Sprintf("initializing crawler %d", crawlerRepository.Crawler.Id),
@@ -43,7 +65,9 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 		)
 		go crawlerRepository.Crawl()
 	}
+}
 
+func collectCrawlersResults(crawlersRepositories []repositories.CrawlerRepository) []models.Crawler {
 	// Check for status until all the crawlers finish
 	var haltedCrawlers []models.Crawler
 	for {
@@ -58,29 +82,33 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 		}
 		time.Sleep(2 * time.Second)
 	}
+	return haltedCrawlers
+}
 
-	// Saving the results
-
+func saveResults(crawlers []models.Crawler) {
 	// Serialize the slice to JSON
-	jsonData, err := json.MarshalIndent(haltedCrawlers, "", "  ")
+	jsonData, err := json.MarshalIndent(crawlers, "", "  ")
 	if err != nil {
-		log.Fatalf("Error serializing to JSON: %v", err)
+		server_errors.Log(fmt.Sprintf("%s %s", server_errors.JSONSerializationFailed, err.Error()), server_errors.ErrorLevel)
+		return
 	}
 
 	// Open the file in append mode, create it if it doesn't exist, and set write permissions
 	file, err := os.OpenFile("results", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatalf("Error opening file: %v", err)
+		server_errors.Log(fmt.Sprintf("%s %s", server_errors.FileOpenError, err.Error()), server_errors.ErrorLevel)
+		return
 	}
 	defer file.Close()
 
 	// Write the JSON data to the file
 	if _, err := file.Write(jsonData); err != nil {
-		log.Fatalf("Error writing to file: %v", err)
+		server_errors.Log(fmt.Sprintf("%s %s", server_errors.FileWriteError, err.Error()), server_errors.ErrorLevel)
+		return
 	}
 
 	// Add a newline after appending data for better readability
 	if _, err := file.WriteString("\n"); err != nil {
-		log.Fatalf("Error writing newline to file: %v", err)
+		server_errors.Log(fmt.Sprintf("%s %s", server_errors.FileWriteError, err.Error()), server_errors.ErrorLevel)
 	}
 }
