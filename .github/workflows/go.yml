@@ -1,8 +1,4 @@
-name: Go
-
-description: |
-  Builds and tests Go modules (server-api and client) using Go 1.23.
-  Installs required system dependencies (X11/OpenGL) for GUI components.
+name: "🚀 Go 1.23 CI | Builds server-api/client + GUI deps"
 
 on: [push]
 
