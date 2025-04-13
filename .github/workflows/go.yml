@@ -1,5 +1,9 @@
 name: Go
 
+description: |
+  Builds and tests Go modules (server-api and client) using Go 1.23.
+  Installs required system dependencies (X11/OpenGL) for GUI components.
+
 on: [push]
 
 jobs:
