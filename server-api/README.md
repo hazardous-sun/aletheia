@@ -9,6 +9,9 @@ A REST API built using the Gin framework in Go for managing languages and news o
 - [Getting Started](#getting-started)
   - [Environment Variables](#environment-variables)
   - [Running the Application](#running-the-application)
+  - [Debugging the Application](#debugging-the-application)
+    - [For JetBrains Users](#for-jetbrains-users)
+    - [For VS Code Users](#for-vs-code-users)
 - [API Endpoints](#api-endpoints)
   - [Languages](#languages)
   - [News Outlets](#news-outlets)
@@ -85,6 +88,18 @@ The script will:
 - `-R` or `--RESET`: Deletes project images before initialization
 - `--DB_*`: Override specific database connection parameters
 - `--SERVER_PORT`: Override the server port
+
+### Debugging the Application
+
+#### For JetBrains Users
+1. The debug configuration is already included in `.idea/runConfigurations/`
+2. Just run the "Remote Debug" configuration after starting the containers
+
+#### For VS Code Users
+1. Install recommended extensions
+2. Two debug configurations are available:
+- **Attach to Podman Container**: Attaches to a running container
+- **Launch in Podman Container**: Builds and starts containers before debugging
 
 ## API Endpoints
 
