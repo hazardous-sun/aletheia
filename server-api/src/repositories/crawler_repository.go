@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
-	"regexp"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -23,62 +21,13 @@ func NewCrawlerRepository(crawler models.Crawler) CrawlerRepository {
 	}
 }
 
-/*
-1. Analyze QueryUrl
-	1. Replace KEYWORDS_HERE1 by query value
-2. Analyze HtmlSelector
-	1. Replace N_FIRST_... with the number of the first iteration
-		- Example: N_FIRST_2 should be converted to 2, N_FIRST_13 should be converted to 13...
-3. Crawl QueryUrl
-	1. While len(resultsFound) < PagesToVisit, iterate over the resulting page searching for links
-*/
-
 func (cr *CrawlerRepository) Crawl() {
 	cr.Crawler.Status = server_errors.CrawlerRunning
 
-	// crawler.QueryUrl should not be empty
-	if cr.Crawler.QueryUrl == "" {
-		server_errors.Log(
-			fmt.Sprintf("crawler %d failed because it was initialized without an URL to query", cr.Crawler.Id),
-			server_errors.WarningLevel,
-		)
-		cr.Crawler.Status = server_errors.CrawlerEmptyQueryUrl
+	if badCrawler(&cr.Crawler) {
 		return
 	}
 
-	// crawler.Query should not be empty
-	if cr.Crawler.Query == "" {
-		server_errors.Log(
-			fmt.Sprintf("crawler %d failed because query was empty", cr.Crawler.Id),
-			server_errors.WarningLevel,
-		)
-		cr.Crawler.Status = server_errors.CrawlerEmptyQuery
-		return
-	}
-
-	// crawler.HtmlSelector should not be empty
-	if cr.Crawler.HtmlSelector == "" {
-		server_errors.Log(
-			fmt.Sprintf("crawler %d failed because HTML selector was empty", cr.Crawler.Id),
-			server_errors.WarningLevel,
-		)
-		cr.Crawler.Status = server_errors.CrawlerEmptyHtmlSelector
-		return
-	}
-
-	// crawler.PagesBodies should be empty
-	if len(cr.Crawler.PagesBodies) > 0 {
-		server_errors.Log(
-			fmt.Sprintf("crawler %d failed because its page bodies was initialized with values already maintained", cr.Crawler.Id),
-			server_errors.WarningLevel,
-		)
-		cr.Crawler.Status = server_errors.CrawlerFilledPagesBodies
-		return
-	}
-
-	searchURL := strings.ReplaceAll(cr.Crawler.QueryUrl, "KEYWORDS_HERE", cr.Crawler.Query)
-	searchURL = url.QueryEscape(searchURL)
-	searchURL = strings.ReplaceAll(searchURL, "+", "%20")
 	c := colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"),
 	)
@@ -100,19 +49,19 @@ func (cr *CrawlerRepository) Crawl() {
 
 	c.OnRequest(func(r *colly.Request) {
 		server_errors.Log(
-			fmt.Sprintf("crawler %d visiting: %s", cr.Crawler.Id, searchURL),
+			fmt.Sprintf("crawler %d visiting: %s", cr.Crawler.Id, cr.Crawler.Query),
 			server_errors.InfoLevel)
 	})
 
 	c.OnError(func(_ *colly.Response, err error) {
 		server_errors.Log(
-			fmt.Sprintf("crawler %d failed: %s", cr.Crawler.Id, searchURL),
+			fmt.Sprintf("crawler %d failed: %s", cr.Crawler.Id, cr.Crawler.Query),
 			server_errors.ErrorLevel)
 	})
 
-	if err := c.Visit(searchURL); err != nil {
+	if err := c.Visit(cr.Crawler.Query); err != nil {
 		server_errors.Log(
-			fmt.Sprintf("crawler %d visit error: %s", cr.Crawler.Id, searchURL),
+			fmt.Sprintf("crawler %d visit error: %s", cr.Crawler.Id, cr.Crawler.Query),
 			server_errors.ErrorLevel)
 	}
 
@@ -121,6 +70,39 @@ func (cr *CrawlerRepository) Crawl() {
 		collectCandidateBody(cr, link)
 	}
 	cr.Crawler.Status = server_errors.CrawlerSucceeded
+}
+
+func badCrawler(crawler *models.Crawler) bool {
+	if crawler.Query == "" {
+		server_errors.Log(
+			fmt.Sprintf("crawler %d failed because it was initialized without a query", crawler.Id),
+			server_errors.ErrorLevel,
+		)
+		crawler.Status = server_errors.CrawlerEmptyQueryUrl
+		return true
+	}
+
+	// crawler.HtmlSelector should not be empty
+	if crawler.HtmlSelector == "" {
+		server_errors.Log(
+			fmt.Sprintf("crawler %d failed because HTML selector was empty", crawler.Id),
+			server_errors.ErrorLevel,
+		)
+		crawler.Status = server_errors.CrawlerEmptyHtmlSelector
+		return true
+	}
+
+	// crawler.PagesBodies should be empty
+	if len(crawler.PagesBodies) > 0 {
+		server_errors.Log(
+			fmt.Sprintf("crawler %d failed because its page bodies was initialized with values already maintained", crawler.Id),
+			server_errors.ErrorLevel,
+		)
+		crawler.Status = server_errors.CrawlerFilledPagesBodies
+		return true
+	}
+
+	return false
 }
 
 func collectCandidateBody(cr *CrawlerRepository, link string) {
@@ -161,10 +143,4 @@ func collectCandidateBody(cr *CrawlerRepository, link string) {
 		fmt.Sprintf("added %s to crawler %d pagebodies", link, cr.Crawler.Id),
 		server_errors.InfoLevel,
 	)
-}
-
-// Replaces `N_FIRST_(\d+)` with the current iteration
-func configHtmlSelector(input string) string {
-	re := regexp.MustCompile(`N_FIRST_(\d+)`)
-	return re.ReplaceAllString(input, "$1")
 }
