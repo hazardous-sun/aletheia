@@ -9,6 +9,7 @@ services:
       dockerfile: src/deployments/fact-check-server/Dockerfile
     ports:
       - "${SERVER_PORT}:8000"
+      - "40000:40000"  # Delve remote debugging
     depends_on:
       - news-db
     environment:
