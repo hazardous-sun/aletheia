@@ -12,7 +12,6 @@ func TestCrawler_EmptyStruct(t *testing.T) {
 		"Id":           float64(0),
 		"PagesToVisit": float64(0),
 		"Query":        "",
-		"QueryUrl":     "",
 		"HtmlSelector": "",
 		"Status":       "",
 		"PagesBodies":  nil, // Empty slice becomes nil in JSON
@@ -26,7 +25,6 @@ func TestCrawler_CompleteStruct(t *testing.T) {
 		Id:           1,
 		PagesToVisit: 10,
 		Query:        "test query",
-		QueryUrl:     "https://example.com/search",
 		HtmlSelector: "div.result",
 		Status:       "active",
 		PagesBodies:  []string{"<html>page1</html>", "<html>page2</html>"},
@@ -35,7 +33,6 @@ func TestCrawler_CompleteStruct(t *testing.T) {
 		"Id":           float64(1),
 		"PagesToVisit": float64(10),
 		"Query":        "test query",
-		"QueryUrl":     "https://example.com/search",
 		"HtmlSelector": "div.result",
 		"Status":       "active",
 		"PagesBodies":  []interface{}{"<html>page1</html>", "<html>page2</html>"},
@@ -55,7 +52,6 @@ func TestCrawler_PartialFields(t *testing.T) {
 		"Id":           float64(42),
 		"PagesToVisit": float64(0),
 		"Query":        "partial test",
-		"QueryUrl":     "",
 		"HtmlSelector": "",
 		"Status":       "pending",
 		"PagesBodies":  []interface{}{"<html>test</html>"},
@@ -83,7 +79,7 @@ func TestCrawler_JSONFieldNames(t *testing.T) {
 	}
 
 	// Verify the exact JSON field names are correct (note capitalization)
-	expectedFields := []string{"Id", "PagesToVisit", "Query", "QueryUrl", "HtmlSelector", "Status", "PagesBodies"}
+	expectedFields := []string{"Id", "PagesToVisit", "Query", "HtmlSelector", "Status", "PagesBodies"}
 	for _, field := range expectedFields {
 		if _, ok := unmarshaled[field]; !ok {
 			t.Errorf("Expected JSON field '%s' not found", field)
