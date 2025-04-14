@@ -54,3 +54,16 @@ Currently, the project has 2 Git Hooks:
   keywords used by git-cliff to generate the `CHANGELOG.md` file.
 - [`pre-push`](docs/.githooks/pre-push): this hook runs the project's unit tests before pushing the local changes to the
   remote repository.
+
+### Debugging Setup
+
+#### For JetBrains Users
+1. The debug configuration is already included in `.idea/runConfigurations/`
+2. Just run the "Remote Debug" configuration after starting the containers
+
+#### For VS Code Users
+1. Install recommended extensions
+2. Two debug configurations are available:
+  - **Attach to Podman Container**: Attaches to a running container
+  - **Launch in Podman Container**: Builds and starts containers before debugging
+```
