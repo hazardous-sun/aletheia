@@ -20,7 +20,7 @@ func (qp *QueryParser) Parse() string {
 		return ""
 	}
 
-	server_errors.Log(fmt.Sprintf("Generating query to %s", qp.NewsOutletName), server_errors.InfoLevel)
+	server_errors.Log(fmt.Sprintf("Generating query to '%s' crawler", qp.NewsOutletName), server_errors.InfoLevel)
 
 	qp.QueryParam = strings.TrimSpace(qp.QueryParam)
 	if qp.QueryParam == "" {

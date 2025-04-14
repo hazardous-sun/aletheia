@@ -22,4 +22,5 @@ const (
 	JSONSerializationFailed = "unable to serialize JSON:"
 	FileOpenError           = "unable to open file:"
 	FileWriteError          = "unable to write file:"
+	HttpFetchError          = "unable to fetch URL:"
 )

@@ -112,7 +112,7 @@ func collectCandidateBody(cr *CrawlerRepository, link string) {
 
 	resp, err := http.Get(link)
 	if err != nil {
-		fmt.Printf("Error fetching %s: %v\n", link, err)
+		server_errors.Log(fmt.Sprintf("%s %s ->", server_errors.HttpFetchError, link), server_errors.ErrorLevel)
 		return
 	}
 	defer func(Body io.ReadCloser) {

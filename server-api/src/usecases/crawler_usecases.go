@@ -29,6 +29,8 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 		}
 		finalQuery := queryParser.Parse()
 
+		server_errors.Log(fmt.Sprintf("Parsed query '%s' into '%s'", query, finalQuery), server_errors.InfoLevel)
+
 		if finalQuery == "" {
 			continue
 		}
@@ -60,10 +62,11 @@ func (cu *CrawlerUsecase) Crawl(newsOutlets []models.NewsOutlet, pagesToVisit in
 func initializeCrawlers(crawlersRepositories []repositories.CrawlerRepository) {
 	for _, crawlerRepository := range crawlersRepositories {
 		server_errors.Log(
-			fmt.Sprintf("initializing crawler %d", crawlerRepository.Crawler.Id),
+			fmt.Sprintf("Initializing crawler %d", crawlerRepository.Crawler.Id),
 			server_errors.InfoLevel,
 		)
 		go crawlerRepository.Crawl()
+		fmt.Println(crawlerRepository)
 	}
 }
 
@@ -71,6 +74,7 @@ func collectCrawlersResults(crawlersRepositories []repositories.CrawlerRepositor
 	// Check for status until all the crawlers finish
 	var haltedCrawlers []models.Crawler
 	for {
+		server_errors.Log("Checking crawlers that already halted", server_errors.InfoLevel)
 		for i, crawlerRepository := range crawlersRepositories {
 			if crawlerRepository.Crawler.Status != server_errors.CrawlerRunning {
 				haltedCrawlers = append(haltedCrawlers, crawlerRepository.Crawler)
@@ -78,8 +82,10 @@ func collectCrawlersResults(crawlersRepositories []repositories.CrawlerRepositor
 			}
 		}
 		if len(crawlersRepositories) == 0 {
+			server_errors.Log(fmt.Sprintf("All crawlers halted: %v", haltedCrawlers), server_errors.InfoLevel)
 			break
 		}
+		server_errors.Log(fmt.Sprintf("The following crawlers still did not halt: %v", crawlersRepositories), server_errors.WarningLevel)
 		time.Sleep(2 * time.Second)
 	}
 	return haltedCrawlers
