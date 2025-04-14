@@ -59,25 +59,25 @@ func TestLogFunction(t *testing.T) {
 			name:     "InfoLog",
 			message:  "test info message",
 			level:    server_errors.InfoLevel,
-			expected: "info: test info message",
+			expected: "\033[96minfo: test info message \033[0m",
 		},
 		{
 			name:     "WarningLog",
 			message:  "test warning message",
 			level:    server_errors.WarningLevel,
-			expected: "warning: test warning message",
+			expected: "\033[93mwarning: test warning message \033[0m",
 		},
 		{
 			name:     "ErrorLog",
 			message:  "test error message",
 			level:    server_errors.ErrorLevel,
-			expected: "error: test error message",
+			expected: "\033[91merror: test error message \033[0m",
 		},
 		{
 			name:     "UnknownLevel",
 			message:  "test unknown message",
 			level:    "unknown",
-			expected: "",
+			expected: "\033[96minfo: test unknown message \033[0m",
 		},
 	}
 
@@ -85,13 +85,6 @@ func TestLogFunction(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			buf.Reset() // Clear buffer before each test
 			server_errors.Log(tt.message, tt.level)
-
-			if tt.level == "unknown" {
-				if buf.Len() != 0 {
-					t.Error("Expected no output for unknown log level")
-				}
-				return
-			}
 
 			output := buf.String()
 			if !strings.Contains(output, tt.expected) {
