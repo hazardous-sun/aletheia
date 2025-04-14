@@ -66,4 +66,3 @@ Currently, the project has 2 Git Hooks:
 2. Two debug configurations are available:
   - **Attach to Podman Container**: Attaches to a running container
   - **Launch in Podman Container**: Builds and starts containers before debugging
-```
