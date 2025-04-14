@@ -126,7 +126,7 @@ The script will:
   ```json
   {
     "Name": "Example News",
-    "QueryUrl": "https://example.com/search?q=KEYWORDS_HERE",
+    "QueryUrl": "https://example.com/search?q=QUERY_HERE",
     "HtmlSelector": ".article a",
     "language": "english",
     "credibility": 80
@@ -168,7 +168,7 @@ The project follows a layered architecture:
 
 ```
 src/
-├── cmd/               # Main application entry point
+├── cmd/               # Entry point
 ├── controllers/       # HTTP request handlers
 ├── db/                # Database connection and configuration
 ├── deployments/       # Container deployment files
@@ -214,10 +214,12 @@ go test ./...
 ```
 
 ## TODO
-
-- Implement security measures for Gin to block proxy communication
-- Develop authentication for API endpoints
-- Improve crawler repository to correctly collect website data
-- Add more comprehensive error handling
-- Implement rate limiting
-- Add API documentation (Swagger/OpenAPI)
+- High priority:
+  - Improve crawler repository to correctly collect website data
+- Medium priority:
+  - Add API documentation (Swagger/OpenAPI)
+  - Refactor the code to add more comprehensive error handling
+- Low priority:
+  - Implement security measures for Gin to block proxy communication
+  - Develop authentication for API endpoints
+  - Implement rate limiting
