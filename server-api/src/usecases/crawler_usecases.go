@@ -65,7 +65,7 @@ func initializeCrawlers(crawlersRepositories []repositories.CrawlerRepository) {
 			fmt.Sprintf("Initializing crawler %d", crawlerRepository.Crawler.Id),
 			server_errors.InfoLevel,
 		)
-		go crawlerRepository.Crawl()
+		crawlerRepository.Crawl()
 		fmt.Println(crawlerRepository)
 	}
 }

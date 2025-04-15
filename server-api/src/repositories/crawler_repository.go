@@ -63,6 +63,8 @@ func (cr *CrawlerRepository) Crawl() {
 		server_errors.Log(
 			fmt.Sprintf("crawler %d visit error: %s", cr.Crawler.Id, cr.Crawler.Query),
 			server_errors.ErrorLevel)
+		cr.Crawler.Status = err.Error()
+		return
 	}
 
 	// Fetch and save the body content of each link
@@ -134,7 +136,6 @@ func collectCandidateBody(cr *CrawlerRepository, link string) {
 		return
 	}
 
-	// TODO the bodies are not being correctly stored here, the sites are not being visited
 	// Store the body
 	candidateBody := string(body)
 	cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, candidateBody)
