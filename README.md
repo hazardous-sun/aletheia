@@ -1,5 +1,7 @@
 # Aletheia
 
+[![🚀 Build with Dependencies](https://github.com/hazardous-sun/aletheia/actions/workflows/go.yml/badge.svg)](https://github.com/hazardous-sun/aletheia/actions/workflows/go.yml)
+
 > "If a lie is only printed often enough, it becomes a quasi-truth, and if such a truth is repeated often enough, it
 > becomes an article of belief, a dogma, and men will die for it."
 > - Isabella Jane Blagden
