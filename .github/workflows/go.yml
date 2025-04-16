@@ -1,4 +1,4 @@
-name: "🚀 Go 1.23 CI | Builds server-api/client + GUI deps"
+name: "🚀 Build with Dependencies"
 
 on: [push]
 
