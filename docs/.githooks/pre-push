@@ -9,54 +9,103 @@ NC='\033[0m'
 # Get the absolute path of the git root directory
 GIT_ROOT=$(git rev-parse --show-toplevel)
 
-echo -e "${CYAN}Running tests before push...${NC}"
+# Function to validate tests are passing
+validate_tests_passing() {
+    echo -e "${CYAN}Running tests before push...${NC}"
 
-# Function to run tests in a directory
-run_go_tests() {
-    local dir="$GIT_ROOT/$1"
-    echo -e "${CYAN}Running tests in ${YELLOW}$dir${CYAN}...${NC}"
-    
-    if [ ! -d "$dir" ]; then
-        echo -e "${RED}error: Directory ${YELLOW}$dir${RED} does not exist${NC}"
-        return 1
+    # Function to run tests in a directory
+    run_go_tests() {
+        local dir="$GIT_ROOT/$1"
+        echo -e "${CYAN}Running tests in ${YELLOW}$dir${CYAN}...${NC}"
+
+        if [ ! -d "$dir" ]; then
+            echo -e "${RED}error: Directory ${YELLOW}$dir${RED} does not exist${NC}"
+            return 1
+        fi
+
+        # Capture the current directory to return to later
+        local current_dir=$(pwd)
+
+        cd "$dir" || {
+            echo -e "${RED}error: Could not enter directory ${YELLOW}$dir${NC}"
+            return 1
+        }
+
+        echo -e "${CYAN}Executing tests in $(pwd)...${NC}"
+        go test ./... -v
+        local test_result=$?
+
+        # Return to the original directory
+        cd "$current_dir" || {
+            echo -e "${RED}error: Could not return to original directory${NC}"
+            return 1
+        }
+
+        return $test_result
+    }
+
+    # Run client tests
+    run_go_tests "client/tests"
+    client_test_result=$?
+
+    # Run server-api tests
+    run_go_tests "server-api/tests"
+    server_test_result=$?
+
+    # Check results
+    if [ $client_test_result -ne 0 ] || [ $server_test_result -ne 0 ]; then
+        echo -e "${RED}❌ Some tests failed. Push aborted.${NC}"
+        echo -e "${RED}Client tests exit code: ${YELLOW}$client_test_result${NC}"
+        echo -e "${RED}Server tests exit code: ${YELLOW}$server_test_result${NC}"
+        exit 1
+    else
+        echo -e "${GREEN}✅ All tests passed.${NC}"
     fi
-    
-    # Capture the current directory to return to later
-    local current_dir=$(pwd)
-    
-    cd "$dir" || {
-        echo -e "${RED}error: Could not enter directory ${YELLOW}$dir${NC}"
-        return 1
-    }
-    
-    echo -e "${CYAN}Executing tests in $(pwd)...${NC}"
-    go test ./... -v
-    local test_result=$?
-    
-    # Return to the original directory
-    cd "$current_dir" || {
-        echo -e "${RED}error: Could not return to original directory${NC}"
-        return 1
-    }
-    
-    return $test_result
 }
 
-# Run client tests
-run_go_tests "client/tests"
-client_test_result=$?
+# Function to validate commit messages
+validate_commit_messages() {
+    local unpushed_commits=$(git rev-list @{upstream}..HEAD --count)
 
-# Run server-api tests
-run_go_tests "server-api/tests"
-server_test_result=$?
+    if [ "$unpushed_commits" -eq 0 ]; then
+        echo -e "${YELLOW}No unpushed commits to validate${NC}"
+        return 0
+    fi
 
-# Check results
-if [ $client_test_result -ne 0 ] || [ $server_test_result -ne 0 ]; then
-    echo -e "${RED}❌ Some tests failed. Push aborted.${NC}"
-    echo -e "${RED}Client tests exit code: ${YELLOW}$client_test_result${NC}"
-    echo -e "${RED}Server tests exit code: ${YELLOW}$server_test_result${NC}"
-    exit 1
-else
-    echo -e "${GREEN}✅ All tests passed. Proceeding with push.${NC}"
-    exit 0
-fi
+    # Get the range of commits that are about to be pushed
+    local first_unpushed=$(git rev-list --reverse @{upstream}..HEAD | head -1)
+
+    echo -e "${CYAN}Validating ${unpushed_commits} unpushed commit message(s)...${NC}"
+
+    local has_errors=0
+
+    # Check each commit message in the push
+    git log --format=%B $first_unpushed..HEAD | while IFS= read -r line; do
+        if [[ -z "$line" ]]; then
+            continue  # skip empty lines
+        fi
+
+        if ! [[ "$line" =~ ^(feat|fix|doc|perf|refactor|style|test|chore|revert|security|other) ]]; then
+            echo -e "${RED}error: Commit message must start with one of: feat, fix, doc, perf, refactor, style, test, chore, revert, security, other${NC}"
+            echo -e "${RED}Invalid message: ${YELLOW}$line${NC}"
+            has_errors=1
+        fi
+    done
+
+    if [ $has_errors -ne 0 ]; then
+        echo -e "${RED}❌ Some commit messages don't follow the required format. Push aborted.${NC}"
+        echo -e "${YELLOW}Hint: Use 'git commit --amend' to fix the most recent commit, or 'git rebase -i' to fix multiple commits${NC}"
+        exit 1
+    fi
+
+    echo -e "${GREEN}✅ All commit messages are properly formatted${NC}"
+}
+
+# First validate tests are passing
+validate_tests_passing
+
+# Then validate commit messages
+validate_commit_messages
+
+echo -e "${GREEN}🚀 All checks passed. Proceeding with push.${NC}"
+exit 0
