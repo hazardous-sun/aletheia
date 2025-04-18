@@ -24,14 +24,5 @@ source ai-analyzer/bin/activate
 # Download required libraries
 pip install -r requirements.txt
 
-export ORIGINAL_POST_CONTENT="ducks do not 'quack', they only 'bark'"
-echo $ORIGINAL_POST_CONTENT
-
-export ONLINE_NEWS_CONTENT="ducks only 'quack' and nothing else"
-echo $ONLINE_NEWS_CONTENT
-
-export USER_CONTEXT="can you confirm to me if ducks actually 'bark'?"
-echo $USER_CONTEXT
-
 # Activate the connector
-python3 connector.py
+python3 ai_api.py

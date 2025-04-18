@@ -39,3 +39,8 @@ done
 # Build the Docker image
 podman build . -t ai-analyzer
 
+# Run the container with port mapping
+podman run -d \
+  --name ai-analyzer \
+  -p $PORT:7654 \
+  ai-analyzer
