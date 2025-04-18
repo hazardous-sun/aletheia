@@ -6,5 +6,4 @@ NC="\033[0m"
 # Check if the commit message starts with a valid keyword
 if ! grep -qE "^(feat|fix|doc|perf|refactor|style|test|chore|revert|security|other)" "$1"; then
   echo -e "${WARNING}warning: if this is the last commit message, it must start with one of: feat, fix, doc, perf, refactor, style, test, chore, revert, security, other${NC}" >&2
-  exit 1
 fi
