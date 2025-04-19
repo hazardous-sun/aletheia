@@ -3,12 +3,12 @@ package repositories
 import (
 	"aletheia-server/src/errors"
 	"aletheia-server/src/models"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
-
-	"github.com/gocolly/colly"
 )
 
 type CrawlerRepository struct {
@@ -28,47 +28,43 @@ func (cr *CrawlerRepository) Crawl() {
 		return
 	}
 
-	c := colly.NewCollector(
-		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"),
-	)
-
-	var results []string
-
-	// Look for URLs that should be visited
-	c.OnHTML(cr.Crawler.HtmlSelector, func(e *colly.HTMLElement) {
-		if len(results) >= cr.Crawler.PagesToVisit {
-			return
-		}
-
-		// Extract the URL
-		link := e.Attr("href")
-		if link != "" {
-			results = append(results, link)
-		}
-	})
-
-	c.OnRequest(func(r *colly.Request) {
+	// Get the initial page content
+	resp, err := http.Get(cr.Crawler.Query)
+	if err != nil {
 		server_errors.Log(
-			fmt.Sprintf("crawler %d visiting: %s", cr.Crawler.Id, cr.Crawler.Query),
-			server_errors.InfoLevel)
-	})
-
-	c.OnError(func(_ *colly.Response, err error) {
-		server_errors.Log(
-			fmt.Sprintf("crawler %d failed: %s", cr.Crawler.Id, cr.Crawler.Query),
+			fmt.Sprintf("crawler %d failed to fetch initial page: %v", cr.Crawler.Id, err),
 			server_errors.ErrorLevel)
-	})
+		cr.Crawler.Status = err.Error()
+		return
+	}
+	defer resp.Body.Close()
 
-	if err := c.Visit(cr.Crawler.Query); err != nil {
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
 		server_errors.Log(
-			fmt.Sprintf("crawler %d visit error: %s", cr.Crawler.Id, cr.Crawler.Query),
+			fmt.Sprintf("crawler %d failed to read initial page: %v", cr.Crawler.Id, err),
 			server_errors.ErrorLevel)
 		cr.Crawler.Status = err.Error()
 		return
 	}
 
+	// Send HTML content to AI analyzer to get links
+	links, err := getLinksFromAI(string(body))
+	if err != nil {
+		server_errors.Log(
+			fmt.Sprintf("crawler %d failed to get links from AI: %v", cr.Crawler.Id, err),
+			server_errors.ErrorLevel)
+		cr.Crawler.Status = err.Error()
+		return
+	}
+
+	// Limit the number of pages to visit
+	if len(links) > cr.Crawler.PagesToVisit {
+		links = links[:cr.Crawler.PagesToVisit]
+	}
+
 	// Fetch and save the body content of each link
-	for _, link := range results {
+	for _, link := range links {
 		collectCandidateBody(cr, link)
 	}
 	cr.Crawler.Status = server_errors.CrawlerSucceeded
@@ -81,16 +77,6 @@ func badCrawler(crawler *models.Crawler) bool {
 			server_errors.ErrorLevel,
 		)
 		crawler.Status = server_errors.CrawlerEmptyQueryUrl
-		return true
-	}
-
-	// crawler.HtmlSelector should not be empty
-	if crawler.HtmlSelector == "" {
-		server_errors.Log(
-			fmt.Sprintf("crawler %d failed because HTML selector was empty", crawler.Id),
-			server_errors.ErrorLevel,
-		)
-		crawler.Status = server_errors.CrawlerEmptyHtmlSelector
 		return true
 	}
 
@@ -107,9 +93,51 @@ func badCrawler(crawler *models.Crawler) bool {
 	return false
 }
 
+func getLinksFromAI(htmlContent string) ([]string, error) {
+	// Prepare request to AI analyzer
+	requestBody, err := json.Marshal(map[string]string{
+		"html_content": htmlContent,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %v", err)
+	}
+
+	resp, err := http.Post("http://localhost:7654/getLinks", "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		return nil, fmt.Errorf("failed to request links from AI: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("AI analyzer returned status %d", resp.StatusCode)
+	}
+
+	var result struct {
+		Success bool                `json:"success"`
+		Links   []map[string]string `json:"links"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("failed to decode AI response: %v", err)
+	}
+
+	if !result.Success {
+		return nil, fmt.Errorf("AI analyzer returned unsuccessful response")
+	}
+
+	// Extract URLs from the links
+	var urls []string
+	for _, linkMap := range result.Links {
+		for _, url := range linkMap {
+			urls = append(urls, url)
+		}
+	}
+
+	return urls, nil
+}
+
 func collectCandidateBody(cr *CrawlerRepository, link string) {
 	if !strings.HasPrefix(link, "http") {
-		link = "https:" + link // Ensure the link has a valid scheme
+		link = "https://" + link // Ensure the link has a valid scheme
 	}
 
 	resp, err := http.Get(link)
