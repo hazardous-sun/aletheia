@@ -1,15 +1,20 @@
-FROM docker.io/ollama/ollama:0.5.7
+FROM python:3.10-slim
 
 # Create app directory
 WORKDIR /ai-analyzer
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && \
     apt-get install -y \
-    python3 \
-    python3.10-venv \
-    curl && \
+    curl \
+    && \
     rm -rf /var/lib/apt/lists/*
+
+# Install Ollama
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
+# Pre-download the AI model during build
+RUN ollama pull deepseek-r1:1.5b
 
 # Copy the project to the container
 COPY src/ ./

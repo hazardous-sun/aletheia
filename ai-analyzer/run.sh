@@ -5,14 +5,13 @@ NC="\033[0m"
 
 printUsage() {
   echo "Usage: run.sh [OPTIONS]"
-  echo "Container:"
-  echo -e "  --PORT= \t Specify which port should be used for communicating with the analyzer"
-  echo "Miscelaneous:"
-  echo -e "  -h --HELP \t Shows the script usage"
+  echo "Options:"
+  echo -e "  --PORT=\t Specify which port should be used for the FastAPI service (default: 7654)"
+  echo -e "  -h --HELP\t Shows this help message"
 }
 
-# Setting environment variables
-export PORT="7654"
+# Default port
+PORT="7654"
 
 # Parse command-line options
 while [[ $# -gt 0 ]]; do
@@ -20,15 +19,19 @@ while [[ $# -gt 0 ]]; do
     --PORT=*)
       VALUE="${1#*=}"
       if [ "$VALUE" == "" ]; then
-        echo -e "${ERROR}error: PORT value cannot be empty${NC}"
+        echo -e "${ERROR}Error: PORT value cannot be empty${NC}"
         printUsage
         exit 1
       fi
-      export PORT="$VALUE"
-      echo "PORT value overwritten"
+      PORT="$VALUE"
+      echo "Using custom port: $PORT"
+      ;;
+    -h|--HELP)
+      printUsage
+      exit 0
       ;;
     *)
-      echo "Invalid argument: $1" >&2
+      echo -e "${ERROR}Error: Unknown argument '$1'${NC}" >&2
       printUsage
       exit 1
       ;;
@@ -37,10 +40,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Build the Docker image
+echo "Building container image..."
 podman build . -t ai-analyzer
 
 # Run the container with port mapping
+echo "Starting container..."
 podman run -d \
   --name ai-analyzer \
   -p $PORT:7654 \
   ai-analyzer
+
+echo -e "\nService running on port $PORT"
