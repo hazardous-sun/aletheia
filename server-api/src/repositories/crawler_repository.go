@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -102,7 +103,17 @@ func getLinksFromAI(htmlContent string) ([]string, error) {
 		return nil, fmt.Errorf("failed to marshal request: %v", err)
 	}
 
-	resp, err := http.Post("http://localhost:7654/getLinks", "application/json", bytes.NewBuffer(requestBody))
+	aiServiceURL := os.Getenv("AI_ANALYZER_URL")
+	if aiServiceURL == "" {
+		aiServiceURL = "http://ai-analyzer:7654" // Default fallback
+	}
+
+	resp, err := http.Post(
+		fmt.Sprintf("%s/getLinks", aiServiceURL),
+		"application/json",
+		bytes.NewBuffer(requestBody),
+	)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to request links from AI: %v", err)
 	}
