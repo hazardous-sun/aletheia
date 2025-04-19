@@ -42,6 +42,7 @@ clearDatabase() {
       echo -e "${INFO}Successfully cleared the database!${NC}"
     else
       echo -e "${ERROR}Failed to clear database${NC}" >&2
+      exit 1
     fi
   else
     echo -e "${WARNING}No database directory found${NC}"
@@ -56,6 +57,7 @@ clearImages() {
         echo -e "${INFO}Removed image: $IMAGE${NC}"
       else
         echo -e "${ERROR}Failed to remove image: $IMAGE${NC}" >&2
+        exit 1
       fi
     fi
   done
@@ -125,36 +127,29 @@ export DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME SERVER_PORT AI_PORT
 
 # Cleanup any existing containers
 echo -e "${INFO}Cleaning up existing containers...${NC}"
-podman-compose -f server-api/docker-compose.yml down --remove-orphans
-podman rm -f ai-analyzer 2>/dev/null
+if ! podman-compose down --remove-orphans; then
+  echo -e "${ERROR}Failed to clean up existing containers${NC}" >&2
+  exit 1
+fi
 
-# Build and start services
-echo -e "${INFO}Building and starting services...${NC}"
-
-# Build AI Analyzer
-echo -e "${INFO}Building AI Analyzer...${NC}"
-podman build -f ai-analyzer/Dockerfile -t ai-analyzer ai-analyzer/
-
-# Start AI Analyzer in detached mode
-echo -e "${INFO}Starting AI Analyzer on port $AI_PORT...${NC}"
-podman run -d \
-  --name ai-analyzer \
-  --network host \
-  -e PORT=$AI_PORT \
-  -p $AI_PORT:7654 \
-  ai-analyzer
-
-# Build and start API services
-echo -e "${INFO}Building and starting API services...${NC}"
-podman-compose -f server-api/docker-compose.yml up -d --build
-
-# Wait for services to initialize
-echo -e "${INFO}Waiting for services to become ready...${NC}"
-sleep 5
+# Start the services
+echo -e "${INFO}Starting services with podman-compose...${NC}"
+if ! podman-compose up -d; then
+  echo -e "${ERROR}Failed to start services with podman-compose${NC}" >&2
+  echo -e "${WARNING}Please check your podman and podman-compose installation and try again.${NC}"
+  exit 1
+fi
 
 # Verify services are running
 echo -e "${INFO}Service status:${NC}"
 echo -e "${INFO}API Server:${NC} http://localhost:$SERVER_PORT"
 echo -e "${INFO}AI Analyzer:${NC} http://localhost:$AI_PORT"
+
+# Additional verification - check if containers are actually running
+if ! podman-compose ps | grep -q "Up"; then
+  echo -e "${ERROR}Some containers failed to start${NC}" >&2
+  podman-compose ps
+  exit 1
+fi
 
 echo -e "${INFO}All services started successfully!${NC}"
