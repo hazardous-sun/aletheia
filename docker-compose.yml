@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  aletheia-api:
+    container_name: aletheia-api
+    build:
+      context: ./server-api
+      dockerfile: src/deployments/aletheia-api/Dockerfile
+    ports:
+      - "${SERVER_PORT:-8000}:8000"
+      - "40000:40000"  # Delve debugging
+    depends_on:
+      - aletheia-db
+      - ai-analyzer
+    environment:
+      DB_HOST: aletheia-db
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_USER: "${DB_USER:-postgres}"
+      DB_PASSWORD: "${DB_PASSWORD:-1234}"
+      DB_NAME: "${DB_NAME:-postgres}"
+      AI_ANALYZER_URL: "http://ai-analyzer:7654"
+    networks:
+      - aletheia-net
+
+  aletheia-db:
+    container_name: aletheia-db
+    build:
+      context: ./server-api
+      dockerfile: src/deployments/aletheia-db/Dockerfile
+    environment:
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-1234}"
+      POSTGRES_USER: "${DB_USER:-postgres}"
+      POSTGRES_DB: "${DB_NAME:-postgres}"
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - ./server-api/pgdata:/var/lib/postgresql/data
+    networks:
+      - aletheia-net
+
+  ai-analyzer:
+    container_name: ai-analyzer
+    build:
+      context: ./ai-analyzer
+      dockerfile: Dockerfile
+    ports:
+      - "7654:7654"
+    environment:
+      PORT: "7654"
+    networks:
+      - aletheia-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7654"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  aletheia-net:
+    driver: bridge
