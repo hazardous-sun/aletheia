@@ -15,6 +15,13 @@ All notable changes to this project will be documented in this file.
 - Added some error messages for the QueryParser
 - Added a config to remotely debug server-api
 - Added configs for debugging server-api in VS Code
+- Added an AI link extractor
+- Added an API for the AI analyzer
+- Added an API for the AI Analyzer
+- Removed Ollama base image
+- Ollama and LLM are now being pulled during build process
+- Added a compose file to run the API and AI analyzer together on the same network
+- The API url can be configured as the environment variable AI_ANALYZER_URL now
 
 ### 🐛 Bug Fixes
 
@@ -42,6 +49,11 @@ All notable changes to this project will be documented in this file.
 - Go mod download
 - Go mod download
 - Go mod tidy
+- Updated CHANGELOG.md
+- Added workflow to update dependencies
+- Go get -u ./...
+- Go mod tidy
+- *(deps)* Bump golang.org/x/net from 0.36.0 to 0.38.0 in /client
 
 ### 🚜 Refactor
 
@@ -63,6 +75,9 @@ All notable changes to this project will be documented in this file.
 - Updated crawler use case
 - Updated crawler repository
 - Adjusted the ANSII code for the info color
+- Adjusted content analyzer
+- Updated requirements.txt
+- Renamed 'fact-check-server' to 'aletheia-api' and 'news-db' to 'aletheia-db'
 
 ### 📚 Documentation
 
@@ -82,6 +97,8 @@ All notable changes to this project will be documented in this file.
 - Added a section in the README about the remote debugging
 - Moved the debugging section to server-api README.md
 - Updated 'go' workflow display name
+- Updated commit-msg to only warn the user that the last commit message to be pushed should start with one of git-cliff keywords
+- Updated the pre-push hook to enforce the use of git-cliff keywords on the last commit message to be pushed
 
 ### 🧪 Testing
 
