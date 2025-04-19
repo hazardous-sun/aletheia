@@ -13,8 +13,10 @@ RUN apt-get update && \
 # Install Ollama
 RUN curl -fsSL https://ollama.com/install.sh | sh
 
-# Pre-download the AI model during build
-RUN ollama pull deepseek-r1:1.5b
+# Start Ollama, wait for it to initialize, then pull the model
+RUN ollama serve > /dev/null 2>&1 & \
+    sleep 5 && \
+    ollama pull deepseek-r1:1.5b
 
 # Copy the project to the container
 COPY src/ ./
@@ -31,4 +33,4 @@ RUN chmod +x ./run.sh
 EXPOSE 7654
 
 # Start the service
-ENTRYPOINT ["./run.sh"]
+ENTRYPOINT ["/bin/bash", "-c", "source venv/bin/activate && ./run.sh"]
