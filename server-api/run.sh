@@ -32,7 +32,7 @@ clearImages() {
   echo "Clearing previous project images..."
 
   # Check if the images exist
-  for IMAGE in news-db fact-check-api; do
+  for IMAGE in aletheia-db aletheia-api; do
     if podman image exists "$IMAGE"; then
       removeImage "$IMAGE"
     fi
@@ -117,8 +117,8 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-# Build the image for news-db
-podman build src/deployments/news-db -t news-db
+# Build the image for aletheia-db
+podman build src/deployments/aletheia-db -t aletheia-db
 
 # Run service
 podman-compose up -d

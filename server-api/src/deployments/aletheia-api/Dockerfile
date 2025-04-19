@@ -9,7 +9,7 @@ RUN go mod download
 # Install Delve
 RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
-RUN go build -o fact-check-server src/cmd/main.go
+RUN go build -o aletheia-api src/cmd/main.go
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -22,11 +22,11 @@ ENV DB_PORT=${DB_PORT}
 RUN apk add --no-cache netcat-openbsd
 
 # Copy the wait-for-db.sh script and set permissions
-COPY src/deployments/fact-check-server/wait-for-db.sh /wait-for-db.sh
+COPY src/deployments/aletheia-api/wait-for-db.sh /wait-for-db.sh
 RUN chmod +x /wait-for-db.sh
 
 # Copy the binary from the builder stage
-COPY --from=builder /go/build/fact-check-server /fact-check-server
+COPY --from=builder /go/build/aletheia-api /aletheia-api
 
 # Copy Delve from the builder stage
 COPY --from=builder /go/bin/dlv /dlv
@@ -37,4 +37,4 @@ USER appuser
 
 EXPOSE 8000 40000
 
-CMD ["/wait-for-db.sh", "$DB_HOST", "$DB_PORT", "/dlv", "exec", "/fact-check-server", "--headless", "--listen=:40000", "--api-version=2", "--accept-multiclient"]
+CMD ["/wait-for-db.sh", "$DB_HOST", "$DB_PORT", "/dlv", "exec", "/aletheia-api", "--headless", "--listen=:40000", "--api-version=2", "--accept-multiclient"]

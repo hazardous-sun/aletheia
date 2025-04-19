@@ -1,29 +1,29 @@
 version: '3.9'
 
 services:
-  fact-check-server:
-    container_name: fact-check-api
-    image: fact-check-api
+  aletheia-api:
+    container_name: aletheia-api
+    image: aletheia-api
     build:
       context: .
-      dockerfile: src/deployments/fact-check-server/Dockerfile
+      dockerfile: src/deployments/aletheia-api/Dockerfile
     ports:
       - "${SERVER_PORT}:8000"
       - "40000:40000"  # Delve remote debugging
     depends_on:
-      - news-db
+      - aletheia-db
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
-  news-db:
-    container_name: news-db
-    image: news-db
+  aletheia-db:
+    container_name: aletheia-db
+    image: aletheia-db
     build:
       context: .
-      dockerfile: src/deployments/news-db/Dockerfile
+      dockerfile: src/deployments/aletheia-db/Dockerfile
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: ${DB_USER}
