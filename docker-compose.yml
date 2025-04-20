@@ -11,14 +11,14 @@ services:
       - "40000:40000"  # Delve debugging
     depends_on:
       - aletheia-db
-      - ai-analyzer
+      - aletheia-ai-analyzer
     environment:
       DB_HOST: aletheia-db
       DB_PORT: "${DB_PORT:-5432}"
       DB_USER: "${DB_USER:-postgres}"
       DB_PASSWORD: "${DB_PASSWORD:-1234}"
       DB_NAME: "${DB_NAME:-postgres}"
-      AI_ANALYZER_URL: "http://ai-analyzer:7654"
+      AI_ANALYZER_URL: "http://aletheia-ai-analyzer:7654"
     networks:
       - aletheia-net
 
@@ -38,8 +38,8 @@ services:
     networks:
       - aletheia-net
 
-  ai-analyzer:
-    container_name: ai-analyzer
+  aletheia-ai-analyzer:
+    container_name: aletheia-ai-analyzer
     build:
       context: ./ai-analyzer
       dockerfile: Dockerfile
