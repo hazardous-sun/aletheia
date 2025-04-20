@@ -53,8 +53,14 @@ class LinkExtractor:
         
         Example output:
         [
-            {{"Breaking News: Earthquake Hits Region": "https://example.com/earthquake"}},
-            {{"Political Summit Concludes": "https://example.com/summit"}}
+            {
+                "title": "Breaking News: Earthquake Hits Region",
+                "url": "https://example.com/earthquake"
+            },
+            {
+                "title": "Political Summit Concludes"
+                "url": "https://example.com/summit"
+            }
         ]
         
         HTML content:
