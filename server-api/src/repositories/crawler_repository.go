@@ -95,17 +95,21 @@ func badCrawler(crawler *models.Crawler) bool {
 }
 
 func getLinksFromAI(htmlContent string) ([]string, error) {
+	htmlContent = strings.ReplaceAll(htmlContent, "\"", "'") // Escape quotes
+	htmlContent = strings.ReplaceAll(htmlContent, "\n", "")  // Remove newlines
+
 	// Prepare request to AI analyzer
 	requestBody, err := json.Marshal(map[string]string{
 		"html_content": htmlContent,
 	})
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal request: %v", err)
 	}
 
 	aiServiceURL := os.Getenv("AI_ANALYZER_URL")
 	if aiServiceURL == "" {
-		aiServiceURL = "http://ai-analyzer:7654" // Default fallback
+		aiServiceURL = "http://localhost:7654" // Default fallback
 	}
 
 	resp, err := http.Post(
@@ -113,6 +117,8 @@ func getLinksFromAI(htmlContent string) ([]string, error) {
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
+
+	server_errors.Log(fmt.Sprintf("resp = %s", resp), server_errors.InfoLevel)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to request links from AI: %v", err)
@@ -123,24 +129,21 @@ func getLinksFromAI(htmlContent string) ([]string, error) {
 		return nil, fmt.Errorf("AI analyzer returned status %d", resp.StatusCode)
 	}
 
-	var result struct {
-		Success bool                `json:"success"`
-		Links   []map[string]string `json:"links"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("failed to decode AI response: %v", err)
+	// Define the correct structure to match the response
+	var links []struct {
+		Title string `json:"title"`
+		URL   string `json:"url"`
 	}
 
-	if !result.Success {
-		return nil, fmt.Errorf("AI analyzer returned unsuccessful response")
+	if err := json.NewDecoder(resp.Body).Decode(&links); err != nil {
+		server_errors.Log(fmt.Sprintf("resp.Body = %s", resp.Body), server_errors.WarningLevel)
+		return nil, fmt.Errorf("failed to decode AI response: %v", err)
 	}
 
 	// Extract URLs from the links
 	var urls []string
-	for _, linkMap := range result.Links {
-		for _, url := range linkMap {
-			urls = append(urls, url)
-		}
+	for _, link := range links {
+		urls = append(urls, link.URL)
 	}
 
 	return urls, nil
