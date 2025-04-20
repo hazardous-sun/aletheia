@@ -5,9 +5,11 @@ from content_analyzer import ContentAnalyzer
 from link_extractor import LinkExtractor
 import uvicorn
 
-app = FastAPI()
+app = FastAPI(
+    max_request_size=10 * 1024 * 1024  # 10MB
+)
 
-# Add CORS middleware to allow requests from your frontend
+# Add CORS middleware to allow requests from the frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,21 +30,33 @@ class AnalysisRequest(BaseModel):
 @app.post("/getLinks")
 async def get_links(request: LinkRequest):
     """
-    Endpoint to extract article links from HTML content
+    Endpoint to extract news links
     """
-    extractor = LinkExtractor()
     try:
+        if not request.html_content.strip():
+            raise ValueError("HTML content cannot be empty")
+
+        print(f"Received HTML content (length: {len(request.html_content)} chars)")
+
+        extractor = LinkExtractor()
         links = extractor.extract_links(request.html_content)
-        return {
-            "success": True,
-            "links": links,
-            "count": len(links)
-        }
+
+        # Validate the response structure
+        if not isinstance(links, list):
+            raise ValueError("Invalid response format - expected list")
+
+        for link in links:
+            if not isinstance(link, dict) or 'url' not in link:
+                raise ValueError("Invalid link format - missing url")
+
+        return {"success": True, "links": links}
+
+    except ValueError as e:
+        print(f"Validation error in getLinks: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
+        print(f"Unexpected error in getLinks: {type(e).__name__}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.post("/analyze")
 async def analyze_content(request: AnalysisRequest):

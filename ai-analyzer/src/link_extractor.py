@@ -1,121 +1,108 @@
 import ollama
 from bs4 import BeautifulSoup
 import json
+import re
 from typing import List, Dict, Union
+
 
 class LinkExtractor:
     def __init__(self, model_name: str = 'deepseek-r1:1.5b'):
-        """
-        Initialize the LinkExtractor with a specific AI model.
-
-        Args:
-            model_name: Name of the Ollama model to use (default: 'deepseek-r1:1.5b')
-        """
         self.model_name = model_name
-        # Ensure the model is available
-        ollama.pull(self.model_name)
+        try:
+            ollama.pull(self.model_name)
+        except Exception as e:
+            print(f"Warning: Could not pull model - {str(e)}")
 
     def extract_links(self, html_content: str) -> List[Dict[str, str]]:
-        """
-        Extract relevant article links from HTML content using AI.
-
-        Args:
-            html_content: Raw HTML content to analyze
-
-        Returns:
-            List of dictionaries containing title-url pairs
-            Example: [{"title1": "url1"}, {"title2": "url2"}]
-        """
-        if not html_content or not html_content.strip():
-            raise ValueError("HTML content cannot be empty")
-
-        # Build the prompt
-        prompt = self._build_prompt(html_content)
-
-        # Get AI response
-        response = self._get_ai_response(prompt)
-
-        # Parse and return the links
-        return self._parse_response(response)
-
-    def _build_prompt(self, html_content: str) -> str:
-        """Construct the prompt for the AI model"""
-        return f"""
-        Extract all news article links and their titles from the provided HTML content.
-        Return ONLY a JSON array where each element is a dictionary with a single key-value pair:
-        the article title as key and the URL as value.
-        
-        Requirements:
-        1. Include only links to actual news articles (no navigation, ads, or unrelated links)
-        2. Use the actual article title text (cleaned, 3-15 words)
-        3. Return complete, absolute URLs
-        4. Return ONLY the JSON, no additional text or explanation
-        
-        Example output:
-        [
-            {
-                "title": "Breaking News: Earthquake Hits Region",
-                "url": "https://example.com/earthquake"
-            },
-            {
-                "title": "Political Summit Concludes"
-                "url": "https://example.com/summit"
-            }
-        ]
-        
-        HTML content:
-        \"\"\"
-        {html_content}
-        \"\"\"
-        """
-
-    def _get_ai_response(self, prompt: str) -> str:
-        """Get response from the AI model"""
-        response = ollama.generate(
-            model=self.model_name,
-            prompt=prompt,
-            options={
-                'temperature': 0.3,  # More deterministic output
-                'num_ctx': 8192     # Larger context window if needed
-            }
-        )
-        return response['response']
-
-    def _parse_response(self, response: str) -> List[Dict[str, str]]:
-        """
-        Parse the AI response and extract the JSON data.
-
-        Args:
-            response: Raw response from the AI model
-
-        Returns:
-            Parsed list of title-url dictionaries
-
-        Raises:
-            ValueError: If the response cannot be parsed as valid JSON
-        """
         try:
-            # Try to find JSON in the response
-            start = response.find('[')
-            end = response.rfind(']') + 1
-            json_str = response[start:end]
+            # Clean and limit the HTML content
+            clean_html = self._clean_html(html_content)[:20000]  # Limit to 20k chars
 
-            # Parse and validate
+            # Create a more reliable prompt template
+            prompt_template = """
+            Analyze the following HTML content and extract all news article links with their titles.
+            Return ONLY a valid JSON array where each element is an object with "title" and "url" properties.
+            
+            HTML Content:
+            {html}
+            
+            Required Output Format:
+            [
+                {{"title": "Article Title 1", "url": "https://example.com/news1"}},
+                {{"title": "Article Title 2", "url": "https://example.com/news2"}}
+            ]
+            
+            Rules:
+            1. Only include links that point to news articles
+            2. Titles should be 3-15 words
+            3. URLs must be complete and valid
+            4. If no news links found, return empty array []
+            5. No additional text or explanations
+            """
+
+            # Safely format the prompt
+            try:
+                prompt = prompt_template.format(html=clean_html)
+            except Exception as e:
+                print(f"Error formatting prompt: {str(e)}")
+                prompt = prompt_template.replace("{html}", clean_html)
+
+            response = ollama.generate(
+                model=self.model_name,
+                prompt=prompt,
+                options={
+                    'temperature': 0.1,
+                    'format': 'json'
+                }
+            )
+
+            # Clean and validate the response
+            json_str = self._extract_json(response['response'])
             links = json.loads(json_str)
 
-            # Validate structure
+            # Validate the links structure
             if not isinstance(links, list):
-                raise ValueError("Expected a JSON array")
+                raise ValueError("Response is not a list")
 
-            for item in links:
-                if not isinstance(item, dict) or len(item) != 1:
-                    raise ValueError("Each array item should be a single key-value pair")
+            validated_links = []
+            for link in links:
+                if isinstance(link, dict) and 'url' in link and 'title' in link:
+                    validated_links.append({
+                        'title': str(link['title']),
+                        'url': str(link['url'])
+                    })
 
-            return links
+            return validated_links
 
-        except (json.JSONDecodeError, ValueError, AttributeError) as e:
-            raise ValueError(f"Failed to parse AI response: {str(e)}. Original response: {response}")
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error. Response was: {response['response']}")
+            return []
+        except Exception as e:
+            print(f"Link extraction error: {str(e)}")
+            raise ValueError(f"Failed to extract links: {str(e)}")
 
-# Example usage
+    def _clean_html(self, html: str) -> str:
+        """Clean HTML content before processing"""
+        try:
+            soup = BeautifulSoup(html, 'html.parser')
+            # Remove unwanted elements
+            for element in soup(['script', 'style', 'meta', 'link', 'noscript']):
+                element.decompose()
+            # Get clean text
+            return soup.get_text(' ', strip=True)
+        except Exception as e:
+            print(f"HTML cleaning error: {str(e)}")
+            return html[:20000]  # Fallback to simple truncation
+
+    def _extract_json(self, text: str) -> str:
+        """Extract JSON string from response text"""
+        # Look for JSON array pattern
+        start = text.find('[')
+        end = text.rfind(']') + 1
+        if start >= 0 and end > 0:
+            return text[start:end]
+        return '[]'  # Return empty array if no JSON found
+
+
 if __name__ == "__main__":
     quit(1)
