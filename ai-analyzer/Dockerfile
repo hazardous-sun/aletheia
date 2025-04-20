@@ -7,6 +7,7 @@ WORKDIR /ai-analyzer
 RUN apt-get update && \
     apt-get install -y \
     curl \
+    pciutils \
     && \
     rm -rf /var/lib/apt/lists/*
 
