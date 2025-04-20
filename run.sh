@@ -51,7 +51,7 @@ clearDatabase() {
 
 clearImages() {
   echo -e "${INFO}Clearing project images...${NC}"
-  for IMAGE in aletheia-db aletheia-api ai-analyzer; do
+  for IMAGE in aletheia_aletheia-db aletheia_aletheia-api aletheia_aletheia-ai-analyzer; do
     if podman image exists "$IMAGE"; then
       if podman image rm "$IMAGE"; then
         echo -e "${INFO}Removed image: $IMAGE${NC}"
@@ -62,6 +62,13 @@ clearImages() {
     fi
   done
 }
+
+# Cleanup any existing containers
+echo -e "${INFO}Cleaning up existing containers...${NC}"
+if ! podman-compose down --remove-orphans; then
+  echo -e "${ERROR}Failed to clean up existing containers${NC}" >&2
+  exit 1
+fi
 
 # Parse command-line options
 while [[ $# -gt 0 ]]; do
@@ -124,13 +131,6 @@ fi
 
 # Export environment variables
 export DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME SERVER_PORT AI_PORT
-
-# Cleanup any existing containers
-echo -e "${INFO}Cleaning up existing containers...${NC}"
-if ! podman-compose down --remove-orphans; then
-  echo -e "${ERROR}Failed to clean up existing containers${NC}" >&2
-  exit 1
-fi
 
 # Start the services
 echo -e "${INFO}Starting services with podman-compose...${NC}"
