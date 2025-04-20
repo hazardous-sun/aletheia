@@ -1,6 +1,7 @@
 package db
 
 import (
+	"aletheia-server/src/errors"
 	"database/sql"
 	"fmt"
 
@@ -24,6 +25,6 @@ func ConnectDB() (*sql.DB, error) {
 		panic(err)
 	}
 
-	fmt.Println("Connected to " + config.DBName)
+	server_errors.Log(fmt.Sprintf("Connected to "+config.DBName), server_errors.InfoLevel)
 	return db, nil
 }
