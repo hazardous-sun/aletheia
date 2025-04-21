@@ -22,6 +22,11 @@ All notable changes to this project will be documented in this file.
 - Ollama and LLM are now being pulled during build process
 - Added a compose file to run the API and AI analyzer together on the same network
 - The API url can be configured as the environment variable AI_ANALYZER_URL now
+- Added run.sh for triggering server-api alongside ai-analyzer
+- Removed unused dependabot workflow
+- The root run.sh now tries to run podman-compose down before collecting the command-line options
+- Ai-analyzer image now contains pciutils
+- Updated the return package of 'getLinks' endpoint
 
 ### 🐛 Bug Fixes
 
@@ -54,6 +59,7 @@ All notable changes to this project will be documented in this file.
 - Go get -u ./...
 - Go mod tidy
 - *(deps)* Bump golang.org/x/net from 0.36.0 to 0.38.0 in /client
+- Updated CHANGELOG.md
 
 ### 🚜 Refactor
 
@@ -78,6 +84,12 @@ All notable changes to this project will be documented in this file.
 - Adjusted content analyzer
 - Updated requirements.txt
 - Renamed 'fact-check-server' to 'aletheia-api' and 'news-db' to 'aletheia-db'
+- Reorganized the root run and compose files
+- Updated the base prompt to the ai-analyzer '/getLinks' endpoint
+- Renamed ai-analyzer to aletheia-ai-analyzer
+- Added custom logging to conn.go
+- Updated logic for communicating with aletheia-ai-analyzer
+- 'badCrawler' and 'collectCandidateBody' are now methods from CrawlerRepository
 
 ### 📚 Documentation
 
