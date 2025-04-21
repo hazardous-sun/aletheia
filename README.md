@@ -122,7 +122,7 @@ go test ./...
 ### Immediate Priorities
 
 - Enhanced crawler reliability and error recovery
-- News outlet credibility validation (0-100 range)
+- News outlet credibility validation
 - API response standardization
 
 ### Future Development
