@@ -157,8 +157,6 @@ func getLinksFromAI(htmlContent string) ([]string, error) {
 		bytes.NewBuffer(requestBody),
 	)
 
-	server_errors.Log(fmt.Sprintf("resp = %s", resp), server_errors.InfoLevel)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to request links from AI: %v", err)
 	}
