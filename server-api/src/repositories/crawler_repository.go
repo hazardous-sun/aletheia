@@ -25,7 +25,7 @@ func NewCrawlerRepository(crawler models.Crawler) CrawlerRepository {
 func (cr *CrawlerRepository) Crawl() {
 	cr.Crawler.Status = server_errors.CrawlerRunning
 
-	if badCrawler(&cr.Crawler) {
+	if cr.badCrawler() {
 		return
 	}
 
@@ -66,32 +66,71 @@ func (cr *CrawlerRepository) Crawl() {
 
 	// Fetch and save the body content of each link
 	for _, link := range links {
-		collectCandidateBody(cr, link)
+		cr.collectCandidateBody(link)
 	}
 	cr.Crawler.Status = server_errors.CrawlerSucceeded
 }
 
-func badCrawler(crawler *models.Crawler) bool {
-	if crawler.Query == "" {
+func (cr *CrawlerRepository) badCrawler() bool {
+	if cr.Crawler.Query == "" {
 		server_errors.Log(
-			fmt.Sprintf("crawler %d failed because it was initialized without a query", crawler.Id),
+			fmt.Sprintf("crawler %d failed because it was initialized without a query", cr.Crawler.Id),
 			server_errors.ErrorLevel,
 		)
-		crawler.Status = server_errors.CrawlerEmptyQueryUrl
+		cr.Crawler.Status = server_errors.CrawlerEmptyQueryUrl
 		return true
 	}
 
 	// crawler.PagesBodies should be empty
-	if len(crawler.PagesBodies) > 0 {
+	if len(cr.Crawler.PagesBodies) > 0 {
 		server_errors.Log(
-			fmt.Sprintf("crawler %d failed because its page bodies was initialized with values already maintained", crawler.Id),
+			fmt.Sprintf("crawler %d failed because its page bodies was initialized with values already maintained", cr.Crawler.Id),
 			server_errors.ErrorLevel,
 		)
-		crawler.Status = server_errors.CrawlerFilledPagesBodies
+		cr.Crawler.Status = server_errors.CrawlerFilledPagesBodies
 		return true
 	}
 
 	return false
+}
+
+func (cr *CrawlerRepository) collectCandidateBody(link string) {
+	if !strings.HasPrefix(link, "http") {
+		link = "https://" + link // Ensure the link has a valid scheme
+	}
+
+	resp, err := http.Get(link)
+	if err != nil {
+		server_errors.Log(fmt.Sprintf("%s %s ->", server_errors.HttpFetchError, link), server_errors.ErrorLevel)
+		return
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			server_errors.Log(
+				server_errors.CrawlerClosingPageError,
+				server_errors.WarningLevel,
+			)
+		}
+	}(resp.Body)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		server_errors.Log(
+			fmt.Sprintf("unable to read body from %s: %v", link, err),
+			server_errors.ErrorLevel,
+		)
+		return
+	}
+
+	// Store the body
+	candidateBody := string(body)
+	cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, candidateBody)
+
+	server_errors.Log(
+		fmt.Sprintf("added %s to crawler %d pagebodies", link, cr.Crawler.Id),
+		server_errors.InfoLevel,
+	)
 }
 
 func getLinksFromAI(htmlContent string) ([]string, error) {
@@ -147,43 +186,4 @@ func getLinksFromAI(htmlContent string) ([]string, error) {
 	}
 
 	return urls, nil
-}
-
-func collectCandidateBody(cr *CrawlerRepository, link string) {
-	if !strings.HasPrefix(link, "http") {
-		link = "https://" + link // Ensure the link has a valid scheme
-	}
-
-	resp, err := http.Get(link)
-	if err != nil {
-		server_errors.Log(fmt.Sprintf("%s %s ->", server_errors.HttpFetchError, link), server_errors.ErrorLevel)
-		return
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			server_errors.Log(
-				server_errors.CrawlerClosingPageError,
-				server_errors.WarningLevel,
-			)
-		}
-	}(resp.Body)
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		server_errors.Log(
-			fmt.Sprintf("unable to read body from %s: %v", link, err),
-			server_errors.ErrorLevel,
-		)
-		return
-	}
-
-	// Store the body
-	candidateBody := string(body)
-	cr.Crawler.PagesBodies = append(cr.Crawler.PagesBodies, candidateBody)
-
-	server_errors.Log(
-		fmt.Sprintf("added %s to crawler %d pagebodies", link, cr.Crawler.Id),
-		server_errors.InfoLevel,
-	)
 }
