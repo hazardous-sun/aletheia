@@ -28,8 +28,10 @@ class LinkExtractor:
             
             Required Output Format:
             [
-                {{"title": "Article Title 1", "url": "https://example.com/news1"}},
-                {{"title": "Article Title 2", "url": "https://example.com/news2"}}
+                {"title": "TITLE_ARTICLE_1", "url": "URL_ARTICLE_1"},
+                {"title": "TITLE_ARTICLE_1", "url": "URL_ARTICLE_2"},
+                ...
+                {"title": "TITLE_ARTICLE_N", "url": "URL_ARTICLE_N"},}
             ]
             
             Rules:

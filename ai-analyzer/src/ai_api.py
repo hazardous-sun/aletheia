@@ -49,7 +49,7 @@ async def get_links(request: LinkRequest):
             if not isinstance(link, dict) or 'url' not in link:
                 raise ValueError("Invalid link format - missing url")
 
-        return {"success": True, "links": links}
+        return links
 
     except ValueError as e:
         print(f"Validation error in getLinks: {str(e)}")
