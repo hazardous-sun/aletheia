@@ -4,8 +4,6 @@ import (
 	"aletheia-server/src/errors"
 	"database/sql"
 	"fmt"
-
-	_ "github.com/lib/pq"
 )
 
 func ConnectDB() (*sql.DB, error) {
