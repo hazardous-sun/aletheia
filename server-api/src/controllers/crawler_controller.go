@@ -43,16 +43,6 @@ func (cr *CrawlerController) Crawl(ctx *gin.Context) {
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
 			})
-		case server_errors.NewsOutletTableMissing:
-			ctx.JSON(http.StatusInternalServerError, models.Response{
-				Message: err.Error(),
-				Status:  http.StatusInternalServerError,
-			})
-		case server_errors.LanguageClosingTableError:
-			ctx.JSON(http.StatusInternalServerError, models.Response{
-				Message: err.Error(),
-				Status:  http.StatusInternalServerError,
-			})
 		default:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
 				Message: err.Error(),
