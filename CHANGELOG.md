@@ -27,6 +27,8 @@ All notable changes to this project will be documented in this file.
 - The root run.sh now tries to run podman-compose down before collecting the command-line options
 - Ai-analyzer image now contains pciutils
 - Updated the return package of 'getLinks' endpoint
+- Debugging will only be available when running the project with the '--DEBUG' command-line option
+- Crawlers now run concurrently
 
 ### 🐛 Bug Fixes
 
@@ -60,6 +62,7 @@ All notable changes to this project will be documented in this file.
 - Go mod tidy
 - *(deps)* Bump golang.org/x/net from 0.36.0 to 0.38.0 in /client
 - Updated CHANGELOG.md
+- Updated CHANGELOG.md
 
 ### 🚜 Refactor
 
@@ -90,6 +93,9 @@ All notable changes to this project will be documented in this file.
 - Added custom logging to conn.go
 - Updated logic for communicating with aletheia-ai-analyzer
 - 'badCrawler' and 'collectCandidateBody' are now methods from CrawlerRepository
+- Removed redundant code
+- Removed unused import
+- Removed redundant code
 
 ### 📚 Documentation
 
@@ -111,6 +117,9 @@ All notable changes to this project will be documented in this file.
 - Updated 'go' workflow display name
 - Updated commit-msg to only warn the user that the last commit message to be pushed should start with one of git-cliff keywords
 - Updated the pre-push hook to enforce the use of git-cliff keywords on the last commit message to be pushed
+- Updated README for server-api
+- Updated README for ai-analyzer
+- Updated root level README.md
 
 ### 🧪 Testing
 
