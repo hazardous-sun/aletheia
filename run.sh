@@ -16,6 +16,7 @@ SERVER_PORT="8000"
 AI_PORT="7654"
 CLEAR_DB=false
 RESET_IMAGES=false
+DEBUG=false
 
 printUsage() {
   echo "Usage: run.sh [OPTIONS]"
@@ -29,6 +30,7 @@ printUsage() {
   echo -e "  --DB_NAME=\t\tDatabase name (default: postgres)"
   echo -e "  --DB_USER=\t\tDatabase user (default: postgres)"
   echo -e "  --DB_PASSWORD=\tDatabase password (default: 1234)"
+  echo -e "  --DEBUG \t\tEnable debug mode (Delve debugger)"
   echo "AI Analyzer Configuration:"
   echo -e "  --AI_PORT=\t\tPort for AI service (default: 7654)"
   echo "Miscellaneous:"
@@ -111,6 +113,10 @@ while [[ $# -gt 0 ]]; do
       printUsage
       exit 0
       ;;
+    --DEBUG)
+      DEBUG=true
+      echo -e "${INFO}Debug mode enabled${NC}"
+      ;;
     *)
       echo -e "${ERROR}Error: Unknown option '$1'${NC}" >&2
       printUsage
@@ -130,7 +136,7 @@ if $RESET_IMAGES; then
 fi
 
 # Export environment variables
-export DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME SERVER_PORT AI_PORT
+export DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME SERVER_PORT AI_PORT DEBUG
 
 # Start the services
 echo -e "${INFO}Starting services with podman-compose...${NC}"

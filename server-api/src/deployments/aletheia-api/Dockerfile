@@ -25,6 +25,10 @@ RUN apk add --no-cache netcat-openbsd
 COPY src/deployments/aletheia-api/wait-for-db.sh /wait-for-db.sh
 RUN chmod +x /wait-for-db.sh
 
+# Copy the start.sh script and set permissions
+COPY src/deployments/aletheia-api/start.sh /start.sh
+RUN chmod +x /start.sh
+
 # Copy the binary from the builder stage
 COPY --from=builder /go/build/aletheia-api /aletheia-api
 
@@ -37,4 +41,4 @@ USER appuser
 
 EXPOSE 8000 40000
 
-CMD ["/wait-for-db.sh", "$DB_HOST", "$DB_PORT", "/dlv", "exec", "/aletheia-api", "--headless", "--listen=:40000", "--api-version=2", "--accept-multiclient"]
+CMD ["/wait-for-db.sh", "$DB_HOST", "$DB_PORT", "/start.sh"]

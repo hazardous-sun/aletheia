@@ -18,7 +18,8 @@ services:
       DB_USER: "${DB_USER:-postgres}"
       DB_PASSWORD: "${DB_PASSWORD:-1234}"
       DB_NAME: "${DB_NAME:-postgres}"
-      AI_ANALYZER_URL: "http://aletheia-ai-analyzer:7654"
+      AI_ANALYZER_URL: "http://aletheia-ai-analyzer:${AI_PORT:-7654}"
+      DEBUG: "${DEBUG:-false}"
     networks:
       - aletheia-net
 
