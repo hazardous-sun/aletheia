@@ -1,6 +1,6 @@
-# Server API
+# Aletheia Server API
 
-A REST API built using the Gin framework in Go for managing languages and news outlets, with web crawling capabilities to collect news data.
+A REST API built using the Gin framework in Go for managing languages and news outlets, with web crawling capabilities to collect news data and integrate with an AI analyzer.
 
 ## Table of Contents
 
@@ -19,6 +19,7 @@ A REST API built using the Gin framework in Go for managing languages and news o
 - [Project Structure](#project-structure)
 - [Database](#database)
 - [Testing](#testing)
+- [Architecture](#architecture)
 - [TODO](#todo)
 
 ## Features
@@ -37,10 +38,19 @@ A REST API built using the Gin framework in Go for managing languages and news o
 - **Web Crawling**:
   - Crawl news outlets using configured query URLs and HTML selectors
   - Store crawled page bodies for analysis
+  - Integration with AI analyzer service for link extraction
+  - Concurrent crawling with configurable page limits
+
+- **Error Handling**:
+  - Comprehensive error logging with different levels (info, warning, error)
+  - Color-coded console output for different log levels
+  - Specific error types for different components
 
 - **Containerized Environment**:
   - Docker/Podman setup for easy deployment
   - PostgreSQL database integration
+  - Debugging support with Delve
+  - Database initialization scripts
 
 ## Prerequisites
 
@@ -48,7 +58,7 @@ Before you begin, ensure you have the following installed:
 
 - [Podman](https://podman.io/) or Docker
 - [Podman Compose](https://github.com/containers/podman-compose/) or Docker Compose
-- [Go](https://golang.org/doc/install) (for local development)
+- [Go](https://golang.org/doc/install) (1.23+ for local development)
 
 ## Getting Started
 
@@ -56,14 +66,15 @@ Before you begin, ensure you have the following installed:
 
 The application requires these environment variables:
 
-| Variable       | Description                          | Default Value  |
-|----------------|--------------------------------------|----------------|
-| DB_HOST        | PostgreSQL database host             | `news-db`      |
-| DB_PORT        | PostgreSQL database port             | `5432`         |
-| DB_USER        | PostgreSQL username                  | `postgres`     |
-| DB_PASSWORD    | PostgreSQL password                  | `1234`         |
-| DB_NAME        | PostgreSQL database name             | `postgres`     |
-| SERVER_PORT    | Port for the API server              | `8000`         |
+| Variable        | Description                          | Default Value  |
+|-----------------|--------------------------------------|----------------|
+| DB_HOST         | PostgreSQL database host             | `news-db`      |
+| DB_PORT         | PostgreSQL database port             | `5432`         |
+| DB_USER         | PostgreSQL username                  | `postgres`     |
+| DB_PASSWORD     | PostgreSQL password                  | `1234`         |
+| DB_NAME         | PostgreSQL database name             | `postgres`     |
+| SERVER_PORT     | Port for the API server              | `8000`         |
+| AI_ANALYZER_URL | URL for the AI analyzer service      | `http://localhost:7654` |
 
 ### Running the Application
 
@@ -88,6 +99,7 @@ The script will:
 - `-R` or `--RESET`: Deletes project images before initialization
 - `--DB_*`: Override specific database connection parameters
 - `--SERVER_PORT`: Override the server port
+- `--AI_ANALYZER_URL`: Override the AI analyzer service URL
 
 ### Debugging the Application
 
@@ -179,16 +191,16 @@ The script will:
 
 ## Project Structure
 
-The project follows a layered architecture:
+The project follows a clean architecture pattern with clear separation of concerns:
 
 ```
 src/
-├── cmd/               # Entry point
+├── cmd/               # Entry point (main.go)
 ├── controllers/       # HTTP request handlers
 ├── db/                # Database connection and configuration
 ├── deployments/       # Container deployment files
-├── errors/            # Custom error definitions
-├── models/            # Data structures
+├── errors/            # Custom error definitions and logging
+├── models/            # Data structures and business objects
 ├── repositories/      # Database interaction layer
 └── usecases/          # Business logic
 ```
@@ -219,22 +231,46 @@ CREATE TABLE news_outlet (
 
 The project includes comprehensive tests for:
 
-- Error handling
-- Data models
-- API responses
+- Error handling and constants
+- Data models and JSON serialization
+- API response structures
+- Database repository layer
 
 Run tests with:
 ```bash
 go test ./...
 ```
 
+## Architecture
+
+The application follows a layered architecture:
+
+1. **Controllers**: Handle HTTP requests/responses
+2. **Use Cases**: Contain business logic
+3. **Repositories**: Handle data persistence
+4. **Models**: Define data structures
+5. **Errors**: Centralized error handling
+
+Key design patterns:
+- Dependency injection
+- Separation of concerns
+- Concurrent web crawling
+- Comprehensive logging
+
 ## TODO
+
 - High priority:
   - Improve crawler repository to correctly collect website data
+  - Add validation for news outlet credibility scores (0-100)
+
 - Medium priority:
   - Add API documentation (Swagger/OpenAPI)
   - Refactor the code to add more comprehensive error handling
+  - Implement retry logic for failed crawls
+
 - Low priority:
   - Implement security measures for Gin to block proxy communication
   - Develop authentication for API endpoints
   - Implement rate limiting
+  - Add health check endpoints
+  - Implement proper shutdown handling
