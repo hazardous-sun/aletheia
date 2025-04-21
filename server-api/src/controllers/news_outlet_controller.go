@@ -48,25 +48,10 @@ func (no *NewsOutletController) AddNewsOutlet(ctx *gin.Context) {
 	if err != nil {
 		server_errors.Log(server_errors.NewsOutletNotAdded, server_errors.ErrorLevel)
 		switch err.Error() {
-		case server_errors.LanguageParsingError:
+		case server_errors.LanguageParsingError, server_errors.LanguageNotFound:
 			ctx.JSON(http.StatusBadRequest, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
-			})
-		case server_errors.NewsOutletTableMissing:
-			ctx.JSON(http.StatusInternalServerError, models.Response{
-				Message: err.Error(),
-				Status:  http.StatusInternalServerError,
-			})
-		case server_errors.NewsOutletClosingTableError:
-			ctx.JSON(http.StatusInternalServerError, models.Response{
-				Message: err.Error(),
-				Status:  http.StatusInternalServerError,
-			})
-		case server_errors.LanguageNotFound:
-			ctx.JSON(http.StatusNotFound, models.Response{
-				Message: err.Error(),
-				Status:  http.StatusNotFound,
 			})
 		default:
 			ctx.JSON(http.StatusInternalServerError, models.Response{
@@ -120,16 +105,6 @@ func (no *NewsOutletController) GetNewsOutlets(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, models.Response{
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
-			})
-		case server_errors.NewsOutletTableMissing:
-			ctx.JSON(http.StatusInternalServerError, models.Response{
-				Message: err.Error(),
-				Status:  http.StatusInternalServerError,
-			})
-		case server_errors.LanguageClosingTableError:
-			ctx.JSON(http.StatusInternalServerError, models.Response{
-				Message: err.Error(),
-				Status:  http.StatusInternalServerError,
 			})
 		default:
 			ctx.JSON(http.StatusInternalServerError, models.Response{

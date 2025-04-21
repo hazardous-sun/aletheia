@@ -49,24 +49,9 @@ func (lc *LanguageController) AddLanguage(ctx *gin.Context) {
 	if err != nil {
 		server_errors.Log(server_errors.LanguageNotAdded, server_errors.ErrorLevel)
 		switch err.Error() {
-		case server_errors.LanguageParsingError:
+		case server_errors.LanguageParsingError, server_errors.LanguageAlreadyExists:
 			ctx.JSON(http.StatusBadRequest, models.Response{
 				Message: err.Error(),
-				Status:  http.StatusBadRequest,
-			})
-		case server_errors.LanguageTableMissing:
-			ctx.JSON(http.StatusInternalServerError, models.Response{
-				Message: err.Error(),
-				Status:  http.StatusInternalServerError,
-			})
-		case server_errors.LanguageClosingTableError:
-			ctx.JSON(http.StatusInternalServerError, models.Response{
-				Message: err.Error(),
-				Status:  http.StatusInternalServerError,
-			})
-		case server_errors.LanguageAlreadyExists:
-			ctx.JSON(http.StatusBadRequest, models.Response{
-				Message: server_errors.LanguageAlreadyExists,
 				Status:  http.StatusBadRequest,
 			})
 		default:
