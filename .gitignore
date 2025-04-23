@@ -2,7 +2,4 @@
 pgdata
 
 # Removing unnecessary files from .idea
-.idea/misc.xml
-.idea/shelf/
-.idea/vcs.xml
-.idea/workspace.xml
+.idea/
