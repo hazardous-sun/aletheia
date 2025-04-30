@@ -36,7 +36,7 @@ class LinkExtractor:
             
             Rules:
             1. Only include links that point to news articles
-            2. Titles should be 3-15 words
+            2. Titles should be 3-15 words, in the original language
             3. URLs must be complete and valid
             4. If no news links found, return empty array []
             5. No additional text or explanations
@@ -59,6 +59,8 @@ class LinkExtractor:
             )
 
             # Clean and validate the response
+            response = self._collect_json_section(response['response'])
+
             json_str = self._extract_json(response['response'])
             links = json.loads(json_str)
 
@@ -104,6 +106,11 @@ class LinkExtractor:
         if start >= 0 and end > 0:
             return text[start:end]
         return '[]'  # Return empty array if no JSON found
+
+    def _collect_json_section(self, result: str) -> str:
+        start = result.find('[')
+        end = result.rfind(']')
+        return result[start:end]
 
 
 if __name__ == "__main__":
