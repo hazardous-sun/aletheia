@@ -16,7 +16,7 @@ class LinkExtractor:
     def extract_links(self, html_content: str) -> List[Dict[str, str]]:
         try:
             # Clean and limit the HTML content
-            clean_html = self._clean_html(html_content)[:20000]  # Limit to 20k chars
+            clean_html = self._clean_html(html_content)[:90000]  # Limit to 90k chars
 
             # Create a more reliable prompt template
             prompt_template = """
