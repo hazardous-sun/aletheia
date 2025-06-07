@@ -14,15 +14,18 @@ DB_PASSWORD="1234"
 DB_NAME="postgres"
 SERVER_PORT="8000"
 AI_PORT="7654"
+
 CLEAR_DB=false
-RESET_IMAGES=false
 DEBUG=false
+SETUP=false
+RESET_IMAGES=false
 
 printUsage() {
   echo "Usage: run.sh [OPTIONS]"
   echo "Database Options:"
   echo -e "  -C --CLEAR \t\tClears the database"
   echo -e "  -R --RESET \t\tResets all project images"
+  echo -e "  -S --SETUP \t\tSetup the database with default languages and news outlets"
   echo "Server API Configuration:"
   echo -e "  --SERVER_PORT=\tPort for the API server (default: 8000)"
   echo -e "  --DB_HOST=\t\tDatabase host (default: aletheia-db)"
@@ -65,6 +68,30 @@ clearImages() {
   done
 }
 
+setupDatabase() {
+  sleep 5
+
+  # Add Portuguese to Languages table
+  _=$(curl -s \
+    --header "Content-Type: application/json" \
+    --request POST \
+    --data '{"name":"portuguese"}' \
+    http://localhost:8000/language)
+
+  # Add G1 to NewsOutlets table
+  _=$(curl -s \
+    --header "Content-Type: application/json" \
+    --request POST \
+    --data '{
+        "name": "G1",
+        "queryUrl": "https://g1.globo.com/busca/?q=QUERY_HERE&page=1&order=recent&species=not%C3%ADcias&from=now-1M",
+        "htmlSelector": "li.widget > div > a",
+        "language": "portuguese",
+        "credibility": 100
+    }' \
+    http://localhost:8000/newsOutlet)
+}
+
 # Cleanup any existing containers
 echo -e "${INFO}Cleaning up existing containers...${NC}"
 if ! podman-compose down --remove-orphans; then
@@ -80,6 +107,9 @@ while [[ $# -gt 0 ]]; do
       ;;
     -R|--RESET)
       RESET_IMAGES=true
+      ;;
+    -S|--SETUP)
+      SETUP=true
       ;;
     --SERVER_PORT=*)
       SERVER_PORT="${1#*=}"
@@ -159,3 +189,9 @@ if ! podman-compose ps | grep -q "Up"; then
 fi
 
 echo -e "${INFO}All services started successfully!${NC}"
+
+if $SETUP; then
+  echo -e "${INFO}Setting up database...${NC}"
+  setupDatabase
+  echo -e "${INFO}Database filled with default values!${NC}"
+fi
