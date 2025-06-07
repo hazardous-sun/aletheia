@@ -8,3 +8,6 @@ pgdata
 .idea/shelf/
 .idea/vcs.xml
 .idea/workspace.xml
+
+# Python interpreter
+__pycache__/
