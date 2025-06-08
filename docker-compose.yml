@@ -50,11 +50,6 @@ services:
       PORT: "7654"
     networks:
       - aletheia-net
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7654"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 networks:
   aletheia-net:
