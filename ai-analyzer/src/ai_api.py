@@ -1,3 +1,5 @@
+from builtins import ValueError
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -40,6 +42,9 @@ async def get_links(request: LinkRequest):
 
         extractor = LinkExtractor()
         links = extractor.extract_links(request.html_content)
+
+        if links is None:
+            raise ValueError("An error occurred while parsing the request")
 
         # Validate the response structure
         if not isinstance(links, list):
