@@ -34,6 +34,7 @@ async def get_links(request: LinkRequest):
     """
     Endpoint to extract news links
     """
+    print(f"getLinks request: {str(request)}")
     try:
         if not request.html_content.strip():
             raise ValueError("HTML content cannot be empty")
