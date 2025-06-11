@@ -123,7 +123,6 @@ go test ./...
 
 - Enhanced crawler reliability and error recovery
 - News outlet credibility validation
-- API response standardization
 
 ### Future Development
 
