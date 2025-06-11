@@ -17,7 +17,8 @@ RUN curl -fsSL https://ollama.com/install.sh | sh
 # Start Ollama, wait for it to initialize, then pull the model
 RUN ollama serve > /dev/null 2>&1 & \
     sleep 5 && \
-    ollama pull deepseek-r1:1.5b
+    ollama pull deepseek-r1:1.5b && \
+    ollama pull phi3:3.8b
 
 # Copy the project to the container
 COPY src/ ./

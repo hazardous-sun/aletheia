@@ -2,12 +2,12 @@ import ollama
 from typing import Dict, Optional
 
 class ContentAnalyzer:
-    def __init__(self, model_name: str = 'mistral:7b'):
+    def __init__(self, model_name: str = 'phi3:3.8b'):
         """
         Initialize the ContentAnalyzer with a specific AI model.
 
         Args:
-            model_name: Name of the Ollama model to use (default: 'mistral:7b')
+            model_name: Name of the Ollama model to use (default: 'deepseek-r1:1.5b')
         """
         self.model_name = model_name
         # Ensure the model is available
