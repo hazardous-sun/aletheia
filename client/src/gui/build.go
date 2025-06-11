@@ -3,17 +3,23 @@ package gui
 import (
 	"aletheia-client/src/errors"
 	"aletheia-client/src/models"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"io"
+	"net/http"
 	"strings"
 )
 
 var PostUrl string = ""
 var Image bool = false
-var Prompt string = ""
 var Video bool = false
+var Prompt string = ""
+var promptEntry *widget.Entry
+var answerBox *widget.Entry
 
 func Build(a fyne.App) {
 	config, err := models.NewConfig()
@@ -32,17 +38,23 @@ func Build(a fyne.App) {
 }
 
 func buildFields(config models.Config) fyne.CanvasObject {
-	// Required widgets
 	requiredWidgets := buildRequiredFields()
-
-	// Optional widgets
 	optionalWidgets := buildOptionalFields(config)
 
-	widgetsCtr := container.NewGridWithRows(len(requiredWidgets)+len(optionalWidgets), append(requiredWidgets, optionalWidgets...)...)
+	answerBox = widget.NewMultiLineEntry()
+	answerBox.SetPlaceHolder("Waiting for server response...")
+	answerBox.Hide()
+
+	allWidgets := append(requiredWidgets, optionalWidgets...)
+	allWidgets = append(allWidgets, answerBox)
+
+	formContainer := container.NewGridWithRows(len(allWidgets), allWidgets...)
+
 	return container.NewBorder(
-		widgetsCtr,
+		formContainer,
 		nil, nil, nil,
 		widget.NewButton("Send", func() {
+			Prompt = promptEntry.Text
 			sendPackage(config)
 		}),
 	)
@@ -50,11 +62,12 @@ func buildFields(config models.Config) fyne.CanvasObject {
 
 // Required fields
 func buildRequiredFields() []fyne.CanvasObject {
-	windowWidgets := make([]fyne.CanvasObject, 0)
-	// Required fields
-	urlField := buildEntryContainerField("URL:")
-	windowWidgets = append(windowWidgets, urlField)
-	return windowWidgets
+	promptEntry = widget.NewMultiLineEntry()
+	promptEntry.SetPlaceHolder("Enter your search query...")
+	return []fyne.CanvasObject{
+		widget.NewLabel("Prompt"),
+		promptEntry,
+	}
 }
 
 // Optional fields
@@ -110,17 +123,41 @@ func buildCheckField(labelText string) fyne.CanvasObject {
 }
 
 func sendPackage(config models.Config) {
-	packageSent := models.PackageSent{
-		Url:    PostUrl,
-		Image:  Image,
-		Prompt: Prompt,
-		Video:  Video,
+	requestBody := map[string]interface{}{
+		"query":        Prompt,
+		"pagesToVisit": 5,
 	}
-	apiConnector := models.NewAPIConnector(PostUrl)
-	response, err := apiConnector.SendPackage(fmt.Sprintf("localhost:%s", config.Port), packageSent)
+
+	bodyJson, err := json.Marshal(requestBody)
 	if err != nil {
-		client_errors.Log(err.Error(), client_errors.ErrorLevel)
-	} else {
-		client_errors.Log(fmt.Sprintf("%v", response), client_errors.InfoLevel)
+		client_errors.Log("Failed to encode request body: "+err.Error(), client_errors.ErrorLevel)
+		answerBox.SetText("Error preparing request.")
+		answerBox.Show()
+		return
 	}
+
+	// Log the package being sent
+	client_errors.Log("Sending JSON to server:\n"+string(bodyJson), client_errors.InfoLevel)
+
+	apiURL := "http://localhost:" + config.Port + "/crawl"
+	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(bodyJson))
+	if err != nil {
+		client_errors.Log("Request failed: "+err.Error(), client_errors.ErrorLevel)
+		answerBox.SetText("Error: " + err.Error())
+		answerBox.Show()
+		return
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		client_errors.Log("Reading response failed: "+err.Error(), client_errors.ErrorLevel)
+		answerBox.SetText("Error reading response.")
+		answerBox.Show()
+		return
+	}
+
+	client_errors.Log("Received response: "+string(respBody), client_errors.InfoLevel)
+	answerBox.SetText(string(respBody))
+	answerBox.Show()
 }
