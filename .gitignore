@@ -3,6 +3,7 @@ pgdata
 
 # Removing unnecessary files from .idea
 .idea/aletheia.iml
+.idea/inspectionProfiles/
 .idea/misc.xml
 .idea/modules.xml
 .idea/shelf/
